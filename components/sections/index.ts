@@ -1,0 +1,13 @@
+export { Hero } from "./hero";
+export { About } from "./about";
+export { Experience } from "./experience";
+export { Education } from "./education";
+export { TechStack } from "./tech-stack";
+export { Projects } from "./projects";
+export { Certifications } from "./certifications";
+export { Achievements } from "./achievements";
+export { Testimonials } from "./testimonials";
+export { Companies } from "./companies";
+export { Approach } from "./approach";
+export { Contact } from "./contact";
+export { BlogPreview } from "./blog-preview";

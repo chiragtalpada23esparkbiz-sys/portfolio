@@ -1,0 +1,65 @@
+---
+title: "Getting Started with LangChain: Building AI-Powered Applications"
+excerpt: "Learn how to build intelligent applications using LangChain, from setting up your first chain to implementing RAG-based chatbots."
+date: "2026-01-25"
+tags: ["AI", "LangChain", "Python", "RAG"]
+author:
+  name: "Chirag Talpada"
+---
+
+# Getting Started with LangChain
+
+LangChain has revolutionized how we build AI-powered applications. In this post, I'll walk you through the fundamentals and share some practical examples from my experience building production applications.
+
+## What is LangChain?
+
+LangChain is a framework designed to simplify the creation of applications using large language models (LLMs). It provides:
+
+- **Chains**: Sequences of calls to LLMs or other utilities
+- **Agents**: Chains that can decide which actions to take
+- **Memory**: Persist state between calls of a chain/agent
+- **Retrieval**: Fetch relevant documents to augment LLM responses
+
+## Setting Up Your First Chain
+
+Here's a simple example of creating a chain:
+
+```python
+from langchain import PromptTemplate, LLMChain
+from langchain.llms import OpenAI
+
+llm = OpenAI(temperature=0.7)
+prompt = PromptTemplate(
+    input_variables=["topic"],
+    template="Write a short paragraph about {topic}"
+)
+
+chain = LLMChain(llm=llm, prompt=prompt)
+result = chain.run("artificial intelligence")
+```
+
+## Building a RAG-Based Chatbot
+
+Retrieval-Augmented Generation (RAG) combines the power of LLMs with your own data. Here's a high-level overview:
+
+1. **Document Loading**: Load your documents (PDFs, text files, etc.)
+2. **Text Splitting**: Break documents into manageable chunks
+3. **Embedding**: Convert chunks into vector representations
+4. **Storage**: Store vectors in a vector database
+5. **Retrieval**: Find relevant chunks for user queries
+6. **Generation**: Use LLM to generate responses
+
+## Best Practices
+
+From my experience building AI applications, here are some key takeaways:
+
+- **Start simple**: Begin with basic chains before moving to agents
+- **Test thoroughly**: AI outputs can be unpredictable
+- **Monitor costs**: Keep track of API usage
+- **Handle errors gracefully**: LLM calls can fail
+
+## Conclusion
+
+LangChain makes it accessible to build sophisticated AI applications. Start experimenting with simple chains and gradually increase complexity as you learn.
+
+Happy coding!
