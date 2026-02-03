@@ -23,7 +23,7 @@ const experiences: Experience[] = [
     title: "Full-Stack Developer",
     company: "eSparkBiz",
     type: "full-time",
-    startDate: "Jan 2022",
+    startDate: "Jan 2023",
     endDate: "Present",
     location: "Remote",
     description:
