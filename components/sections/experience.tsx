@@ -19,9 +19,9 @@ interface Experience {
 
 const experiences: Experience[] = [
   {
-    id: "sparkbiz",
+    id: "esparkbiz",
     title: "Full-Stack Developer",
-    company: "SparkBiz",
+    company: "eSparkBiz",
     type: "full-time",
     startDate: "Jan 2022",
     endDate: "Present",
@@ -41,7 +41,15 @@ const experiences: Experience[] = [
       "Successfully built RAG-based chatbot serving 10,000+ users",
       "Led adoption of TypeScript across the codebase improving code quality",
     ],
-    technologies: ["React", "Next.js", "Node.js", "GraphQL", "Hasura", "PostgreSQL", "LangChain"],
+    technologies: [
+      "React",
+      "Next.js",
+      "Node.js",
+      "GraphQL",
+      "Hasura",
+      "PostgreSQL",
+      "LangChain",
+    ],
   },
   {
     id: "missionctrl",
@@ -66,7 +74,14 @@ const experiences: Experience[] = [
       "Implemented real-time notification system processing 100K+ events daily",
       "Received recognition for AI integration excellence",
     ],
-    technologies: ["React", "Node.js", "Python", "OpenAI API", "MongoDB", "Redis"],
+    technologies: [
+      "React",
+      "Node.js",
+      "Python",
+      "OpenAI API",
+      "MongoDB",
+      "Redis",
+    ],
   },
   {
     id: "jurnii",
@@ -110,7 +125,7 @@ export function Experience() {
       <div className="max-w-4xl mx-auto">
         <div className="relative">
           {/* Timeline line */}
-          <div className="absolute left-[7px] top-2 bottom-2 w-[2px] bg-border" />
+          <div className="absolute left-1.75 top-2 bottom-2 w-0.5 bg-border" />
 
           {/* Experience items */}
           <div className="space-y-12">
@@ -145,7 +160,9 @@ export function Experience() {
 
                   {/* Key Responsibilities */}
                   <div>
-                    <h4 className="font-semibold mb-2">Key Responsibilities:</h4>
+                    <h4 className="font-semibold mb-2">
+                      Key Responsibilities:
+                    </h4>
                     <ul className="space-y-1.5">
                       {exp.responsibilities.map((item, index) => (
                         <li

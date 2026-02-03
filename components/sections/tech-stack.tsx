@@ -1,157 +1,303 @@
 "use client";
 
 import { Section } from "@/components/ui/section";
+import { Dock, DockIcon } from "@/components/ui/dock";
+import { Code2, Brain, Database, Cloud, Workflow, Shield } from "lucide-react";
+import { TechIcons } from "@/components/tech_icons";
+import { ReactElement, useEffect, useState } from "react";
 
-interface Skill {
+type TechIconType = {
   name: string;
-  percentage: number;
-  color: string;
-}
+  Icon: ReactElement;
+};
 
-interface SkillCategory {
-  name: string;
-  skills: Skill[];
-}
+// Responsive icons per row
+const useIconsPerRow = () => {
+  const [iconsPerRow, setIconsPerRow] = useState(12);
 
-const skillCategories: SkillCategory[] = [
+  useEffect(() => {
+    const updateIconsPerRow = () => {
+      const width = window.innerWidth;
+      if (width < 480) {
+        setIconsPerRow(4);
+      } else if (width < 640) {
+        setIconsPerRow(5);
+      } else if (width < 768) {
+        setIconsPerRow(6);
+      } else if (width < 1024) {
+        setIconsPerRow(8);
+      } else {
+        setIconsPerRow(12);
+      }
+    };
+
+    updateIconsPerRow();
+    window.addEventListener("resize", updateIconsPerRow);
+    return () => window.removeEventListener("resize", updateIconsPerRow);
+  }, []);
+
+  return iconsPerRow;
+};
+
+// Responsive icon sizes
+const useIconSize = () => {
+  const [sizes, setSizes] = useState({ iconSize: 60, magnification: 80 });
+
+  useEffect(() => {
+    const updateSizes = () => {
+      const width = window.innerWidth;
+      if (width < 640) {
+        setSizes({ iconSize: 45, magnification: 50 });
+      } else if (width < 768) {
+        setSizes({ iconSize: 48, magnification: 60 });
+      } else {
+        setSizes({ iconSize: 60, magnification: 80 });
+      }
+    };
+
+    updateSizes();
+    window.addEventListener("resize", updateSizes);
+    return () => window.removeEventListener("resize", updateSizes);
+  }, []);
+
+  return sizes;
+};
+
+// Expertise areas with descriptions
+const expertiseAreas = [
   {
-    name: "AI & ML",
-    skills: [
-      { name: "LangChain", percentage: 90, color: "bg-orange-400" },
-      { name: "OpenAI API", percentage: 92, color: "bg-blue-500" },
-      { name: "Vector DBs", percentage: 85, color: "bg-purple-500" },
+    icon: Code2,
+    title: "Full-Stack Development",
+    description:
+      "Building complete web applications with React, Next.js, Node.js, and modern JavaScript/TypeScript ecosystems.",
+    color: "bg-blue-500/10 text-blue-600 dark:text-blue-400",
+  },
+  {
+    icon: Brain,
+    title: "AI & Automation",
+    description:
+      "Creating AI agents, RAG chatbots, and intelligent automation workflows using LangChain, LangGraph, and AI SDKs.",
+    color: "bg-purple-500/10 text-purple-600 dark:text-purple-400",
+  },
+  {
+    icon: Database,
+    title: "Database & APIs",
+    description:
+      "Designing efficient database schemas and APIs with PostgreSQL, MySQL, GraphQL, and REST architectures.",
+    color: "bg-green-500/10 text-green-600 dark:text-green-400",
+  },
+  {
+    icon: Cloud,
+    title: "DevOps & Collaboration",
+    description:
+      "Implementing Docker containerization, Git version control, and effective project management and teamwork practices.",
+    color: "bg-orange-500/10 text-orange-600 dark:text-orange-400",
+  },
+  {
+    icon: Workflow,
+    title: "Workflow Automation",
+    description:
+      "Building automated workflows and intelligent reporting systems to streamline processes.",
+    color: "bg-cyan-500/10 text-cyan-600 dark:text-cyan-400",
+  },
+  {
+    icon: Shield,
+    title: "Auth & Payments",
+    description:
+      "Implementing secure authentication with OAuth/JWT and payment integration with Stripe.",
+    color: "bg-pink-500/10 text-pink-600 dark:text-pink-400",
+  },
+];
+
+// Tech stack organized by category with actual icon components
+const techCategories = [
+  {
+    name: "Frontend",
+    technologies: [
+      { name: "React", Icon: TechIcons.React },
+      { name: "Next.js", Icon: TechIcons.NextJS },
+      { name: "TypeScript", Icon: TechIcons.TypeScript },
+      { name: "JavaScript", Icon: TechIcons.Javascript },
+      { name: "Tailwind CSS", Icon: TechIcons.Tailwind },
+      { name: "shadcn/ui", Icon: TechIcons.ShadcnUI },
+      { name: "HTML5", Icon: TechIcons.HTML5 },
+      { name: "CSS3", Icon: TechIcons.CSS3 },
+      { name: "Redux", Icon: TechIcons.Redux },
     ],
   },
   {
     name: "Backend",
-    skills: [
-      { name: "Node.js", percentage: 94, color: "bg-green-500" },
-      { name: "GraphQL", percentage: 90, color: "bg-pink-500" },
-      { name: "Hasura", percentage: 88, color: "bg-blue-600" },
-      { name: "REST API Design", percentage: 91, color: "bg-gray-800 dark:bg-gray-200" },
-      { name: "WebSockets", percentage: 78, color: "bg-blue-400" },
-    ],
-  },
-  {
-    name: "Cloud",
-    skills: [
-      { name: "Vercel", percentage: 92, color: "bg-gray-800 dark:bg-gray-200" },
-      { name: "AWS", percentage: 75, color: "bg-orange-500" },
-      { name: "Firebase", percentage: 80, color: "bg-yellow-500" },
+    technologies: [
+      { name: "Node.js", Icon: TechIcons.NodeJS },
+      { name: "Express.js", Icon: TechIcons.ExpressJS },
+      { name: "GraphQL", Icon: TechIcons.GraphQL },
+      { name: "tRPC", Icon: TechIcons.TRPC },
+      { name: "Zod", Icon: TechIcons.Zod },
     ],
   },
   {
     name: "Database",
-    skills: [
-      { name: "PostgreSQL", percentage: 92, color: "bg-teal-500" },
-      { name: "MySQL", percentage: 85, color: "bg-blue-600" },
-      { name: "Redis", percentage: 78, color: "bg-red-500" },
+    technologies: [
+      { name: "PostgreSQL", Icon: TechIcons.PostgreSQL },
+      { name: "MySQL", Icon: TechIcons.MySQL },
+      { name: "MongoDB", Icon: TechIcons.MongoDB },
+      { name: "Redis", Icon: TechIcons.Redis },
+      { name: "Hasura", Icon: TechIcons.Hasura },
+      { name: "Zitadel", Icon: TechIcons.Zitadel },
+      { name: "Better-auth", Icon: TechIcons.BetterAuth },
     ],
   },
   {
-    name: "Frontend",
-    skills: [
-      { name: "React", percentage: 95, color: "bg-cyan-500" },
-      { name: "Next.js", percentage: 93, color: "bg-gray-800 dark:bg-gray-200" },
-      { name: "TypeScript", percentage: 92, color: "bg-blue-600" },
-      { name: "Tailwind CSS", percentage: 95, color: "bg-teal-400" },
-      { name: "ShadCN UI", percentage: 90, color: "bg-gray-700 dark:bg-gray-300" },
+    name: "AI & ML",
+    technologies: [
+      { name: "OpenAI", Icon: TechIcons.OpenAI },
+      { name: "Anthropic", Icon: TechIcons.Anthropic },
+      { name: "Claude", Icon: TechIcons.Claude },
+      { name: "LangChain/LangGraph", Icon: TechIcons.LangChain },
     ],
   },
   {
-    name: "DevOps",
-    skills: [
-      { name: "Docker", percentage: 82, color: "bg-blue-500" },
-      { name: "GitHub Actions", percentage: 88, color: "bg-gray-800 dark:bg-gray-200" },
-      { name: "Windmill", percentage: 85, color: "bg-purple-500" },
+    name: "DevOps & Tools",
+    technologies: [
+      { name: "Docker", Icon: TechIcons.Docker },
+      { name: "Git", Icon: TechIcons.Git },
+      { name: "GitHub", Icon: TechIcons.GitHub },
+      { name: "GitLab", Icon: TechIcons.GitLab },
+      { name: "Postman", Icon: TechIcons.Postman },
+      { name: "PostHog", Icon: TechIcons.PostHog },
+      { name: "Cursor", Icon: TechIcons.Cursor },
+      { name: "Hyperbrowser", Icon: TechIcons.hyperbrowser },
     ],
   },
   {
-    name: "Authentication",
-    skills: [
-      { name: "Zitadel", percentage: 88, color: "bg-orange-500" },
-      { name: "BetterAuth", percentage: 85, color: "bg-green-500" },
-      { name: "Authorizer", percentage: 82, color: "bg-blue-500" },
-      { name: "OAuth/JWT", percentage: 90, color: "bg-gray-800 dark:bg-gray-200" },
-    ],
-  },
-  {
-    name: "Tools",
-    skills: [
-      { name: "Git", percentage: 95, color: "bg-orange-600" },
-      { name: "Stripe", percentage: 85, color: "bg-purple-600" },
-      { name: "Hyperbrowser", percentage: 80, color: "bg-blue-500" },
-    ],
-  },
-  {
-    name: "Soft Skills",
-    skills: [
-      { name: "Problem Solving", percentage: 95, color: "bg-green-500" },
-      { name: "Communication", percentage: 90, color: "bg-gray-800 dark:bg-gray-200" },
-      { name: "Team Collaboration", percentage: 92, color: "bg-blue-500" },
-      { name: "Agile/Scrum", percentage: 88, color: "bg-teal-500" },
+    name: "Services & PM",
+    technologies: [
+      { name: "Stripe", Icon: TechIcons.Stripe },
+      { name: "Notion", Icon: TechIcons.Notion },
+      { name: "Trello", Icon: TechIcons.Trello },
+      { name: "Jira", Icon: TechIcons.Jira },
+      { name: "Windmill", Icon: TechIcons.Windmill },
     ],
   },
 ];
 
-function SkillBar({ skill }: { skill: Skill }) {
+function ExpertiseCard({
+  expertise,
+}: {
+  expertise: (typeof expertiseAreas)[0];
+}) {
+  const Icon = expertise.icon;
+
   return (
-    <div className="flex items-center gap-3">
-      <span className="text-sm text-muted-foreground w-28 text-right shrink-0">
-        {skill.name}
-      </span>
-      <div className="flex-1 h-5 bg-muted rounded-full overflow-hidden">
-        <div
-          className={`h-full ${skill.color} rounded-full transition-all duration-1000`}
-          style={{ width: `${skill.percentage}%` }}
-        />
+    <article className="group relative rounded-xl sm:rounded-2xl border bg-card p-4 sm:p-6 transition-all duration-300 hover:shadow-lg hover:border-primary/20">
+      {/* Icon */}
+      <div
+        className={`inline-flex items-center justify-center w-10 h-10 sm:w-12 sm:h-12 rounded-lg sm:rounded-xl ${expertise.color} mb-3 sm:mb-4 transition-transform duration-300 group-hover:scale-110`}
+      >
+        <Icon className="w-5 h-5 sm:w-6 sm:h-6" />
       </div>
-      <span className="text-sm text-muted-foreground w-10">
-        {skill.percentage}%
-      </span>
-    </div>
+
+      {/* Content */}
+      <h3 className="font-semibold text-base sm:text-lg mb-1.5 sm:mb-2">
+        {expertise.title}
+      </h3>
+      <p className="text-muted-foreground text-xs sm:text-sm leading-relaxed">
+        {expertise.description}
+      </p>
+    </article>
   );
 }
 
-function SkillCard({ category }: { category: SkillCategory }) {
-  return (
-    <div className="rounded-xl border bg-card p-6">
-      {/* Header */}
-      <div className="flex items-center justify-between mb-6">
-        <h3 className="font-semibold text-lg">{category.name}</h3>
-        <span className="flex items-center justify-center w-7 h-7 rounded-full bg-muted text-sm font-medium">
-          {category.skills.length}
-        </span>
-      </div>
+// Flatten all technologies
+const allTechnologies: TechIconType[] = techCategories.flatMap(
+  (cat) => cat.technologies,
+);
 
-      {/* Skills */}
-      <div className="space-y-4">
-        {category.skills.map((skill) => (
-          <SkillBar key={skill.name} skill={skill} />
-        ))}
-      </div>
-    </div>
-  );
-}
+// Chunk technologies into rows based on count
+const chunkTechnologies = (iconsPerRow: number): TechIconType[][] => {
+  return allTechnologies.reduce((acc, _, i) => {
+    if (i % iconsPerRow === 0) {
+      acc.push(allTechnologies.slice(i, i + iconsPerRow) as TechIconType[]);
+    }
+    return acc;
+  }, [] as TechIconType[][]);
+};
 
 export function TechStack() {
+  const iconsPerRow = useIconsPerRow();
+  const { iconSize, magnification } = useIconSize();
+  const chunkedTechnologies = chunkTechnologies(iconsPerRow);
+
   return (
-    <Section id="tech-stack" className="py-20 md:py-28">
+    <Section id="tech-stack" className="py-12 sm:py-16 md:py-20 lg:py-28">
       {/* Header */}
-      <div className="text-center mb-16">
-        <h2 className="text-4xl md:text-5xl font-bold tracking-tight mb-4">
+      <header className="text-center mb-10 sm:mb-12 md:mb-16 px-4">
+        <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold tracking-tight mb-3 sm:mb-4">
           Skills & Expertise
         </h2>
-        <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
-          A comprehensive overview of my technical proficiencies and tools I work with daily
+        <p className="text-muted-foreground text-base sm:text-lg max-w-2xl mx-auto">
+          Specialized in building robust, scalable applications with modern
+          technologies, focusing on exceptional user experiences and AI-driven
+          solutions.
         </p>
+      </header>
+
+      {/* Expertise Areas */}
+      <div className="mb-12 sm:mb-16 md:mb-20">
+        <h3 className="sr-only">Areas of Expertise</h3>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
+          {expertiseAreas.map((expertise) => (
+            <ExpertiseCard key={expertise.title} expertise={expertise} />
+          ))}
+        </div>
       </div>
 
-      {/* Skills Grid */}
-      <div className="grid md:grid-cols-2 gap-6">
-        {skillCategories.map((category) => (
-          <SkillCard key={category.name} category={category} />
-        ))}
+      {/* Tech Stack with Dock Effect */}
+      <div>
+        <div className="text-center mb-6 sm:mb-8 md:mb-10 px-4">
+          <h3 className="text-2xl sm:text-3xl font-semibold mb-2">
+            Technologies I Use
+          </h3>
+          <p className="text-muted-foreground text-xs sm:text-sm max-w-2xl mx-auto">
+            From frontend frameworks to AI tools, these are the technologies I
+            work with daily to build modern, scalable applications.
+          </p>
+        </div>
+
+        <div className="relative overflow-x-auto">
+          {chunkedTechnologies.map((techRaw, r) => {
+            return (
+              <Dock
+                key={`${r}-${iconsPerRow}`}
+                iconMagnification={magnification}
+                iconDistance={100}
+                className={`border-none min-w-fit ${r === 0 ? "mt-8" : ""}`}
+                iconSize={iconSize}
+              >
+                {techRaw.map((tech, i) => {
+                  const Icon = tech.Icon;
+
+                  return (
+                    <DockIcon
+                      key={i}
+                      className="group relative bg-black/10 dark:bg-white"
+                    >
+                      {/* Tooltip */}
+                      <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-1 sm:mb-2 px-2 sm:px-3 py-1 sm:py-1.5 rounded-md sm:rounded-lg bg-white dark:bg-zinc-800 text-zinc-900 dark:text-white text-[10px] sm:text-xs font-medium shadow-lg border border-zinc-200 dark:border-zinc-700 whitespace-nowrap opacity-0 group-hover:opacity-100 transition-all duration-200 pointer-events-none z-20">
+                        {tech.name}
+                        <div className="absolute -bottom-1 left-1/2 -translate-x-1/2 w-1.5 sm:w-2 h-1.5 sm:h-2 bg-white dark:bg-zinc-800 border-b border-r border-zinc-200 dark:border-zinc-700 rotate-45" />
+                      </div>
+                      {/* Icon */}
+                      <div className="w-full h-full [&>svg]:w-full [&>svg]:h-full">
+                        {Icon}
+                      </div>
+                    </DockIcon>
+                  );
+                })}
+              </Dock>
+            );
+          })}
+        </div>
       </div>
     </Section>
   );

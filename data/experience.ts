@@ -2,8 +2,8 @@ import type { Experience } from "@/types";
 
 export const experiences: Experience[] = [
   {
-    id: "sparkbiz",
-    company: "SparkBiz",
+    id: "esparkbiz",
+    company: "eSparkBiz",
     role: "Full Stack Developer",
     startDate: "2022",
     endDate: "Present",
@@ -26,7 +26,7 @@ export const experiences: Experience[] = [
       "LangChain",
       "Node.js",
     ],
-    logo: "/images/companies/sparkbiz.svg",
+    logo: "/images/companies/esparkbiz.svg",
   },
   {
     id: "missionctrl",

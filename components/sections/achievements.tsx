@@ -103,7 +103,7 @@ const achievements: Achievement[] = [
     id: "employee-excellence",
     type: "recognition",
     title: "Employee Excellence Award",
-    organization: "SparkBiz Technologies",
+    organization: "eSparkBiz Technologies",
     description:
       "Awarded for exceptional performance and innovation in full-stack development projects.",
     link: "#",

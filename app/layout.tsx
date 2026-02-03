@@ -34,7 +34,7 @@ export const metadata: Metadata = {
     template: "%s | Chirag Talpada",
   },
   description:
-    "Full Stack Developer with 3+ years of experience specializing in React, Next.js, Node.js, GraphQL, and AI-powered applications. Building scalable web solutions at SparkBiz.",
+    "Full Stack Developer with 3+ years of experience specializing in React, Next.js, Node.js, GraphQL, and AI-powered applications. Building scalable web solutions at eSparkBiz.",
   keywords: [
     "Full Stack Developer",
     "React Developer",
@@ -106,7 +106,7 @@ export default function RootLayout({
           name="Chirag Talpada"
           jobTitle="Full Stack Developer"
           url="https://chiragtalpada.dev"
-          worksFor="SparkBiz"
+          worksFor="eSparkBiz"
           sameAs={[
             "https://github.com/chiragtalpada",
             "https://linkedin.com/in/chiragtalpada",

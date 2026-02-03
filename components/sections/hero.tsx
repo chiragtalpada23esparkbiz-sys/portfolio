@@ -3,13 +3,13 @@
 import * as React from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { Mail, MapPin, CheckCircle } from "lucide-react";
+import { Mail, MapPin, CheckCircle, Download } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 const roles = [
   "Full-Stack SaaS Apps",
   "AI-Powered Solutions",
-  "GraphQL APIs",
+  "Automation-Focused Systems",
   "Modern Web Apps",
 ];
 
@@ -36,7 +36,7 @@ export function Hero() {
           }}
         />
         {/* Gradient overlay at top */}
-        <div className="absolute top-0 left-0 right-0 h-40 bg-gradient-to-b from-background to-transparent" />
+        <div className="absolute top-0 left-0 right-0 h-40 bg-linear-to-b from-background to-transparent" />
       </div>
 
       <div className="container mx-auto px-4 md:px-6 py-12">
@@ -57,27 +57,32 @@ export function Hero() {
             </div>
 
             {/* Description */}
-            <p className="text-muted-foreground text-lg max-w-lg leading-relaxed">
-              Passionate full-stack developer with 3+ years of experience
-              building scalable web applications and AI-powered solutions.
-              Specialized in React, Next.js, AI, and modern cloud technologies!
+            <p className="text-muted-foreground text-lg max-w-2xl leading-relaxed">
+              JavaScript-enthusiastic full-stack developer with 3+ years of
+              experience building scalable web applications and AI-powered
+              products. I specialize in React and Next.js on the frontend, build
+              reliable backend systems with Node.js, and integrate AI agents,
+              RAG-based chatbots, and automation workflows to deliver
+              production-ready solutions on modern cloud architectures. I also
+              leverage tools like Cursor, ChatGPT, and Claude Code to boost
+              development productivity.
             </p>
 
             {/* Social Buttons */}
             <div className="flex flex-wrap gap-3">
               <Button variant="outline" size="lg" asChild>
                 <a
-                  href="https://github.com/chiragtalpada"
+                  href="https://mail.google.com/mail/?view=cm&fs=1&to=chiragtalpada0227@gmail.com"
                   target="_blank"
                   rel="noopener noreferrer"
                   suppressHydrationWarning
                 >
-                  GitHub
+                  Gmail
                 </a>
               </Button>
               <Button variant="outline" size="lg" asChild>
                 <a
-                  href="https://linkedin.com/in/chiragtalpada"
+                  href="https://www.linkedin.com/in/chirag-talpada"
                   target="_blank"
                   rel="noopener noreferrer"
                   suppressHydrationWarning
@@ -87,12 +92,12 @@ export function Hero() {
               </Button>
               <Button variant="outline" size="lg" asChild>
                 <a
-                  href="https://twitter.com/chiragtalpada"
-                  target="_blank"
-                  rel="noopener noreferrer"
+                  href="/chirag_talpada_cv.pdf"
+                  download
                   suppressHydrationWarning
                 >
-                  Twitter
+                  <Download className="h-4 w-4 mr-2" />
+                  Download CV
                 </a>
               </Button>
               <Button variant="outline" size="lg" asChild>
@@ -104,11 +109,11 @@ export function Hero() {
             <div className="flex flex-wrap items-center gap-6 text-sm text-muted-foreground pt-4">
               <div className="flex items-center gap-2">
                 <Mail className="h-4 w-4" />
-                <span>hello@chiragtalpada.dev</span>
+                <span>chiragtalpada0227@gmail.com</span>
               </div>
               <div className="flex items-center gap-2">
                 <MapPin className="h-4 w-4 text-red-500" />
-                <span>India</span>
+                <span>Gujarat, India</span>
               </div>
               <div className="flex items-center gap-2">
                 <CheckCircle className="h-4 w-4 text-green-500" />
@@ -130,8 +135,9 @@ export function Hero() {
               </div>
 
               {/* Profile Image Container */}
-              <div className="relative w-[320px] h-[400px] md:w-[420px] md:h-[520px] lg:w-[480px] lg:h-[580px] rounded-2xl overflow-hidden shadow-2xl">
+              <div className="relative w-[320px] h-100 md:w-105 md:h-130 lg:w-120 lg:h-145 rounded-2xl overflow-hidden shadow-2xl">
                 <Image
+                  style={{ filter: "blur(40px)" }} //did blur for now
                   src="/face_shot.jpg"
                   alt="Chirag Talpada - Full Stack Developer"
                   fill

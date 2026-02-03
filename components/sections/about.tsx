@@ -3,10 +3,10 @@
 import { Section } from "@/components/ui/section";
 
 const stats = [
-  { value: "50+", label: "Projects Completed" },
-  { value: "100%", label: "Client Satisfaction" },
+  { value: "10+", label: "Projects" },
+  { value: "20+", label: "Technologies Used" },
   { value: "3+", label: "Years Experience" },
-  { value: "20+", label: "Technologies Mastered" },
+  { value: "9+", label: "Achievements & Awards" },
 ];
 
 export function About() {
@@ -24,36 +24,62 @@ export function About() {
         {/* Content */}
         <div className="space-y-6 text-muted-foreground leading-relaxed">
           <p>
-            I&apos;m a passionate full-stack developer with over 3 years of experience
-            crafting elegant solutions to complex problems. My journey in tech began
-            with a fascination for how things work, which led me to pursue Computer
-            Science and eventually specialize in web development and artificial
-            intelligence.
+            I&apos;m a{" "}
+            <span className="font-semibold text-foreground">
+              Full-Stack JavaScript Developer
+            </span>{" "}
+            with 3+ years of professional experience, currently working at{" "}
+            <span className="font-semibold text-foreground">eSparkBiz</span>,
+            where I help build modern web applications used in real-world
+            production environments.
           </p>
 
           <div>
-            <span className="font-semibold text-foreground">My Approach</span>: I
-            believe in writing clean, maintainable code that scales. I&apos;m a strong
-            advocate for test-driven development and continuous integration. My
-            experience spans from startups to enterprise companies, giving me a
-            unique perspective on different development methodologies and best
-            practices.
+            <span className="font-semibold text-foreground">
+              Full-Stack Expertise
+            </span>
+            : I specialize in building end-to-end web and SaaS products. On the
+            frontend, I work extensively with React and Next.js, crafting clean,
+            responsive, and user-friendly interfaces using Tailwind CSS and
+            shadcn/ui. On the backend, I design and develop reliable, scalable
+            systems using Node.js, along with PostgreSQL, MySQL, and Hasura for
+            API and data orchestration.
           </div>
 
           <div>
-            <span className="font-semibold text-foreground">What I Do</span>: I
-            specialize in building full-stack applications using React, Next.js, and
-            Node.js. Recently, I&apos;ve been focusing on integrating AI capabilities
-            into web applications, leveraging technologies like OpenAI&apos;s GPT models,
-            LangChain, and vector databases. I&apos;m also experienced in GraphQL with
-            Hasura, PostgreSQL, and modern cloud infrastructure.
+            <span className="font-semibold text-foreground">
+              AI-Driven Solutions
+            </span>
+            : Beyond traditional full-stack development, I&apos;ve been actively
+            working with AI-powered applications. I&apos;ve built AI agents and
+            RAG-based chatbots using LangChain, LangGraph, vector databases, and
+            AI SDKs—integrating them into real products that deliver
+            intelligent, context-aware experiences.
           </div>
 
-          <p>
-            When I&apos;m not coding, you can find me contributing to open-source
-            projects, writing technical blog posts, or mentoring aspiring developers.
-            I&apos;m always excited to learn new technologies and share knowledge with the
-            community.
+          <div>
+            <span className="font-semibold text-foreground">
+              Automation & Workflows
+            </span>
+            : I&apos;ve developed automation workflows using tools like Windmill
+            and Hyperbrowser to streamline processes and generate intelligent
+            reports, helping teams work smarter and faster.
+          </div>
+
+          <div>
+            <span className="font-semibold text-foreground">
+              End-to-End Ownership
+            </span>
+            : I&apos;ve implemented authentication systems, integrated Stripe
+            payments, designed database schemas, and contributed to
+            architectural decisions—taking ownership of features from idea to
+            production.
+          </div>
+
+          <p className="text-foreground font-medium border-l-4 border-primary pl-4 py-2 bg-muted/30 rounded-r-lg">
+            At my core, I enjoy solving real-world problems, learning new
+            technologies, and building scalable, maintainable software that
+            delivers actual value - not just code.
           </p>
         </div>
 
@@ -65,7 +91,9 @@ export function About() {
                 <div className="text-4xl md:text-5xl font-bold mb-2">
                   {stat.value}
                 </div>
-                <div className="text-sm text-muted-foreground">{stat.label}</div>
+                <div className="text-sm text-muted-foreground">
+                  {stat.label}
+                </div>
               </div>
             ))}
           </div>

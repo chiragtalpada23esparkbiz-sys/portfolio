@@ -2,9 +2,9 @@ import type { Company } from "@/types";
 
 export const companies: Company[] = [
   {
-    id: "sparkbiz",
-    name: "SparkBiz",
-    logo: "/images/companies/sparkbiz.svg",
+    id: "esparkbiz",
+    name: "eSparkBiz",
+    logo: "/images/companies/esparkbiz.svg",
     url: "https://esparkbiz.com",
   },
   {
