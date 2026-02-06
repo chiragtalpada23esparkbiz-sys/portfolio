@@ -35,7 +35,7 @@ const navLinks = [
 export function Footer() {
   return (
     <footer className="border-t bg-muted/30">
-      <div className="container mx-auto px-4 md:px-6 py-12">
+      <div className="container mx-auto px-4 xl:px-32 md-short:px-12 lg-short:px-20 py-12">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           {/* Brand */}
           <div className="space-y-4">

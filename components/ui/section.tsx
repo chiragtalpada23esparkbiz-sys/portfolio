@@ -18,13 +18,15 @@ const Section = React.forwardRef<HTMLElement, SectionProps>(
         {...props}
       >
         {container ? (
-          <div className="container mx-auto px-4 md:px-6">{children}</div>
+          <div className="container mx-auto px-4 xl:px-32 md-short:px-12 lg-short:px-20">
+            {children}
+          </div>
         ) : (
           children
         )}
       </section>
     );
-  }
+  },
 );
 Section.displayName = "Section";
 
@@ -39,11 +41,7 @@ const SectionHeader = React.forwardRef<HTMLDivElement, SectionHeaderProps>(
     return (
       <div
         ref={ref}
-        className={cn(
-          "mb-12",
-          align === "center" && "text-center",
-          className
-        )}
+        className={cn("mb-12", align === "center" && "text-center", className)}
         {...props}
       >
         <h2 className="text-3xl font-bold tracking-tight md:text-4xl">
@@ -56,7 +54,7 @@ const SectionHeader = React.forwardRef<HTMLDivElement, SectionHeaderProps>(
         )}
       </div>
     );
-  }
+  },
 );
 SectionHeader.displayName = "SectionHeader";
 

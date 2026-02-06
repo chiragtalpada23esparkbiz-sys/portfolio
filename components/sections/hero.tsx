@@ -24,7 +24,7 @@ export function Hero() {
   }, []);
 
   return (
-    <section className="relative min-h-[calc(100vh-4rem)] flex items-center overflow-hidden">
+    <section className="relative min-h-fit lg:min-h-[calc(100vh-4rem)] lg-short:min-h-fit flex items-start lg:items-center overflow-hidden">
       {/* Grid pattern background */}
       <div className="absolute inset-0 -z-10">
         <div
@@ -39,25 +39,25 @@ export function Hero() {
         <div className="absolute top-0 left-0 right-0 h-40 bg-linear-to-b from-background to-transparent" />
       </div>
 
-      <div className="container mx-auto px-4 md:px-6 py-12">
-        <div className="grid lg:grid-cols-2 gap-12 items-center">
+      <div className="container mx-auto px-4 xl:px-32 md-short:px-12 lg-short:px-20 pt-12 pb-8 sm:pt-16 sm:pb-12 lg:pt-12 lg:pb-6 md-short:pt-16 md-short:pb-4 lg-short:pt-24 lg-short:pb-4">
+        <div className="grid lg:grid-cols-2 gap-8 sm:gap-12 lg:gap-8 md-short:gap-6 lg-short:gap-6 items-center">
           {/* Left Column - Content */}
-          <div className="space-y-6">
+          <div className="space-y-4 sm:space-y-6 lg:space-y-4 md-short:space-y-3 lg-short:space-y-3">
             {/* Name */}
-            <h1 className="text-5xl md:text-6xl lg:text-7xl font-bold tracking-tight">
+            <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-5xl xl:text-6xl md-short:text-4xl lg-short:text-4xl font-bold tracking-tight">
               Chirag Talpada
             </h1>
 
             {/* Role with rotating text */}
-            <div className="flex items-center gap-3 text-xl md:text-2xl">
+            <div className="flex flex-wrap items-center gap-2 sm:gap-3 text-base sm:text-xl md:text-2xl lg:text-xl xl:text-2xl md-short:text-xl lg-short:text-lg">
               <span className="text-muted-foreground">I build</span>
-              <span className="inline-flex items-center px-5 py-2.5 rounded-full bg-zinc-100 dark:bg-zinc-800 font-medium transition-all duration-500">
+              <span className="inline-flex items-center px-3 sm:px-5 py-1.5 sm:py-2.5 md-short:px-4 md-short:py-2 lg-short:px-3 lg-short:py-1.5 rounded-full bg-zinc-100 dark:bg-zinc-800 font-medium transition-all duration-500 text-sm sm:text-lg md:text-xl lg:text-lg xl:text-xl md-short:text-lg lg-short:text-base">
                 {roles[currentRoleIndex]}
               </span>
             </div>
 
             {/* Description */}
-            <p className="text-muted-foreground text-lg max-w-2xl leading-relaxed">
+            <p className="text-muted-foreground text-base sm:text-lg lg:text-base xl:text-lg md-short:text-base lg-short:text-sm max-w-2xl leading-relaxed">
               JavaScript-enthusiastic full-stack developer with 3+ years of
               experience building scalable web applications and AI-powered
               products. I specialize in React and Next.js on the frontend, build
@@ -69,8 +69,13 @@ export function Hero() {
             </p>
 
             {/* Social Buttons */}
-            <div className="flex flex-wrap gap-3">
-              <Button variant="outline" size="lg" asChild>
+            <div className="flex flex-wrap gap-2 sm:gap-3 lg:gap-2 md-short:gap-2">
+              <Button
+                variant="outline"
+                size="default"
+                className="sm:text-base"
+                asChild
+              >
                 <a
                   href="https://mail.google.com/mail/?view=cm&fs=1&to=chiragtalpada0227@gmail.com"
                   target="_blank"
@@ -80,7 +85,12 @@ export function Hero() {
                   Gmail
                 </a>
               </Button>
-              <Button variant="outline" size="lg" asChild>
+              <Button
+                variant="outline"
+                size="default"
+                className="sm:text-base"
+                asChild
+              >
                 <a
                   href="https://www.linkedin.com/in/chirag-talpada"
                   target="_blank"
@@ -90,7 +100,12 @@ export function Hero() {
                   LinkedIn
                 </a>
               </Button>
-              <Button variant="outline" size="lg" asChild>
+              <Button
+                variant="outline"
+                size="default"
+                className="sm:text-base"
+                asChild
+              >
                 <a
                   href="/chirag_talpada_cv.pdf"
                   download
@@ -100,14 +115,19 @@ export function Hero() {
                   Download CV
                 </a>
               </Button>
-              <Button variant="outline" size="lg" asChild>
+              <Button
+                variant="outline"
+                size="default"
+                className="sm:text-base"
+                asChild
+              >
                 <Link href="#projects">Projects</Link>
               </Button>
             </div>
 
             {/* Contact Info Row */}
-            <div className="flex flex-wrap items-center gap-6 text-sm text-muted-foreground pt-4">
-              <div className="flex items-center gap-2">
+            <div className="flex flex-wrap items-center gap-3 sm:gap-6 lg:gap-4 md-short:gap-4 lg-short:gap-3 text-xs sm:text-sm md-short:text-sm lg-short:text-xs text-muted-foreground pt-2 lg:pt-2 md-short:pt-1 lg-short:pt-1">
+              <div className="hidden sm:flex items-center gap-2">
                 <Mail className="h-4 w-4" />
                 <span>chiragtalpada0227@gmail.com</span>
               </div>
@@ -135,15 +155,14 @@ export function Hero() {
               </div>
 
               {/* Profile Image Container */}
-              <div className="relative w-[320px] h-100 md:w-105 md:h-130 lg:w-120 lg:h-145 rounded-2xl overflow-hidden shadow-2xl">
+              <div className="relative w-70 h-87.5 sm:w-[320px] sm:h-100 md:w-90 md:h-112.5 lg:w-95 lg:h-118.75 xl:w-105 xl:h-131.25 md-short:w-70 md-short:h-87.5 lg-short:w-[320px] lg-short:h-100 lg:max-h-[calc(100vh-8rem)] rounded-2xl overflow-hidden shadow-2xl aspect-4/5">
                 <Image
-                  // style={{ filter: "blur(40px)" }} //did blur for now
                   src="/face_shot.jpg"
                   alt="Chirag Talpada - Full Stack Developer"
                   fill
                   className="object-cover"
                   priority
-                  sizes="(max-width: 768px) 320px, (max-width: 1024px) 420px, 480px"
+                  sizes="(max-width: 768px) 320px, (max-width: 1024px) 360px, (max-width: 1280px) 380px, 420px"
                   quality={90}
                 />
               </div>
