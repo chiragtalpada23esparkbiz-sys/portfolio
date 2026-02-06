@@ -137,7 +137,7 @@ export function Hero() {
               {/* Profile Image Container */}
               <div className="relative w-[320px] h-100 md:w-105 md:h-130 lg:w-120 lg:h-145 rounded-2xl overflow-hidden shadow-2xl">
                 <Image
-                  style={{ filter: "blur(40px)" }} //did blur for now
+                  // style={{ filter: "blur(40px)" }} //did blur for now
                   src="/face_shot.jpg"
                   alt="Chirag Talpada - Full Stack Developer"
                   fill

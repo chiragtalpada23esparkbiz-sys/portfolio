@@ -17,38 +17,42 @@ interface Education {
 
 const educationData: Education[] = [
   {
-    id: "certifications",
-    degree: "Professional Certifications",
-    institution: "Coursera & Udacity",
-    field: "Machine Learning & Cloud Computing",
-    startDate: "Jan 2020",
-    endDate: "Present",
+    id: "Master",
+    degree: "Master of Computer Application",
+    institution: "Sardar Patel University",
+    field: "Computer Applications",
+    startDate: "Apr 2021",
+    endDate: "Apr 2023",
+    gpa: "9.55/10",
     description:
-      "Continuous learning through professional development courses including Deep Learning Specialization, AWS Solutions Architect, and Full-Stack Web Development.",
+      "Graduated with a Master of Computer Applications from Sardar Patel University, specializing in advanced computing and software systems. My postgraduate studies deepened my expertise in professional programming (Java, full-stack frameworks), algorithms, distributed systems, and application design. The curriculum combined theory with significant hands-on experience, including web technologies, system architecture, and large-scale project implementation. This strengthened my ability to architect scalable applications, collaborate effectively on cross-functional teams, and adapt to emerging technologies in cloud, data, and AI-focused environments.",
     achievements: [
-      "Deep Learning Specialization by Andrew Ng",
-      "AWS Certified Solutions Architect - Associate",
-      "Google Cloud Professional Cloud Architect",
-      "Meta React Advanced Certification",
-      "MongoDB Certified Developer",
+      "Active Participant in Technical & Coding Competitions, demonstrating strong problem-solving and algorithmic skills",
+      "Ranked 3rd at College Level for academic excellence in MCA program",
+      "Consistently High Academic Performance with strong focus on advanced computing and software systems",
+      "Recognized for Technical Excellence in programming, database systems, and application development coursework",
+      "Led and Contributed to Complex Academic Projects, applying real-world software engineering and system design principles",
+      "2nd Rank – C Programming Competition - VP & RPTP Science College, Anand",
     ],
   },
   {
-    id: "bachelors",
-    degree: "Bachelor of Engineering",
-    institution: "Gujarat Technological University",
-    field: "Computer Engineering",
-    startDate: "2017",
-    endDate: "2021",
-    gpa: "8.5/10",
+    id: "Bachelor",
+    degree: "Bachelor of Computer Application",
+    institution: "Sardar Patel University",
+    field: "Computer Applications",
+    startDate: "Apr 2018",
+    endDate: "Apr 2021",
+    gpa: "9.51/10",
     description:
-      "Comprehensive computer science education with focus on software engineering and systems design. Active member of Computer Science Student Association.",
+      "Completed a rigorous Bachelor of Computer Applications program at Sardar Patel University, where I built strong foundations in software engineering, database systems, programming (C, Java), and web development. The curriculum emphasized hands-on labs, real-world project work, and problem-solving skills, preparing me to design efficient software solutions and work across full-stack application development. Through academic projects and coursework, I gained expertise in building responsive web apps, managing data systems, and applying core CS principles to practical scenarios.",
     achievements: [
+      "Ranked 1st at College Level and 3rd at University Level (Sardar Patel University) for overall academic performance",
+      "1st Rank – State Level C Programming Competition - GH Patel PG Department of Computer Science & Technology — 2019 & 2020",
+      "Runner-Up – C Programming Blind Coding Competition - Charusat University, Changa",
+      "Runner-Up – DB Mania (SQL Competition) - Charusat University, Changa",
       "Graduated with Distinction",
-      "2x Hackathon Winner",
-      "Published research paper on web technologies",
-      "Led technical team for college fest",
-      "Active open source contributor",
+      "Class Representative (BCA) — Acted as liaison between faculty and students, coordinated academic and technical activities",
+      "2nd Rank – Web Design Competition - Organized by Sardar Patel University",
     ],
   },
 ];
@@ -87,7 +91,7 @@ export function Education() {
               {edu.gpa && (
                 <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-muted text-sm">
                   <Award className="h-4 w-4" />
-                  GPA: {edu.gpa}
+                  CGPA: {edu.gpa}
                 </div>
               )}
             </div>

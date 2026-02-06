@@ -19,27 +19,45 @@ interface Experience {
 
 const experiences: Experience[] = [
   {
-    id: "esparkbiz",
-    title: "Full-Stack Developer",
+    id: "eSparkBiz",
+    title: "Software Developer",
     company: "eSparkBiz",
     type: "full-time",
     startDate: "Jan 2023",
     endDate: "Present",
-    location: "Remote",
+    location: "On site - Ahmedabad, India",
     description:
-      "Leading the development of enterprise-scale web applications using React, Next.js, and GraphQL. Architecting microservices and implementing CI/CD pipelines for improved deployment efficiency.",
+      "Dedicated Full Stack Developer working directly with international clients and stakeholders to design, build, and scale enterprise-grade SaaS products. Played a key role in delivering complex platforms across renewable energy, healthcare, UX intelligence, and AI-powered B2B SaaS, contributing from early-stage POCs to production systems used by thousands of users.",
     responsibilities: [
-      "Architect and implement scalable full-stack applications using React, Next.js, and Node.js",
-      "Design and develop GraphQL APIs using Hasura for real-time data synchronization",
-      "Implement AI-powered features using LangChain and OpenAI APIs",
-      "Mentor junior developers and conduct code reviews",
-      "Collaborate with product managers and designers on feature planning",
+      "Worked as a dedicated developer for client projects, collaborating directly with founders, product owners, and stakeholders to deliver business-critical solutions",
+      "Led end-to-end feature development from requirement analysis and technical design to implementation, testing, and production deployment",
+      "Designed and developed scalable full-stack applications using React, Next.js, TypeScript, Node.js, GraphQL, Hasura and PostgreSQL",
+      "Built highly responsive, data-intensive dashboards and workflows, including planners, schedulers, analytics views, and AI-generated reports",
+      "Architected type-safe API layers using GraphQL (Hasura), tRPC, and code generation to ensure reliability and maintainability",
+      "Developed real-time systems using subscriptions, background jobs, queues, and streaming APIs for scheduling, notifications, and AI workflows",
+      "Built and maintained SEO-friendly applications using SSR, dynamic routing, structured data, and meta optimization",
+      "Implemented multi-tenant SaaS architectures with role-based access control and strict organization-level data isolation",
+      "Integrated third-party services including authentication, billing, notifications, file storage, analytics, and AI providers",
+      "Optimized frontend performance by improving Core Web Vitals (LCP, CLS) and reducing page load times across large datasets",
+      "Collaborated closely with backend teams, designers, and QA to deliver pixel-perfect, production-ready features",
+      "Mentored junior developers, conducted code reviews, assessed trainees, and supported internal training programs",
+      "Participated in technical interviews and campus recruitment drives, helping evaluate and onboard engineering talent",
     ],
     achievements: [
-      "Reduced application load time by 40% through performance optimization",
-      "Implemented automated testing suite increasing code coverage to 85%",
-      "Successfully built RAG-based chatbot serving 10,000+ users",
-      "Led adoption of TypeScript across the codebase improving code quality",
+      "Delivered 10+ major production features and multiple enterprise platforms while working as a dedicated client-facing developer",
+      "Successfully converted high-risk POCs into long-term projects, building client trust and enabling product scale and revenue growth",
+      "Reduced application load times by 25–40% through performance optimization, caching strategies, and efficient rendering",
+      "Improved Core Web Vitals by ~30%, significantly enhancing UX and SEO performance",
+      "Increased organic traffic by up to 40% through SSR, SEO best practices, and structured metadata",
+      "Built reusable UI component libraries, reducing code duplication by ~30% and improving development speed across teams",
+      "Built and scaled a multi-organization healthcare platform supporting EHRs, appointments, billing, insurance claims, and audit trails",
+      "Designed and implemented event-sourced financial workflows handling invoices, partial payments, refunds, and credits",
+      "Played a key role in launching 2 AI-powered SaaS products used by a growing user base.",
+      "Built RAG-based AI assistants and AI workflows that reduced manual reporting and analysis effort by up to 80%",
+      "Reduced API response times by up to 50% through query optimization and caching",
+      "Received internal recognition for delivering complex AI integrations and hard POCs under tight timelines",
+      "Built a production-grade appointment and scheduling system with live updates, waitlists, and calendar views",
+      "Achieved 99.9% streaming reliability with resumable stream architecture",
     ],
     technologies: [
       "React",
@@ -48,65 +66,16 @@ const experiences: Experience[] = [
       "GraphQL",
       "Hasura",
       "PostgreSQL",
-      "LangChain",
-    ],
-  },
-  {
-    id: "missionctrl",
-    title: "Full-Stack Developer & AI Specialist",
-    company: "MissionCtrl",
-    type: "full-time",
-    startDate: "Mar 2021",
-    endDate: "Dec 2021",
-    location: "Remote",
-    description:
-      "Developed AI-powered web applications integrating machine learning models with modern web technologies. Specialized in building intelligent automation and workflow systems.",
-    responsibilities: [
-      "Built AI-powered SaaS platforms using React, Node.js, and Python",
-      "Integrated OpenAI GPT models for intelligent chatbot features",
-      "Developed RESTful APIs for ML model inference",
-      "Optimized database queries for production environments",
-      "Collaborated with data scientists to productionize ML models",
-    ],
-    achievements: [
-      "Launched 2 successful AI products serving 5,000+ users",
-      "Reduced API response time by 50% through caching and optimization",
-      "Implemented real-time notification system processing 100K+ events daily",
-      "Received recognition for AI integration excellence",
-    ],
-    technologies: [
-      "React",
-      "Node.js",
-      "Python",
-      "OpenAI API",
-      "MongoDB",
+      "LangGraph",
+      "tRPC",
+      "TypeScript",
       "Redis",
+      "Tailwind CSS",
+      "Shadcn UI",
+      "Redux Toolkit",
+      "OpenAI",
+      "Cluade",
     ],
-  },
-  {
-    id: "jurnii",
-    title: "Junior Full-Stack Developer",
-    company: "Jurnii",
-    type: "full-time",
-    startDate: "Jun 2020",
-    endDate: "Feb 2021",
-    location: "Remote",
-    description:
-      "Early-stage startup team member responsible for building web platform features from scratch. Wore multiple hats including frontend, backend, and DevOps responsibilities.",
-    responsibilities: [
-      "Built full-stack application features using MERN stack",
-      "Designed and implemented RESTful APIs and database schemas",
-      "Set up development workflows and deployment pipelines",
-      "Implemented user authentication and authorization",
-      "Collaborated directly with founders on product decisions",
-    ],
-    achievements: [
-      "Delivered MVP ahead of schedule enabling successful funding round",
-      "Built reusable component library reducing development time by 30%",
-      "Implemented payment integration using Stripe",
-      "Established coding standards and documentation practices",
-    ],
-    technologies: ["React", "Node.js", "Express", "MySQL", "Stripe", "AWS"],
   },
 ];
 
@@ -201,9 +170,6 @@ export function Experience() {
                     ))}
                   </div>
                 </div>
-
-                {/* Separator line */}
-                <div className="mt-8 border-t" />
               </div>
             ))}
           </div>
