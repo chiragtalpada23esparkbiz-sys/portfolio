@@ -157,7 +157,7 @@ export function Hero() {
               {/* Profile Image Container */}
               <div className="relative w-70 h-87.5 sm:w-[320px] sm:h-100 md:w-90 md:h-112.5 lg:w-95 lg:h-118.75 xl:w-105 xl:h-131.25 md-short:w-70 md-short:h-87.5 lg-short:w-[320px] lg-short:h-100 lg:max-h-[calc(100vh-8rem)] rounded-2xl overflow-hidden shadow-2xl aspect-4/5">
                 <Image
-                  src="/face_shot.jpg"
+                  src="/face_shot.webp"
                   alt="Chirag Talpada - Full Stack Developer"
                   fill
                   className="object-cover"

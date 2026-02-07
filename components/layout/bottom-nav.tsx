@@ -128,7 +128,8 @@ export function BottomNav() {
                 href={item.href}
                 onClick={(e) => {
                   e.preventDefault();
-                  const targetId = item.href === "#" ? "hero" : item.href.slice(1);
+                  const targetId =
+                    item.href === "#" ? "hero" : item.href.slice(1);
                   const element = document.getElementById(targetId);
                   if (element) {
                     element.scrollIntoView({ behavior: "smooth" });
@@ -158,7 +159,9 @@ export function BottomNav() {
             <div className="absolute -bottom-1 left-1/2 -translate-x-1/2 w-2 h-2 bg-white dark:bg-zinc-800 border-b border-r border-zinc-200 dark:border-zinc-700 rotate-45" />
           </div>
           <button
-            onClick={() => setTheme(resolvedTheme === "dark" ? "light" : "dark")}
+            onClick={() =>
+              setTheme(resolvedTheme === "dark" ? "light" : "dark")
+            }
             className="relative p-2 rounded-full text-zinc-500 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-white hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-all"
             aria-label="Toggle dark mode"
             suppressHydrationWarning
@@ -191,7 +194,7 @@ export function BottomNav() {
             suppressHydrationWarning
           >
             <Image
-              src="/assistent_bot.png"
+              src="/assistent_bot.webp"
               alt="AI Assistant"
               fill
               className="object-cover"
@@ -223,7 +226,9 @@ export function BottomNav() {
             <div className="absolute -bottom-1 left-1/2 -translate-x-1/2 w-2 h-2 bg-white dark:bg-zinc-800 border-b border-r border-zinc-200 dark:border-zinc-700 rotate-45" />
           </div>
           <button
-            onClick={() => setTheme(resolvedTheme === "dark" ? "light" : "dark")}
+            onClick={() =>
+              setTheme(resolvedTheme === "dark" ? "light" : "dark")
+            }
             className="relative p-3 rounded-full bg-white/80 dark:bg-zinc-900 backdrop-blur-md border border-zinc-200 dark:border-zinc-800 text-zinc-500 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-white hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-all shadow-lg dark:shadow-2xl"
             aria-label="Toggle dark mode"
             suppressHydrationWarning
@@ -248,7 +253,7 @@ export function BottomNav() {
           suppressHydrationWarning
         >
           <Image
-            src="/assistent_bot.png"
+            src="/assistent_bot.webp"
             alt="AI Assistant"
             fill
             className="object-cover"

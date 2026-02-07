@@ -1065,7 +1065,7 @@ export const TechIcons = {
   ),
   Zod: (
     <Image
-      src={"/zod.png"}
+      src={"/zod.webp"}
       height={100}
       width={100}
       alt="Zod TypeScript schema validation library"
@@ -1104,7 +1104,7 @@ export const TechIcons = {
   ),
   Zitadel: (
     <Image
-      src={"/zitadel_logo.png"}
+      src={"/zitadel_logo.webp"}
       height={80}
       width={80}
       alt="ZITADEL identity and access management (IAM) platform"
@@ -1131,7 +1131,7 @@ export const TechIcons = {
   ),
   hyperbrowser: (
     <Image
-      src={"/hyperbrowser.png"}
+      src={"/hyperbrowser.webp"}
       height={80}
       width={80}
       alt="Hyperbrowser AI web automation and browsing platform"
