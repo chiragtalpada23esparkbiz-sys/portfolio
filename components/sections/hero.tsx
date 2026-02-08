@@ -5,6 +5,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { Mail, MapPin, CheckCircle, Download } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { InteractiveGrid } from "@/components/ui/interactive-grid";
 
 const roles = [
   "Full-Stack SaaS Apps",
@@ -15,28 +16,21 @@ const roles = [
 
 export function Hero() {
   const [currentRoleIndex, setCurrentRoleIndex] = React.useState(0);
+  const [key, setKey] = React.useState(0);
 
   React.useEffect(() => {
     const interval = setInterval(() => {
       setCurrentRoleIndex((prev) => (prev + 1) % roles.length);
+      setKey((prev) => prev + 1);
     }, 3000);
     return () => clearInterval(interval);
   }, []);
 
   return (
-    <section className="relative min-h-fit lg:min-h-[calc(100vh-4rem)] lg-short:min-h-fit flex items-start lg:items-center overflow-hidden">
-      {/* Grid pattern background */}
-      <div className="absolute inset-0 -z-10">
-        <div
-          className="absolute inset-0 opacity-[0.03] dark:opacity-[0.05]"
-          style={{
-            backgroundImage: `linear-gradient(to right, currentColor 1px, transparent 1px),
-                             linear-gradient(to bottom, currentColor 1px, transparent 1px)`,
-            backgroundSize: "80px 80px",
-          }}
-        />
-        {/* Gradient overlay at top */}
-        <div className="absolute top-0 left-0 right-0 h-40 bg-linear-to-b from-background to-transparent" />
+    <section className="relative min-h-fit lg:min-h-[calc(100vh-4rem)] lg-short:min-h-fit flex items-start lg:items-center overflow-hidden group/hero">
+      {/* Interactive Grid Background */}
+      <div className="absolute inset-0 -z-10 pointer-events-auto">
+        <InteractiveGrid />
       </div>
 
       <div className="container mx-auto px-4 xl:px-32 md-short:px-12 lg-short:px-20 pt-12 pb-8 sm:pt-16 sm:pb-12 lg:pt-12 lg:pb-6 md-short:pt-16 md-short:pb-4 lg-short:pt-24 lg-short:pb-4">
@@ -51,8 +45,13 @@ export function Hero() {
             {/* Role with rotating text */}
             <div className="flex flex-wrap items-center gap-2 sm:gap-3 text-base sm:text-xl md:text-2xl lg:text-xl xl:text-2xl md-short:text-xl lg-short:text-lg">
               <span className="text-muted-foreground">I build</span>
-              <span className="inline-flex items-center px-3 sm:px-5 py-1.5 sm:py-2.5 md-short:px-4 md-short:py-2 lg-short:px-3 lg-short:py-1.5 rounded-full bg-zinc-100 dark:bg-zinc-800 font-medium transition-all duration-500 text-sm sm:text-lg md:text-xl lg:text-lg xl:text-xl md-short:text-lg lg-short:text-base">
-                {roles[currentRoleIndex]}
+              <span className="relative inline-flex items-center px-3 sm:px-4 py-1.5 sm:py-2 md-short:px-3 md-short:py-1.5 lg-short:px-2.5 lg-short:py-1 rounded-md bg-zinc-100 dark:bg-zinc-800/80 border border-zinc-200 dark:border-zinc-700 overflow-hidden">
+                <span
+                  key={key}
+                  className="inline-block font-semibold text-foreground text-sm sm:text-lg md:text-xl lg:text-lg xl:text-xl md-short:text-lg lg-short:text-base animate-[slideInBlur_0.4s_ease-out]"
+                >
+                  {roles[currentRoleIndex]}
+                </span>
               </span>
             </div>
 

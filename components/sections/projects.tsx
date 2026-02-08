@@ -5,76 +5,29 @@ import Link from "next/link";
 import { Section } from "@/components/ui/section";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { ExternalLink } from "lucide-react";
+import { ArrowRight, ExternalLink } from "lucide-react";
+import { getFeaturedProjects } from "@/data/projects";
+import type { Project } from "@/types";
 
-interface Project {
-  id: string;
-  title: string;
-  description: string;
-  image: string;
-  category: string;
-  technologies: string[];
-  liveUrl?: string;
-  githubUrl?: string;
-}
+const categoryLabels: Record<Project["category"], string> = {
+  saas: "SaaS",
+  enterprise: "Enterprise",
+  ai: "AI-Powered",
+  healthcare: "Healthcare",
+};
 
-const projects: Project[] = [
-  {
-    id: "ai-content-generator",
-    title: "AI-Powered Content Generator",
-    description:
-      "Next-gen content creation platform powered by GPT-4 and LangChain for automated content generation.",
-    image: "/images/projects/ai-content.png",
-    category: "ai-ml",
-    technologies: ["React", "Next.js", "TypeScript", "OpenAI API", "LangChain", "PostgreSQL"],
-    liveUrl: "#",
-    githubUrl: "#",
-  },
-  {
-    id: "analytics-dashboard",
-    title: "Real-Time Analytics Dashboard",
-    description:
-      "Enterprise-grade analytics platform for data-driven decisions with real-time updates.",
-    image: "/images/projects/analytics.png",
-    category: "web-app",
-    technologies: ["React", "Node.js", "PostgreSQL", "Redis", "WebSockets", "D3.js"],
-    liveUrl: "#",
-  },
-  {
-    id: "ecommerce-platform",
-    title: "E-Commerce Platform",
-    description:
-      "Modern e-commerce solution with headless CMS, Stripe payments, and inventory management.",
-    image: "/images/projects/ecommerce.png",
-    category: "web-app",
-    technologies: ["Next.js", "TypeScript", "Tailwind CSS", "Vercel", "Stripe", "Hasura"],
-    liveUrl: "#",
-    githubUrl: "#",
-  },
-  {
-    id: "task-management",
-    title: "Task Management SaaS",
-    description:
-      "Collaborative project management tool for remote teams with real-time sync.",
-    image: "/images/projects/task-mgmt.png",
-    category: "web-app",
-    technologies: ["React", "Node.js", "MongoDB", "WebSockets", "Redis"],
-    liveUrl: "#",
-  },
-  {
-    id: "social-automation",
-    title: "Social Media Automation Tool",
-    description:
-      "Automated social media scheduling and analytics platform with AI-powered insights.",
-    image: "/images/projects/social.png",
-    category: "web-app",
-    technologies: ["Next.js", "Python", "OpenAI API", "PostgreSQL", "Redis"],
-    liveUrl: "#",
-    githubUrl: "#",
-  },
-];
+const categoryColors: Record<Project["category"], string> = {
+  saas: "bg-blue-500/10 text-blue-600 dark:text-blue-400 border-blue-500/20",
+  enterprise:
+    "bg-purple-500/10 text-purple-600 dark:text-purple-400 border-purple-500/20",
+  ai: "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/20",
+  healthcare:
+    "bg-rose-500/10 text-rose-600 dark:text-rose-400 border-rose-500/20",
+};
 
 export function Projects() {
+  const projects = getFeaturedProjects();
+
   return (
     <Section id="projects" className="py-20 md:py-28">
       {/* Header */}
@@ -82,11 +35,14 @@ export function Projects() {
         <h2 className="text-4xl md:text-5xl font-bold tracking-tight mb-4">
           Featured Projects
         </h2>
-        <p className="text-muted-foreground text-lg">Some of my best work</p>
+        <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
+          Enterprise-grade applications I&apos;ve built, from AI platforms to
+          healthcare systems
+        </p>
       </div>
 
       {/* Projects Grid */}
-      <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+      <div className="grid md:grid-cols-2 gap-8">
         {projects.map((project) => (
           <ProjectCard key={project.id} project={project} />
         ))}
@@ -96,75 +52,98 @@ export function Projects() {
 }
 
 function ProjectCard({ project }: { project: Project }) {
-  const displayedTechs = project.technologies.slice(0, 4);
-  const remainingCount = project.technologies.length - 4;
+  const displayedTechs = project.technologies.slice(0, 5);
+  const remainingCount = project.technologies.length - 5;
 
   return (
-    <div className="rounded-xl border bg-card overflow-hidden hover:shadow-lg transition-all group">
+    <article className="group rounded-2xl border bg-card overflow-hidden hover:shadow-xl transition-all duration-300 hover:border-primary/30">
       {/* Image */}
-      <div className="relative aspect-video overflow-hidden bg-gradient-to-br from-muted to-muted/50">
-        {/* Placeholder gradient background */}
-        <div className="absolute inset-0 bg-gradient-to-br from-primary/10 via-purple-500/10 to-pink-500/10 flex items-center justify-center">
-          <span className="text-4xl font-bold text-primary/20">
-            {project.title.charAt(0)}
-          </span>
+      <Link
+        href={`/projects/${project.slug}`}
+        className="block overflow-hidden"
+      >
+        <div className="relative h-70 md:h-80 overflow-hidden">
+          <Image
+            src={project.thumbnail}
+            alt={project.title}
+            fill
+            className="object-cover object-top-left group-hover:scale-105 transition-transform duration-500"
+            sizes="(max-width: 768px) 100vw, 50vw"
+          />
+          <div className="absolute inset-0 bg-linear-to-t from-black/40 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
         </div>
-        {/* Uncomment when you have actual images */}
-        {/* <Image
-          src={project.image}
-          alt={project.title}
-          fill
-          className="object-cover group-hover:scale-105 transition-transform duration-300"
-        /> */}
-      </div>
+      </Link>
 
       {/* Content */}
-      <div className="p-5">
-        {/* Category Badge */}
-        <Badge variant="secondary" className="mb-3 text-xs">
-          {project.category}
-        </Badge>
+      <div className="p-6">
+        {/* Category & Role */}
+        <div className="flex items-center gap-3 mb-4">
+          <Badge
+            variant="outline"
+            className={`text-xs font-medium ${categoryColors[project.category]}`}
+          >
+            {categoryLabels[project.category]}
+          </Badge>
+          <span className="text-xs text-muted-foreground">{project.role}</span>
+        </div>
 
         {/* Title */}
-        <h3 className="font-bold text-lg mb-2">{project.title}</h3>
+        <Link href={`/projects/${project.slug}`}>
+          <h3 className="font-bold text-xl mb-2 group-hover:text-primary transition-colors">
+            {project.title}
+          </h3>
+        </Link>
+
+        {/* Subtitle */}
+        <p className="text-sm text-muted-foreground mb-3 font-medium">
+          {project.subtitle}
+        </p>
 
         {/* Description */}
-        <p className="text-muted-foreground text-sm mb-4 line-clamp-2">
+        <p className="text-muted-foreground text-sm mb-5 line-clamp-2">
           {project.description}
         </p>
 
         {/* Technologies */}
-        <div className="flex flex-wrap gap-2 mb-4">
+        <div className="flex flex-wrap gap-2 mb-5">
           {displayedTechs.map((tech) => (
-            <Badge key={tech} variant="outline" className="text-xs font-normal">
+            <Badge
+              key={tech}
+              variant="secondary"
+              className="text-xs font-normal"
+            >
               {tech}
             </Badge>
           ))}
           {remainingCount > 0 && (
-            <Badge variant="outline" className="text-xs font-normal">
-              +{remainingCount}
+            <Badge variant="secondary" className="text-xs font-normal">
+              +{remainingCount} more
             </Badge>
           )}
         </div>
 
-        {/* Buttons */}
-        <div className="flex gap-2">
+        {/* Actions */}
+        <div className="flex items-center gap-3">
+          <Button size="sm" variant="default" asChild>
+            <Link href={`/projects/${project.slug}`}>
+              View Details
+              <ArrowRight className="ml-2 h-4 w-4" />
+            </Link>
+          </Button>
           {project.liveUrl && (
-            <Button size="sm" className="flex-1" asChild>
-              <Link href={project.liveUrl} target="_blank">
-                Live Demo
-              </Link>
-            </Button>
-          )}
-          {project.githubUrl && (
-            <Button variant="outline" size="sm" asChild>
-              <Link href={project.githubUrl} target="_blank">
-                GitHub
+            <Button size="sm" variant="outline" asChild>
+              <Link
+                href={project.liveUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                Live Site
+                <ExternalLink className="ml-2 h-3.5 w-3.5" />
               </Link>
             </Button>
           )}
         </div>
       </div>
-    </div>
+    </article>
   );
 }

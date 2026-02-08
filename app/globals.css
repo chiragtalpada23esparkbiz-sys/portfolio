@@ -213,6 +213,19 @@ html {
   }
 }
 
+@keyframes slideInBlur {
+  0% {
+    opacity: 0;
+    filter: blur(8px);
+    transform: translateY(-12px);
+  }
+  100% {
+    opacity: 1;
+    filter: blur(0px);
+    transform: translateY(0);
+  }
+}
+
 .animate-fade-in {
   animation: fade-in 0.5s ease-out forwards;
 }

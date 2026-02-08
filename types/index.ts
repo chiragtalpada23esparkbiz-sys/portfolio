@@ -13,14 +13,29 @@ export interface Experience {
 
 export interface Project {
   id: string;
+  slug: string;
   title: string;
+  subtitle: string;
   description: string;
-  longDescription?: string;
-  image: string;
+  longDescription: string;
+  category: "saas" | "enterprise" | "ai" | "healthcare";
+  role: string;
+  duration: string;
+  thumbnail: string;
+  images: ProjectImage[];
   technologies: string[];
+  responsibilities: string[];
+  achievements: string[];
   liveUrl?: string;
   githubUrl?: string;
   featured: boolean;
+  order: number;
+}
+
+export interface ProjectImage {
+  src: string;
+  alt: string;
+  caption?: string;
 }
 
 export interface Technology {

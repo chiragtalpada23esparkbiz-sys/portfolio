@@ -1,4 +1,4 @@
-import type { BlogPost } from "@/types";
+import type { BlogPost, Project } from "@/types";
 
 interface PersonSchemaProps {
   name: string;
@@ -125,5 +125,79 @@ export function OrganizationJsonLd() {
       type="application/ld+json"
       dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }}
     />
+  );
+}
+
+interface ProjectSchemaProps {
+  project: Project;
+}
+
+export function ProjectJsonLd({ project }: ProjectSchemaProps) {
+  const baseUrl = "https://chiragtalpada.dev";
+
+  const schema = {
+    "@context": "https://schema.org",
+    "@type": "SoftwareApplication",
+    name: project.title,
+    description: project.description,
+    applicationCategory: "WebApplication",
+    operatingSystem: "Web Browser",
+    author: {
+      "@type": "Person",
+      name: "Chirag Talpada",
+      url: baseUrl,
+      jobTitle: "Full Stack Developer",
+    },
+    creator: {
+      "@type": "Person",
+      name: "Chirag Talpada",
+    },
+    url: project.liveUrl || `${baseUrl}/projects/${project.slug}`,
+    image: `${baseUrl}${project.thumbnail}`,
+    screenshot: project.images.map((img) => `${baseUrl}${img.src}`),
+    keywords: project.technologies.join(", "),
+    about: {
+      "@type": "Thing",
+      name: project.subtitle,
+      description: project.longDescription,
+    },
+  };
+
+  const breadcrumbSchema = {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: [
+      {
+        "@type": "ListItem",
+        position: 1,
+        name: "Home",
+        item: baseUrl,
+      },
+      {
+        "@type": "ListItem",
+        position: 2,
+        name: "Projects",
+        item: `${baseUrl}/#projects`,
+      },
+      {
+        "@type": "ListItem",
+        position: 3,
+        name: project.title,
+        item: `${baseUrl}/projects/${project.slug}`,
+      },
+    ],
+  };
+
+  return (
+    <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }}
+      />
+    </>
   );
 }
