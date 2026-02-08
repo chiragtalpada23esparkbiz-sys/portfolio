@@ -5,8 +5,7 @@ import {
   Education,
   TechStack,
   Projects,
-  Certifications,
-  Achievements,
+  AchievementsRecognition,
   Testimonials,
   Companies,
   Approach,
@@ -26,8 +25,7 @@ export default async function Home() {
       <Experience />
       <Education />
       <Projects />
-      <Certifications />
-      <Achievements />
+      <AchievementsRecognition />
       <Testimonials />
       <Companies />
       <Approach />

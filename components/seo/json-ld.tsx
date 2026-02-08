@@ -201,3 +201,97 @@ export function ProjectJsonLd({ project }: ProjectSchemaProps) {
     </>
   );
 }
+
+export function AchievementsJsonLd() {
+  const baseUrl = "https://chiragtalpada.dev";
+
+  const schema = {
+    "@context": "https://schema.org",
+    "@type": "ItemList",
+    name: "Achievements & Recognition",
+    description:
+      "Early-career programming achievements that reflect strong problem-solving foundations.",
+    itemListElement: [
+      {
+        "@type": "ListItem",
+        position: 1,
+        item: {
+          "@type": "EducationalOccupationalCredential",
+          name: "Blind Coding Competition Winner",
+          description:
+            "Won 1st place in Blind Coding competition demonstrating exceptional coding skills.",
+          credentialCategory: "Award",
+          recognizedBy: {
+            "@type": "Organization",
+            name: "VNSGU University",
+          },
+          dateCreated: "2019",
+        },
+      },
+      {
+        "@type": "ListItem",
+        position: 2,
+        item: {
+          "@type": "EducationalOccupationalCredential",
+          name: "DBMania Competition Winner",
+          description:
+            "Secured top position in database management competition.",
+          credentialCategory: "Award",
+          recognizedBy: {
+            "@type": "Organization",
+            name: "VNSGU University",
+          },
+          dateCreated: "2019",
+        },
+      },
+      {
+        "@type": "ListItem",
+        position: 3,
+        item: {
+          "@type": "EducationalOccupationalCredential",
+          name: "State Level Programming Competition",
+          description:
+            "Achieved recognition in state-level programming competition.",
+          credentialCategory: "Award",
+          recognizedBy: {
+            "@type": "Organization",
+            name: "Gujarat State",
+          },
+          dateCreated: "2020",
+        },
+      },
+    ],
+  };
+
+  const breadcrumbSchema = {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: [
+      {
+        "@type": "ListItem",
+        position: 1,
+        name: "Home",
+        item: baseUrl,
+      },
+      {
+        "@type": "ListItem",
+        position: 2,
+        name: "Achievements & Recognition",
+        item: `${baseUrl}/achievements`,
+      },
+    ],
+  };
+
+  return (
+    <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }}
+      />
+    </>
+  );
+}
