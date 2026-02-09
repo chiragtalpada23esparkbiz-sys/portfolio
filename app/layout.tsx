@@ -102,6 +102,14 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <head>
+        <link
+          rel="preload"
+          as="image"
+          href="/face_shot.webp"
+          imageSrcSet="/_next/image?url=%2Fface_shot.webp&w=640&q=75 640w, /_next/image?url=%2Fface_shot.webp&w=828&q=75 828w, /_next/image?url=%2Fface_shot.webp&w=1080&q=75 1080w"
+          imageSizes="(max-width: 768px) 320px, (max-width: 1024px) 360px, 420px"
+          fetchPriority="high"
+        />
         <PersonJsonLd
           name="Chirag Talpada"
           jobTitle="Full Stack Developer"

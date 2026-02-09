@@ -5,6 +5,7 @@ import { Dock, DockIcon } from "@/components/ui/dock";
 import { Code2, Brain, Database, Cloud, Workflow, Shield } from "lucide-react";
 import { TechIcons } from "@/components/tech_icons";
 import { ReactElement, useEffect, useState } from "react";
+import { BlurFade } from "../ui/blur-fade";
 
 type TechIconType = {
   name: string;
@@ -245,11 +246,13 @@ export function TechStack() {
       {/* Expertise Areas */}
       <div className="mb-12 sm:mb-16 md:mb-20">
         <h3 className="sr-only">Areas of Expertise</h3>
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
-          {expertiseAreas.map((expertise) => (
-            <ExpertiseCard key={expertise.title} expertise={expertise} />
-          ))}
-        </div>
+        <BlurFade delay={0.25} inView>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
+            {expertiseAreas.map((expertise) => (
+              <ExpertiseCard key={expertise.title} expertise={expertise} />
+            ))}
+          </div>
+        </BlurFade>
       </div>
 
       {/* Tech Stack with Dock Effect */}
@@ -262,42 +265,53 @@ export function TechStack() {
             From frontend frameworks to AI tools, these are the technologies I
             work with daily to build modern, scalable applications.
           </p>
+          {/* Hidden text for SEO - all technologies visible to search engines */}
+          <div className="sr-only">
+            Frontend: React, Next.js, TypeScript, JavaScript, Tailwind CSS, shadcn/ui, HTML5, CSS3, Redux.
+            Backend: Node.js, Express.js, GraphQL, tRPC, Zod.
+            Database: PostgreSQL, MySQL, MongoDB, Redis, Hasura, Zitadel, Better-auth.
+            AI & ML: OpenAI, Anthropic, Claude, LangChain, LangGraph.
+            DevOps & Tools: Docker, Git, GitHub, GitLab, Postman, PostHog, Cursor, Hyperbrowser.
+            Services & PM: Stripe, Notion, Trello, Jira, Windmill.
+          </div>
         </div>
 
-        <div className="relative overflow-x-auto">
-          {chunkedTechnologies.map((techRaw, r) => {
-            return (
-              <Dock
-                key={`${r}-${iconsPerRow}`}
-                iconMagnification={magnification}
-                iconDistance={100}
-                className={`border-none min-w-fit ${r === 0 ? "mt-8" : ""}`}
-                iconSize={iconSize}
-              >
-                {techRaw.map((tech, i) => {
-                  const Icon = tech.Icon;
+        <BlurFade delay={0.25} inView>
+          <div className="relative overflow-x-auto">
+            {chunkedTechnologies.map((techRaw, r) => {
+              return (
+                <Dock
+                  key={`${r}-${iconsPerRow}`}
+                  iconMagnification={magnification}
+                  iconDistance={100}
+                  className={`border-none min-w-fit ${r === 0 ? "mt-8" : ""}`}
+                  iconSize={iconSize}
+                >
+                  {techRaw.map((tech, i) => {
+                    const Icon = tech.Icon;
 
-                  return (
-                    <DockIcon
-                      key={i}
-                      className="group relative bg-black/10 dark:bg-white"
-                    >
-                      {/* Tooltip */}
-                      <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-1 sm:mb-2 px-2 sm:px-3 py-1 sm:py-1.5 rounded-md sm:rounded-lg bg-white dark:bg-zinc-800 text-zinc-900 dark:text-white text-[10px] sm:text-xs font-medium shadow-lg border border-zinc-200 dark:border-zinc-700 whitespace-nowrap opacity-0 group-hover:opacity-100 transition-all duration-200 pointer-events-none z-20">
-                        {tech.name}
-                        <div className="absolute -bottom-1 left-1/2 -translate-x-1/2 w-1.5 sm:w-2 h-1.5 sm:h-2 bg-white dark:bg-zinc-800 border-b border-r border-zinc-200 dark:border-zinc-700 rotate-45" />
-                      </div>
-                      {/* Icon */}
-                      <div className="w-full h-full [&>svg]:w-full [&>svg]:h-full">
-                        {Icon}
-                      </div>
-                    </DockIcon>
-                  );
-                })}
-              </Dock>
-            );
-          })}
-        </div>
+                    return (
+                      <DockIcon
+                        key={i}
+                        className="group relative bg-black/10 dark:bg-white"
+                      >
+                        {/* Tooltip */}
+                        <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-1 sm:mb-2 px-2 sm:px-3 py-1 sm:py-1.5 rounded-md sm:rounded-lg bg-white dark:bg-zinc-800 text-zinc-900 dark:text-white text-[10px] sm:text-xs font-medium shadow-lg border border-zinc-200 dark:border-zinc-700 whitespace-nowrap opacity-0 group-hover:opacity-100 transition-all duration-200 pointer-events-none z-20">
+                          {tech.name}
+                          <div className="absolute -bottom-1 left-1/2 -translate-x-1/2 w-1.5 sm:w-2 h-1.5 sm:h-2 bg-white dark:bg-zinc-800 border-b border-r border-zinc-200 dark:border-zinc-700 rotate-45" />
+                        </div>
+                        {/* Icon */}
+                        <div className="w-full h-full [&>svg]:w-full [&>svg]:h-full">
+                          {Icon}
+                        </div>
+                      </DockIcon>
+                    );
+                  })}
+                </Dock>
+              );
+            })}
+          </div>
+        </BlurFade>
       </div>
     </Section>
   );

@@ -2,6 +2,7 @@
 
 import { Section } from "@/components/ui/section";
 import { Badge } from "@/components/ui/badge";
+import { BlurFade } from "../ui/blur-fade";
 
 interface Experience {
   id: string;
@@ -91,90 +92,96 @@ export function Experience() {
       </div>
 
       {/* Timeline */}
-      <div className="max-w-4xl mx-auto">
-        <div className="relative">
-          {/* Timeline line */}
-          <div className="absolute left-1.75 top-2 bottom-2 w-0.5 bg-border" />
+      <BlurFade delay={0.25} inView>
+        <div className="max-w-4xl mx-auto">
+          <div className="relative">
+            {/* Timeline line */}
+            <div className="absolute left-1.75 top-2 bottom-2 w-0.5 bg-border" />
 
-          {/* Experience items */}
-          <div className="space-y-12">
-            {experiences.map((exp) => (
-              <div key={exp.id} className="relative pl-10">
-                {/* Timeline dot */}
-                <div className="absolute left-0 top-2 w-4 h-4 rounded-full bg-foreground" />
+            {/* Experience items */}
+            <div className="space-y-12">
+              {experiences.map((exp) => (
+                <div key={exp.id} className="relative pl-10">
+                  {/* Timeline dot */}
+                  <div className="absolute left-0 top-2 w-4 h-4 rounded-full bg-foreground" />
 
-                {/* Content */}
-                <div className="space-y-4">
-                  {/* Header */}
-                  <div>
-                    <h3 className="text-2xl font-bold">{exp.title}</h3>
-                    <div className="flex flex-wrap items-center gap-2 mt-1">
-                      <span className="font-medium">{exp.company}</span>
-                      <span className="text-muted-foreground">•</span>
-                      <span className="text-muted-foreground text-sm">
-                        {exp.type}
-                      </span>
+                  {/* Content */}
+                  <div className="space-y-4">
+                    {/* Header */}
+                    <div>
+                      <h3 className="text-2xl font-bold">{exp.title}</h3>
+                      <div className="flex flex-wrap items-center gap-2 mt-1">
+                        <span className="font-medium">{exp.company}</span>
+                        <span className="text-muted-foreground">•</span>
+                        <span className="text-muted-foreground text-sm">
+                          {exp.type}
+                        </span>
+                      </div>
+                      <div className="flex flex-wrap items-center gap-2 text-sm text-muted-foreground mt-1">
+                        <span>
+                          {exp.startDate} - {exp.endDate}
+                        </span>
+                        <span>•</span>
+                        <span>{exp.location}</span>
+                      </div>
                     </div>
-                    <div className="flex flex-wrap items-center gap-2 text-sm text-muted-foreground mt-1">
-                      <span>
-                        {exp.startDate} - {exp.endDate}
-                      </span>
-                      <span>•</span>
-                      <span>{exp.location}</span>
+
+                    {/* Description */}
+                    <p className="text-muted-foreground">{exp.description}</p>
+
+                    {/* Key Responsibilities */}
+                    <div>
+                      <h4 className="font-semibold mb-2">
+                        Key Responsibilities:
+                      </h4>
+                      <ul className="space-y-1.5">
+                        {exp.responsibilities.map((item, index) => (
+                          <li
+                            key={index}
+                            className="text-muted-foreground text-sm flex items-start gap-2"
+                          >
+                            <span className="mt-1.5 w-1.5 h-1.5 rounded-full bg-muted-foreground shrink-0" />
+                            {item}
+                          </li>
+                        ))}
+                      </ul>
                     </div>
-                  </div>
 
-                  {/* Description */}
-                  <p className="text-muted-foreground">{exp.description}</p>
+                    {/* Achievements */}
+                    <div>
+                      <h4 className="font-semibold mb-2">Achievements:</h4>
+                      <ul className="space-y-1.5">
+                        {exp.achievements.map((item, index) => (
+                          <li
+                            key={index}
+                            className="text-muted-foreground text-sm flex items-start gap-2"
+                          >
+                            <span className="mt-1.5 w-1.5 h-1.5 rounded-full bg-muted-foreground shrink-0" />
+                            {item}
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
 
-                  {/* Key Responsibilities */}
-                  <div>
-                    <h4 className="font-semibold mb-2">
-                      Key Responsibilities:
-                    </h4>
-                    <ul className="space-y-1.5">
-                      {exp.responsibilities.map((item, index) => (
-                        <li
-                          key={index}
-                          className="text-muted-foreground text-sm flex items-start gap-2"
+                    {/* Technologies */}
+                    <div className="flex flex-wrap gap-2 pt-2">
+                      {exp.technologies.map((tech) => (
+                        <Badge
+                          key={tech}
+                          variant="secondary"
+                          className="text-xs"
                         >
-                          <span className="mt-1.5 w-1.5 h-1.5 rounded-full bg-muted-foreground shrink-0" />
-                          {item}
-                        </li>
+                          {tech}
+                        </Badge>
                       ))}
-                    </ul>
-                  </div>
-
-                  {/* Achievements */}
-                  <div>
-                    <h4 className="font-semibold mb-2">Achievements:</h4>
-                    <ul className="space-y-1.5">
-                      {exp.achievements.map((item, index) => (
-                        <li
-                          key={index}
-                          className="text-muted-foreground text-sm flex items-start gap-2"
-                        >
-                          <span className="mt-1.5 w-1.5 h-1.5 rounded-full bg-muted-foreground shrink-0" />
-                          {item}
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-
-                  {/* Technologies */}
-                  <div className="flex flex-wrap gap-2 pt-2">
-                    {exp.technologies.map((tech) => (
-                      <Badge key={tech} variant="secondary" className="text-xs">
-                        {tech}
-                      </Badge>
-                    ))}
+                    </div>
                   </div>
                 </div>
-              </div>
-            ))}
+              ))}
+            </div>
           </div>
         </div>
-      </div>
+      </BlurFade>
     </Section>
   );
 }

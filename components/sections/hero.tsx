@@ -45,13 +45,18 @@ export function Hero() {
             {/* Role with rotating text */}
             <div className="flex flex-wrap items-center gap-2 sm:gap-3 text-base sm:text-xl md:text-2xl lg:text-xl xl:text-2xl md-short:text-xl lg-short:text-lg">
               <span className="text-muted-foreground">I build</span>
-              <span className="relative inline-flex items-center px-3 sm:px-4 py-1.5 sm:py-2 md-short:px-3 md-short:py-1.5 lg-short:px-2.5 lg-short:py-1 rounded-md bg-zinc-100 dark:bg-zinc-800/80 border border-zinc-200 dark:border-zinc-700 overflow-hidden">
+              <span className="relative shadow-[inset_0_0_0_1px_rgba(0,0,0,0.1)] inline-flex items-center px-3 sm:px-4 py-1.5 sm:py-2 md-short:px-3 md-short:py-1.5 lg-short:px-2.5 lg-short:py-1 rounded-md bg-zinc-100 dark:bg-zinc-800/80 border border-zinc-200 dark:border-zinc-700 overflow-hidden">
                 <span
                   key={key}
                   className="inline-block font-semibold text-foreground text-sm sm:text-lg md:text-xl lg:text-lg xl:text-xl md-short:text-lg lg-short:text-base animate-[slideInBlur_0.4s_ease-out]"
                 >
                   {roles[currentRoleIndex]}
                 </span>
+              </span>
+              {/* Hidden text for SEO - all roles visible to search engines */}
+              <span className="sr-only">
+                Full-Stack SaaS Apps, AI-Powered Solutions, Automation-Focused
+                Systems, and Modern Web Apps
               </span>
             </div>
 
@@ -154,16 +159,17 @@ export function Hero() {
               </div>
 
               {/* Profile Image Container */}
-              <div className="relative w-70 h-87.5 sm:w-[320px] sm:h-100 md:w-90 md:h-112.5 lg:w-95 lg:h-118.75 xl:w-105 xl:h-131.25 md-short:w-70 md-short:h-87.5 lg-short:w-[320px] lg-short:h-100 lg:max-h-[calc(100vh-8rem)] rounded-2xl overflow-hidden shadow-2xl aspect-4/5">
-                <Image
+              <div className="hover:shadow-2xl relative w-70 h-87.5 sm:w-[320px] sm:h-100 md:w-90 md:h-112.5 lg:w-95 lg:h-118.75 xl:w-105 xl:h-131.25 md-short:w-70 md-short:h-87.5 lg-short:w-[320px] lg-short:h-100 lg:max-h-[calc(100vh-8rem)] rounded-2xl shadow-2xl aspect-4/5 overflow-hidden">
+                {/* <Image
                   src="/face_shot.webp"
-                  alt="Chirag Talpada - Full Stack Developer"
+                  alt="Chirag Talpada - Full Stack JavaScript Developer specializing in React, Next.js, Node.js, and AI-powered solutions"
                   fill
-                  className="object-cover"
+                  className="object-cover z-0"
                   priority
+                  fetchPriority="high"
                   sizes="(max-width: 768px) 320px, (max-width: 1024px) 360px, (max-width: 1280px) 380px, 420px"
-                  quality={90}
-                />
+                  quality={80}
+                /> */}
               </div>
             </div>
           </div>
