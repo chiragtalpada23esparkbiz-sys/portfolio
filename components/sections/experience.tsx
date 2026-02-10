@@ -1,5 +1,3 @@
-"use client";
-
 import { Section } from "@/components/ui/section";
 import { Badge } from "@/components/ui/badge";
 import { BlurFade } from "../ui/blur-fade";
@@ -75,7 +73,7 @@ const experiences: Experience[] = [
       "Shadcn UI",
       "Redux Toolkit",
       "OpenAI",
-      "Cluade",
+      "Claude",
     ],
   },
 ];
@@ -119,7 +117,9 @@ export function Experience() {
                       </div>
                       <div className="flex flex-wrap items-center gap-2 text-sm text-muted-foreground mt-1">
                         <span>
-                          {exp.startDate} - {exp.endDate}
+                          <time dateTime="2023-01">{exp.startDate}</time>
+                          {" "}-{" "}
+                          <time dateTime="2024-12">{exp.endDate}</time>
                         </span>
                         <span>•</span>
                         <span>{exp.location}</span>

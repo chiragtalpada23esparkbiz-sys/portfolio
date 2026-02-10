@@ -213,7 +213,7 @@ export function Contact() {
 
               <Button
                 type="submit"
-                className="w-full"
+                className="w-full bg-black text-white hover:bg-zinc-800 dark:bg-white dark:text-black dark:hover:bg-zinc-200"
                 disabled={status === "loading"}
               >
                 {status === "loading" ? (

@@ -6,6 +6,7 @@ import {
   motion,
   MotionProps,
   useInView,
+  useReducedMotion,
   UseInViewOptions,
   Variants,
 } from "motion/react"
@@ -42,14 +43,15 @@ export function BlurFade({
   ...props
 }: BlurFadeProps) {
   const ref = useRef(null)
+  const prefersReducedMotion = useReducedMotion()
   const inViewResult = useInView(ref, { once: true, margin: inViewMargin })
   const isInView = !inView || inViewResult
   const defaultVariants: Variants = {
     hidden: {
       [direction === "left" || direction === "right" ? "x" : "y"]:
-        direction === "right" || direction === "down" ? -offset : offset,
+        prefersReducedMotion ? 0 : (direction === "right" || direction === "down" ? -offset : offset),
       opacity: 0,
-      filter: `blur(${blur})`,
+      filter: prefersReducedMotion ? "blur(0px)" : `blur(${blur})`,
     },
     visible: {
       [direction === "left" || direction === "right" ? "x" : "y"]: 0,
@@ -67,8 +69,8 @@ export function BlurFade({
         exit="hidden"
         variants={combinedVariants}
         transition={{
-          delay: 0.04 + delay,
-          duration,
+          delay: prefersReducedMotion ? 0 : 0.04 + delay,
+          duration: prefersReducedMotion ? 0.1 : duration,
           ease: "easeOut",
         }}
         className={className}

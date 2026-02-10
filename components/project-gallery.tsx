@@ -3,6 +3,7 @@
 import { useState } from "react";
 import Image from "next/image";
 import { ImageModal } from "@/components/ui/image-modal";
+import { BlurFade } from "@/components/ui/blur-fade";
 import { Expand } from "lucide-react";
 import type { ProjectImage } from "@/types";
 
@@ -39,8 +40,8 @@ export function ProjectGallery({ images }: ProjectGalleryProps) {
     <>
       <div className="grid md:grid-cols-2 gap-6">
         {images.map((image, index) => (
+          <BlurFade key={index} delay={0.1 + index * 0.1} inView>
           <figure
-            key={index}
             className="group relative rounded-xl overflow-hidden border shadow-lg cursor-pointer"
             onClick={() => handleOpenModal(index)}
           >
@@ -65,6 +66,7 @@ export function ProjectGallery({ images }: ProjectGalleryProps) {
               </figcaption>
             )}
           </figure>
+          </BlurFade>
         ))}
       </div>
 

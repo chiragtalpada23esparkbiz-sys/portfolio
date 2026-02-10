@@ -3,7 +3,7 @@ import { Geist, Geist_Mono } from "next/font/google";
 import { ThemeProvider } from "@/components/providers/theme-provider";
 import { Footer } from "@/components/layout/footer";
 import { BottomNav } from "@/components/layout/bottom-nav";
-import { PersonJsonLd, WebsiteJsonLd } from "@/components/seo/json-ld";
+import { PersonJsonLd, WebsiteJsonLd, WorkExperienceJsonLd, EducationJsonLd } from "@/components/seo/json-ld";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -126,6 +126,8 @@ export default function RootLayout({
           url="https://chiragtalpada.dev"
           description="Full Stack Developer portfolio showcasing web development and AI projects"
         />
+        <WorkExperienceJsonLd />
+        <EducationJsonLd />
       </head>
       <body
         className={`${geistSans.variable} ${geistMono.variable} font-sans antialiased`}

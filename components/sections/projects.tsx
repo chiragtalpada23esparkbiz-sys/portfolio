@@ -1,5 +1,3 @@
-"use client";
-
 import Image from "next/image";
 import Link from "next/link";
 import { Section } from "@/components/ui/section";
@@ -8,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { ArrowRight, ExternalLink } from "lucide-react";
 import { getFeaturedProjects } from "@/data/projects";
 import type { Project } from "@/types";
+import { BlurFade } from "../ui/blur-fade";
 
 const categoryLabels: Record<Project["category"], string> = {
   saas: "SaaS",
@@ -43,8 +42,15 @@ export function Projects() {
 
       {/* Projects Grid */}
       <div className="grid md:grid-cols-2 gap-8">
-        {projects.map((project) => (
-          <ProjectCard key={project.id} project={project} />
+        {projects.map((project, i) => (
+          <BlurFade
+            key={project.id}
+            delay={0.1 + 0.15 * i}
+            inView
+            className="h-full"
+          >
+            <ProjectCard project={project} />
+          </BlurFade>
         ))}
       </div>
     </Section>
@@ -65,7 +71,7 @@ function ProjectCard({ project }: { project: Project }) {
         <div className="relative h-70 md:h-80 overflow-hidden">
           <Image
             src={project.thumbnail}
-            alt={project.title}
+            alt={`${project.title} - ${project.subtitle} built with ${project.technologies.slice(0, 3).join(", ")}`}
             fill
             className="object-cover object-top-left group-hover:scale-105 transition-transform duration-500"
             sizes="(max-width: 768px) 100vw, 50vw"
@@ -120,11 +126,17 @@ function ProjectCard({ project }: { project: Project }) {
               +{remainingCount} more
             </Badge>
           )}
+          {/* Hidden remaining technologies for SEO */}
+          {remainingCount > 0 && (
+            <span className="sr-only">
+              {project.technologies.slice(5).join(", ")}
+            </span>
+          )}
         </div>
 
         {/* Actions */}
         <div className="flex items-center gap-3">
-          <Button size="sm" variant="default" asChild>
+          <Button size="sm" variant="default" className="bg-black text-white hover:bg-zinc-800 dark:bg-white dark:text-black dark:hover:bg-zinc-200" asChild>
             <Link href={`/projects/${project.slug}`}>
               View Details
               <ArrowRight className="ml-2 h-4 w-4" />

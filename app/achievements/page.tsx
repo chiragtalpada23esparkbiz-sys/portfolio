@@ -1,3 +1,4 @@
+import { Suspense } from "react";
 import type { Metadata } from "next";
 import { AchievementsPageContent } from "./achievements-content";
 import { AchievementsJsonLd } from "@/components/seo/json-ld";
@@ -49,7 +50,9 @@ export default function AchievementsPage() {
   return (
     <>
       <AchievementsJsonLd />
-      <AchievementsPageContent />
+      <Suspense fallback={null}>
+        <AchievementsPageContent />
+      </Suspense>
     </>
   );
 }

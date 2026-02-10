@@ -190,7 +190,7 @@ function ExpertiseCard({
   const Icon = expertise.icon;
 
   return (
-    <article className="group relative rounded-xl sm:rounded-2xl border bg-card p-4 sm:p-6 transition-all duration-300 hover:shadow-lg hover:border-primary/20">
+    <article className="group relative h-full rounded-xl sm:rounded-2xl border bg-card p-4 sm:p-6 transition-all duration-300 hover:shadow-lg hover:border-primary/20">
       {/* Icon */}
       <div
         className={`inline-flex items-center justify-center w-10 h-10 sm:w-12 sm:h-12 rounded-lg sm:rounded-xl ${expertise.color} mb-3 sm:mb-4 transition-transform duration-300 group-hover:scale-110`}
@@ -246,13 +246,13 @@ export function TechStack() {
       {/* Expertise Areas */}
       <div className="mb-12 sm:mb-16 md:mb-20">
         <h3 className="sr-only">Areas of Expertise</h3>
-        <BlurFade delay={0.25} inView>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
-            {expertiseAreas.map((expertise) => (
-              <ExpertiseCard key={expertise.title} expertise={expertise} />
-            ))}
-          </div>
-        </BlurFade>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
+          {expertiseAreas.map((expertise, index) => (
+            <BlurFade key={expertise.title} delay={0.1 + index * 0.1} inView className="h-full">
+              <ExpertiseCard expertise={expertise} />
+            </BlurFade>
+          ))}
+        </div>
       </div>
 
       {/* Tech Stack with Dock Effect */}
@@ -265,15 +265,6 @@ export function TechStack() {
             From frontend frameworks to AI tools, these are the technologies I
             work with daily to build modern, scalable applications.
           </p>
-          {/* Hidden text for SEO - all technologies visible to search engines */}
-          <div className="sr-only">
-            Frontend: React, Next.js, TypeScript, JavaScript, Tailwind CSS, shadcn/ui, HTML5, CSS3, Redux.
-            Backend: Node.js, Express.js, GraphQL, tRPC, Zod.
-            Database: PostgreSQL, MySQL, MongoDB, Redis, Hasura, Zitadel, Better-auth.
-            AI & ML: OpenAI, Anthropic, Claude, LangChain, LangGraph.
-            DevOps & Tools: Docker, Git, GitHub, GitLab, Postman, PostHog, Cursor, Hyperbrowser.
-            Services & PM: Stripe, Notion, Trello, Jira, Windmill.
-          </div>
         </div>
 
         <BlurFade delay={0.25} inView>

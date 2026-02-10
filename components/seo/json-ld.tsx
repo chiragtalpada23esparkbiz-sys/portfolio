@@ -1,4 +1,5 @@
 import type { BlogPost, Project } from "@/types";
+import { getAllAchievements } from "@/data/achievements";
 
 interface PersonSchemaProps {
   name: string;
@@ -243,6 +244,7 @@ export function ProjectJsonLd({ project }: ProjectSchemaProps) {
 
 export function AchievementsJsonLd() {
   const baseUrl = "https://chiragtalpada.dev";
+  const allAchievements = getAllAchievements();
 
   const schema = {
     "@context": "https://schema.org",
@@ -250,56 +252,26 @@ export function AchievementsJsonLd() {
     name: "Achievements & Recognition",
     description:
       "Early-career programming achievements that reflect strong problem-solving foundations.",
-    itemListElement: [
-      {
-        "@type": "ListItem",
-        position: 1,
-        item: {
-          "@type": "EducationalOccupationalCredential",
-          name: "Blind Coding Competition Winner",
-          description:
-            "Won 1st place in Blind Coding competition demonstrating exceptional coding skills.",
-          credentialCategory: "Award",
-          recognizedBy: {
-            "@type": "Organization",
-            name: "VNSGU University",
-          },
-          dateCreated: "2019",
+    itemListElement: allAchievements.map((a, index) => ({
+      "@type": "ListItem",
+      position: index + 1,
+      item: {
+        "@type": "EducationalOccupationalCredential",
+        name: a.title,
+        description: a.description,
+        credentialCategory:
+          a.category === "award"
+            ? "Award"
+            : a.category === "certificate"
+              ? "Certificate"
+              : "Recognition",
+        recognizedBy: {
+          "@type": "Organization",
+          name: a.organization,
         },
+        dateCreated: a.year,
       },
-      {
-        "@type": "ListItem",
-        position: 2,
-        item: {
-          "@type": "EducationalOccupationalCredential",
-          name: "DBMania Competition Winner",
-          description:
-            "Secured top position in database management competition.",
-          credentialCategory: "Award",
-          recognizedBy: {
-            "@type": "Organization",
-            name: "VNSGU University",
-          },
-          dateCreated: "2019",
-        },
-      },
-      {
-        "@type": "ListItem",
-        position: 3,
-        item: {
-          "@type": "EducationalOccupationalCredential",
-          name: "State Level Programming Competition",
-          description:
-            "Achieved recognition in state-level programming competition.",
-          credentialCategory: "Award",
-          recognizedBy: {
-            "@type": "Organization",
-            name: "Gujarat State",
-          },
-          dateCreated: "2020",
-        },
-      },
-    ],
+    })),
   };
 
   const breadcrumbSchema = {
@@ -332,5 +304,99 @@ export function AchievementsJsonLd() {
         dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }}
       />
     </>
+  );
+}
+
+export function WorkExperienceJsonLd() {
+  const schema = {
+    "@context": "https://schema.org",
+    "@type": "Person",
+    name: "Chirag Talpada",
+    url: "https://chiragtalpada.dev",
+    hasOccupation: {
+      "@type": "EmployeeRole",
+      roleName: "Software Developer",
+      startDate: "2023-01",
+      worksFor: {
+        "@type": "Organization",
+        name: "eSparkBiz",
+        address: {
+          "@type": "PostalAddress",
+          addressLocality: "Ahmedabad",
+          addressCountry: "IN",
+        },
+      },
+      responsibilities: [
+        "Full-stack development using React, Next.js, TypeScript, Node.js, GraphQL, Hasura, PostgreSQL",
+        "Building AI agents, RAG chatbots, and automation workflows using LangChain and LangGraph",
+        "Designing scalable SaaS architectures with multi-tenant support and RBAC",
+        "Implementing authentication, Stripe payments, and third-party integrations",
+        "Optimizing Core Web Vitals and SEO performance for production applications",
+        "Mentoring junior developers and conducting code reviews",
+      ],
+      skills: [
+        "React", "Next.js", "Node.js", "TypeScript", "GraphQL",
+        "Hasura", "PostgreSQL", "LangChain", "LangGraph", "tRPC",
+        "Redis", "Tailwind CSS", "OpenAI", "Claude", "Redux Toolkit",
+      ],
+    },
+  };
+
+  return (
+    <script
+      type="application/ld+json"
+      dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }}
+    />
+  );
+}
+
+export function EducationJsonLd() {
+  const schema = {
+    "@context": "https://schema.org",
+    "@type": "Person",
+    name: "Chirag Talpada",
+    url: "https://chiragtalpada.dev",
+    alumniOf: [
+      {
+        "@type": "EducationalOrganization",
+        name: "Sardar Patel University",
+        address: {
+          "@type": "PostalAddress",
+          addressLocality: "Gujarat",
+          addressCountry: "IN",
+        },
+        hasCredential: [
+          {
+            "@type": "EducationalOccupationalCredential",
+            name: "Master of Computer Application",
+            credentialCategory: "degree",
+            educationalLevel: "Postgraduate",
+            dateCreated: "2023",
+            recognizedBy: {
+              "@type": "EducationalOrganization",
+              name: "Sardar Patel University",
+            },
+          },
+          {
+            "@type": "EducationalOccupationalCredential",
+            name: "Bachelor of Computer Application",
+            credentialCategory: "degree",
+            educationalLevel: "Undergraduate",
+            dateCreated: "2021",
+            recognizedBy: {
+              "@type": "EducationalOrganization",
+              name: "Sardar Patel University",
+            },
+          },
+        ],
+      },
+    ],
+  };
+
+  return (
+    <script
+      type="application/ld+json"
+      dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }}
+    />
   );
 }

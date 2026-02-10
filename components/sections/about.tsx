@@ -1,11 +1,12 @@
 import { Section } from "@/components/ui/section";
 import { BlurFade } from "../ui/blur-fade";
+import { NumberTicker } from "../ui/number-ticker";
 
 const stats = [
-  { value: "10+", label: "Projects" },
-  { value: "20+", label: "Technologies Used" },
-  { value: "3+", label: "Years Experience" },
-  { value: "9+", label: "Achievements & Awards" },
+  { value: "10", label: "Projects" },
+  { value: "20", label: "Technologies Used" },
+  { value: "3", label: "Years Experience" },
+  { value: "9", label: "Achievements & Awards" },
 ];
 
 export function About() {
@@ -87,16 +88,22 @@ export function About() {
         {/* Stats */}
         <div className="mt-16 pt-12 border-t">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
-            {stats.map((stat) => (
-              <div key={stat.label} className="text-center">
-                <div className="text-4xl md:text-5xl font-bold mb-2">
-                  {stat.value}
+            {stats.map((stat) => {
+              return (
+                <div key={stat.label} className="text-center">
+                  <div className="mb-2">
+                    <NumberTicker
+                      value={Number(stat.value)}
+                      className="text-4xl md:text-5xl font-bold"
+                    />
+                    <span className="text-4xl md:text-5xl font-bold">+</span>
+                  </div>
+                  <div className="text-sm text-muted-foreground">
+                    {stat.label}
+                  </div>
                 </div>
-                <div className="text-sm text-muted-foreground">
-                  {stat.label}
-                </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
         </div>
       </div>
