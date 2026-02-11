@@ -3,6 +3,7 @@
 import * as React from "react";
 import Link from "next/link";
 import Image from "next/image";
+import { usePathname } from "next/navigation";
 import {
   Home,
   User,
@@ -45,6 +46,7 @@ const sectionMessages: Record<string, string> = {
 };
 
 export function BottomNav() {
+  const pathname = usePathname();
   const [activeSection, setActiveSection] = React.useState("");
   const [prevSection, setPrevSection] = React.useState("");
   const [showMessage, setShowMessage] = React.useState(true);
@@ -52,6 +54,9 @@ export function BottomNav() {
   const [mounted, setMounted] = React.useState(false);
   const { setTheme, resolvedTheme } = useTheme();
   const timeoutRef = React.useRef<NodeJS.Timeout | null>(null);
+
+  // Check if on blog pages
+  const isBlogPage = pathname?.startsWith("/blog");
 
   React.useEffect(() => {
     setMounted(true);
@@ -104,6 +109,29 @@ export function BottomNav() {
   }, [activeSection, prevSection, isHovering]);
 
   const currentMessage = sectionMessages[activeSection] || sectionMessages[""];
+
+  // Simplified nav for blog pages - only theme toggle on right
+  if (isBlogPage) {
+    return (
+      <div className="fixed bottom-4 sm:bottom-6 right-4 sm:right-6 z-50">
+        <div className="relative group">
+          <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-3 px-3 py-1.5 rounded-lg bg-white dark:bg-zinc-800 text-zinc-900 dark:text-white text-xs font-medium shadow-lg border border-zinc-200 dark:border-zinc-700 whitespace-nowrap opacity-0 group-hover:opacity-100 transition-all duration-200 pointer-events-none">
+            {mounted ? (resolvedTheme === "dark" ? "Light Mode" : "Dark Mode") : "Theme"}
+            <div className="absolute -bottom-1 left-1/2 -translate-x-1/2 w-2 h-2 bg-white dark:bg-zinc-800 border-b border-r border-zinc-200 dark:border-zinc-700 rotate-45" />
+          </div>
+          <button
+            onClick={() => setTheme(resolvedTheme === "dark" ? "light" : "dark")}
+            className="relative p-3 rounded-full bg-white/80 dark:bg-zinc-900 backdrop-blur-md border border-zinc-200 dark:border-zinc-800 text-zinc-500 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-white hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-all shadow-lg dark:shadow-2xl"
+            aria-label="Toggle dark mode"
+            suppressHydrationWarning
+          >
+            <Sun className="h-5 w-5 rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0" />
+            <Moon className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 h-5 w-5 rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100" />
+          </button>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="fixed bottom-4 sm:bottom-6 left-0 right-0 z-50 flex items-center justify-center px-2 sm:px-4">

@@ -1,12 +1,13 @@
 "use client";
 
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { useSearchParams, useRouter, usePathname } from "next/navigation";
 import { Section } from "@/components/ui/section";
 import { Button } from "@/components/ui/button";
 import { ImageModal } from "@/components/ui/image-modal";
+import { BlurFade } from "@/components/ui/blur-fade";
 import { ArrowLeft, Trophy, Award, GraduationCap, Expand } from "lucide-react";
 import {
   getAllAchievements,
@@ -56,6 +57,11 @@ export function AchievementsPageContent() {
   const searchParams = useSearchParams();
   const router = useRouter();
   const pathname = usePathname();
+
+  // Scroll to top on mount
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
 
   const [selectedImage, setSelectedImage] = useState<{
     src: string;
@@ -107,46 +113,53 @@ export function AchievementsPageContent() {
         {/* Hero Section */}
         <Section className="pt-8 pb-12 md:pt-12 md:pb-16">
           {/* Back Link */}
-          <Link
-            href="/#achievements"
-            className="inline-flex items-center text-sm text-muted-foreground hover:text-foreground mb-8 transition-colors"
-          >
-            <ArrowLeft className="mr-2 h-4 w-4" />
-            Back to Home
-          </Link>
+          <BlurFade delay={0}>
+            <Link
+              href="/#achievements"
+              className="inline-flex items-center text-sm text-muted-foreground hover:text-foreground mb-8 transition-colors"
+            >
+              <ArrowLeft className="mr-2 h-4 w-4" aria-hidden="true" />
+              Back to Home
+            </Link>
+          </BlurFade>
 
           {/* Header */}
-          <div className="text-center mb-12">
-            <h1 className="text-4xl md:text-5xl font-bold tracking-tight mb-4">
-              Achievements & Recognition
-            </h1>
-            <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
-              Early-career programming achievements that reflect strong
-              problem-solving foundations.
-            </p>
-          </div>
+          <BlurFade delay={0.1}>
+            <header className="text-center mb-12">
+              <h1 className="text-4xl md:text-5xl font-bold tracking-tight mb-4">
+                Achievements & Recognition
+              </h1>
+              <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
+                Early-career programming achievements that reflect strong
+                problem-solving foundations.
+              </p>
+            </header>
+          </BlurFade>
 
           {/* Stats */}
-          <div className="grid grid-cols-3 gap-4 max-w-2xl mx-auto mb-12">
-            <div className="text-center p-4 rounded-xl bg-amber-500/10 border border-amber-500/20">
-              <Trophy className="h-6 w-6 text-amber-500 mx-auto mb-2" />
-              <div className="text-2xl font-bold">{awards.length}</div>
-              <div className="text-sm text-muted-foreground">Awards</div>
+          <BlurFade delay={0.2}>
+            <div className="grid grid-cols-3 gap-4 max-w-2xl mx-auto mb-12">
+              <div className="text-center p-4 rounded-xl bg-amber-500/10 border border-amber-500/20">
+                <Trophy className="h-6 w-6 text-amber-500 mx-auto mb-2" aria-hidden="true" />
+                <div className="text-2xl font-bold">{awards.length}</div>
+                <div className="text-sm text-muted-foreground">Awards</div>
+              </div>
+              <div className="text-center p-4 rounded-xl bg-blue-500/10 border border-blue-500/20">
+                <GraduationCap className="h-6 w-6 text-blue-500 mx-auto mb-2" aria-hidden="true" />
+                <div className="text-2xl font-bold">{certificates.length}</div>
+                <div className="text-sm text-muted-foreground">Certificates</div>
+              </div>
+              <div className="text-center p-4 rounded-xl bg-purple-500/10 border border-purple-500/20">
+                <Award className="h-6 w-6 text-purple-500 mx-auto mb-2" aria-hidden="true" />
+                <div className="text-2xl font-bold">{recognitions.length}</div>
+                <div className="text-sm text-muted-foreground">Recognitions</div>
+              </div>
             </div>
-            <div className="text-center p-4 rounded-xl bg-blue-500/10 border border-blue-500/20">
-              <GraduationCap className="h-6 w-6 text-blue-500 mx-auto mb-2" />
-              <div className="text-2xl font-bold">{certificates.length}</div>
-              <div className="text-sm text-muted-foreground">Certificates</div>
-            </div>
-            <div className="text-center p-4 rounded-xl bg-purple-500/10 border border-purple-500/20">
-              <Award className="h-6 w-6 text-purple-500 mx-auto mb-2" />
-              <div className="text-2xl font-bold">{recognitions.length}</div>
-              <div className="text-sm text-muted-foreground">Recognitions</div>
-            </div>
-          </div>
+          </BlurFade>
 
           {/* Filter Buttons */}
-          <div className="flex flex-wrap justify-center gap-2 mb-12">
+          <BlurFade delay={0.3}>
+            <nav className="flex flex-wrap justify-center gap-2 mb-12" aria-label="Filter achievements">
             <Button
               variant={filter === "all" ? "default" : "outline"}
               size="sm"
@@ -161,7 +174,7 @@ export function AchievementsPageContent() {
               onClick={() => setFilter("award")}
               className={filter === "award" ? "bg-black text-white hover:bg-black dark:bg-white dark:text-black dark:hover:bg-white" : "hover:border-amber-500/50"}
             >
-              <Trophy className="h-4 w-4 mr-2" />
+              <Trophy className="h-4 w-4 mr-2" aria-hidden="true" />
               Awards
             </Button>
             <Button
@@ -172,7 +185,7 @@ export function AchievementsPageContent() {
                 filter === "certificate" ? "bg-black text-white hover:bg-black dark:bg-white dark:text-black dark:hover:bg-white" : "hover:border-blue-500/50"
               }
             >
-              <GraduationCap className="h-4 w-4 mr-2" />
+              <GraduationCap className="h-4 w-4 mr-2" aria-hidden="true" />
               Certificates
             </Button>
             <Button
@@ -183,10 +196,11 @@ export function AchievementsPageContent() {
                 filter === "recognition" ? "bg-black text-white hover:bg-black dark:bg-white dark:text-black dark:hover:bg-white" : "hover:border-purple-500/50"
               }
             >
-              <Award className="h-4 w-4 mr-2" />
+              <Award className="h-4 w-4 mr-2" aria-hidden="true" />
               Recognitions
             </Button>
-          </div>
+            </nav>
+          </BlurFade>
         </Section>
 
         {/* Achievements Gallery */}
@@ -199,38 +213,46 @@ export function AchievementsPageContent() {
               </span>
             ))}
           </div>
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 items-stretch">
-            {filteredAchievements.map((achievement) => (
-              <AchievementCard
-                key={achievement.id}
-                achievement={achievement}
-                onImageClick={handleImageClick}
-              />
-            ))}
-          </div>
+          <BlurFade delay={0.1} inView>
+            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 items-stretch">
+              {filteredAchievements.map((achievement) => (
+                <AchievementCard
+                  key={achievement.id}
+                  achievement={achievement}
+                  onImageClick={handleImageClick}
+                />
+              ))}
+            </div>
+          </BlurFade>
         </Section>
 
         {/* CTA Section */}
         <Section className="py-16 md:py-24 text-center">
-          <h2 className="text-3xl md:text-4xl font-bold mb-4">
-            Let&apos;s Work Together
-          </h2>
-          <p className="text-muted-foreground text-lg mb-8 max-w-2xl mx-auto">
-            These achievements reflect my dedication to continuous learning and
-            problem-solving. I bring the same commitment to every project.
-          </p>
-          <div className="flex justify-center gap-4">
-            <Button
-              size="lg"
-              className="bg-black text-white hover:bg-zinc-800 dark:bg-white dark:text-black dark:hover:bg-zinc-200"
-              asChild
-            >
-              <Link href="/#contact">Get in Touch</Link>
-            </Button>
-            <Button size="lg" variant="outline" asChild>
-              <Link href="/#projects">View Projects</Link>
-            </Button>
-          </div>
+          <BlurFade delay={0} inView>
+            <h2 className="text-3xl md:text-4xl font-bold mb-4">
+              Let&apos;s Work Together
+            </h2>
+          </BlurFade>
+          <BlurFade delay={0.1} inView>
+            <p className="text-muted-foreground text-lg mb-8 max-w-2xl mx-auto">
+              These achievements reflect my dedication to continuous learning and
+              problem-solving. I bring the same commitment to every project.
+            </p>
+          </BlurFade>
+          <BlurFade delay={0.2} inView>
+            <div className="flex justify-center gap-4">
+              <Button
+                size="lg"
+                className="bg-black text-white hover:bg-zinc-800 dark:bg-white dark:text-black dark:hover:bg-zinc-200"
+                asChild
+              >
+                <Link href="/#contact">Get in Touch</Link>
+              </Button>
+              <Button size="lg" variant="outline" asChild>
+                <Link href="/#projects">View Projects</Link>
+              </Button>
+            </div>
+          </BlurFade>
         </Section>
       </article>
 

@@ -12,15 +12,17 @@ export function AchievementsRecognition() {
   return (
     <Section id="achievements" className="py-20 md:py-28">
       {/* Header */}
-      <div className="text-center mb-16">
-        <h2 className="text-4xl md:text-5xl font-bold tracking-tight mb-4">
-          Achievements & Recognition
-        </h2>
-        <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
-          Early-career programming achievements that reflect strong
-          problem-solving foundations.
-        </p>
-      </div>
+      <BlurFade delay={0} inView>
+        <header className="text-center mb-16">
+          <h2 className="text-4xl md:text-5xl font-bold tracking-tight mb-4">
+            Achievements & Recognition
+          </h2>
+          <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
+            Early-career programming achievements that reflect strong
+            problem-solving foundations.
+          </p>
+        </header>
+      </BlurFade>
 
       {/* Hidden keywords for crawlers */}
       <div className="sr-only">
@@ -51,9 +53,9 @@ export function AchievementsRecognition() {
       {/* View All Button */}
       <div className="text-center relative z-10 mt-4">
         <Button size="lg" variant="outline" asChild>
-          <Link href="/achievements">
+          <Link href="/achievements" scroll={true}>
             View All Achievements
-            <ArrowRight className="ml-2 h-4 w-4" />
+            <ArrowRight className="ml-2 h-4 w-4" aria-hidden="true" />
           </Link>
         </Button>
       </div>

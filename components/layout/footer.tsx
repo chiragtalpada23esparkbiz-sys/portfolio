@@ -1,4 +1,7 @@
+"use client";
+
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { Github, Linkedin, Mail, Twitter } from "lucide-react";
 
 const socialLinks = [
@@ -33,6 +36,23 @@ const navLinks = [
 ];
 
 export function Footer() {
+  const pathname = usePathname();
+  const isBlogPage = pathname?.startsWith("/blog");
+
+  // Blog-specific footer - Minimal
+  if (isBlogPage) {
+    return (
+      <footer className="border-t bg-muted/30">
+        <div className="container mx-auto px-4 md:px-6 py-8">
+          <p className="text-center text-sm text-muted-foreground">
+            &copy; {new Date().getFullYear()} Chirag Talpada
+          </p>
+        </div>
+      </footer>
+    );
+  }
+
+  // Default portfolio footer
   return (
     <footer className="border-t bg-muted/30">
       <div className="container mx-auto px-4 xl:px-32 md-short:px-12 lg-short:px-20 py-12">
@@ -79,7 +99,6 @@ export function Footer() {
                   rel="noopener noreferrer"
                   className="text-muted-foreground hover:text-foreground transition-colors"
                   aria-label={link.name}
-                  suppressHydrationWarning
                 >
                   <link.icon className="h-5 w-5" />
                 </a>

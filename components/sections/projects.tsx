@@ -30,15 +30,17 @@ export function Projects() {
   return (
     <Section id="projects" className="py-20 md:py-28">
       {/* Header */}
-      <div className="text-center mb-16">
-        <h2 className="text-4xl md:text-5xl font-bold tracking-tight mb-4">
-          Featured Projects
-        </h2>
-        <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
-          Enterprise-grade applications I&apos;ve built, from AI platforms to
-          healthcare systems
-        </p>
-      </div>
+      <BlurFade delay={0} inView>
+        <header className="text-center mb-16">
+          <h2 className="text-4xl md:text-5xl font-bold tracking-tight mb-4">
+            Featured Projects
+          </h2>
+          <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
+            Enterprise-grade applications I&apos;ve built, from AI platforms to
+            healthcare systems
+          </p>
+        </header>
+      </BlurFade>
 
       {/* Projects Grid */}
       <div className="grid md:grid-cols-2 gap-8">

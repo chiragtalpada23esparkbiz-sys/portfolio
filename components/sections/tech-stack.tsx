@@ -232,16 +232,18 @@ export function TechStack() {
   return (
     <Section id="tech-stack" className="py-12 sm:py-16 md:py-20 lg:py-28">
       {/* Header */}
-      <header className="text-center mb-10 sm:mb-12 md:mb-16 px-4">
-        <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold tracking-tight mb-3 sm:mb-4">
-          Skills & Expertise
-        </h2>
-        <p className="text-muted-foreground text-base sm:text-lg max-w-2xl mx-auto">
-          Specialized in building robust, scalable applications with modern
-          technologies, focusing on exceptional user experiences and AI-driven
-          solutions.
-        </p>
-      </header>
+      <BlurFade delay={0} inView>
+        <header className="text-center mb-10 sm:mb-12 md:mb-16 px-4">
+          <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold tracking-tight mb-3 sm:mb-4">
+            Skills & Expertise
+          </h2>
+          <p className="text-muted-foreground text-base sm:text-lg max-w-2xl mx-auto">
+            Specialized in building robust, scalable applications with modern
+            technologies, focusing on exceptional user experiences and AI-driven
+            solutions.
+          </p>
+        </header>
+      </BlurFade>
 
       {/* Expertise Areas */}
       <div className="mb-12 sm:mb-16 md:mb-20">

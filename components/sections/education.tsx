@@ -60,12 +60,14 @@ export function Education() {
   return (
     <Section id="education" className="py-20 md:py-28">
       {/* Header */}
-      <div className="text-center mb-16">
-        <h2 className="text-4xl md:text-5xl font-bold tracking-tight mb-4">
-          Education
-        </h2>
-        <p className="text-muted-foreground text-lg">My academic background</p>
-      </div>
+      <BlurFade delay={0} inView>
+        <header className="text-center mb-16">
+          <h2 className="text-4xl md:text-5xl font-bold tracking-tight mb-4">
+            Education
+          </h2>
+          <p className="text-muted-foreground text-lg">My academic background</p>
+        </header>
+      </BlurFade>
 
       {/* Education Grid */}
       <div className="grid md:grid-cols-2 gap-6 max-w-5xl mx-auto">

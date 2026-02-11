@@ -5,6 +5,7 @@ import Image from "next/image";
 import Script from "next/script";
 import { Section } from "@/components/ui/section";
 import { Button } from "@/components/ui/button";
+import { BlurFade } from "@/components/ui/blur-fade";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -159,20 +160,23 @@ export function Testimonials() {
         aria-labelledby="testimonials-heading"
       >
         {/* Header */}
-        <header className="text-center mb-16">
-          <h2
-            id="testimonials-heading"
-            className="text-4xl md:text-5xl font-bold tracking-tight mb-4"
-          >
-            Client Testimonials
-          </h2>
-          <p className="text-muted-foreground text-lg">
-            What clients and colleagues say about my development work
-          </p>
-        </header>
+        <BlurFade delay={0} inView>
+          <header className="text-center mb-16">
+            <h2
+              id="testimonials-heading"
+              className="text-4xl md:text-5xl font-bold tracking-tight mb-4"
+            >
+              Client Testimonials
+            </h2>
+            <p className="text-muted-foreground text-lg">
+              What clients and colleagues say about my development work
+            </p>
+          </header>
+        </BlurFade>
 
         {/* Testimonial Content */}
-        <div className="max-w-5xl mx-auto">
+        <BlurFade delay={0.1} inView>
+          <div className="max-w-5xl mx-auto">
           <div className="grid md:grid-cols-2 gap-12 items-center">
             {/* Left - Stacked Cards */}
             <figure
@@ -311,6 +315,7 @@ export function Testimonials() {
             </div>
           </div>
         </div>
+        </BlurFade>
 
         {/* SEO: All testimonials rendered for crawlers (visually hidden) */}
         <div className="sr-only" aria-hidden="false">

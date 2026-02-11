@@ -14,12 +14,14 @@ export function About() {
     <Section id="about" className="py-20 md:py-28">
       <div className="max-w-4xl mx-auto">
         {/* Header */}
-        <div className="text-center mb-12">
-          <h2 className="text-4xl md:text-5xl font-bold tracking-tight mb-4">
-            About Me
-          </h2>
-          <p className="text-muted-foreground text-lg">Get to know me better</p>
-        </div>
+        <BlurFade delay={0} inView>
+          <header className="text-center mb-12">
+            <h2 className="text-4xl md:text-5xl font-bold tracking-tight mb-4">
+              About Me
+            </h2>
+            <p className="text-muted-foreground text-lg">Get to know me better</p>
+          </header>
+        </BlurFade>
 
         {/* Content */}
         <BlurFade delay={0.1} inView>

@@ -1,9 +1,11 @@
 "use client";
 
 import Link from "next/link";
+import Script from "next/script";
 import { Section } from "@/components/ui/section";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { BlurFade } from "@/components/ui/blur-fade";
 import { ExternalLink } from "lucide-react";
 
 interface Certification {
@@ -68,42 +70,109 @@ const certifications: Certification[] = [
   },
 ];
 
+// JSON-LD structured data for Certifications
+const jsonLd = {
+  "@context": "https://schema.org",
+  "@type": "ItemList",
+  name: "Professional Certifications - Chirag Talpada",
+  description: "Professional certifications and credentials held by Chirag Talpada in cloud computing, DevOps, and software development.",
+  itemListElement: certifications.map((cert, index) => ({
+    "@type": "ListItem",
+    position: index + 1,
+    item: {
+      "@type": "EducationalOccupationalCredential",
+      name: cert.title,
+      credentialCategory: "Professional Certification",
+      recognizedBy: {
+        "@type": "Organization",
+        name: cert.issuer,
+      },
+      dateCreated: cert.date,
+      validUntil: cert.validUntil,
+      description: cert.description,
+    },
+  })),
+};
+
 export function Certifications() {
   return (
-    <Section id="certifications" className="py-20 md:py-28">
-      {/* Header */}
-      <div className="text-center mb-16">
-        <h2 className="text-4xl md:text-5xl font-bold tracking-tight mb-4">
-          Certifications
-        </h2>
-        <p className="text-muted-foreground text-lg">
-          Professional credentials and certifications
-        </p>
-      </div>
+    <>
+      {/* JSON-LD Structured Data for SEO */}
+      <Script
+        id="certifications-jsonld"
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
 
-      {/* Certifications Grid */}
-      <div className="grid md:grid-cols-2 gap-6 max-w-5xl mx-auto">
-        {certifications.map((cert) => (
-          <CertificateCard key={cert.id} certification={cert} />
-        ))}
-      </div>
-    </Section>
+      <Section
+        id="certifications"
+        className="py-20 md:py-28"
+        aria-labelledby="certifications-heading"
+      >
+        {/* Header */}
+        <BlurFade delay={0} inView>
+          <header className="text-center mb-16">
+            <h2
+              id="certifications-heading"
+              className="text-4xl md:text-5xl font-bold tracking-tight mb-4"
+            >
+              Certifications
+            </h2>
+            <p className="text-muted-foreground text-lg">
+              Professional credentials and certifications
+            </p>
+          </header>
+        </BlurFade>
+
+        {/* Certifications Grid */}
+        <div className="grid md:grid-cols-2 gap-6 max-w-5xl mx-auto">
+          {certifications.map((cert, index) => (
+            <BlurFade key={cert.id} delay={0.1 + index * 0.1} inView>
+              <CertificateCard certification={cert} />
+            </BlurFade>
+          ))}
+        </div>
+
+        {/* SEO: All certifications in crawlable format */}
+        <div className="sr-only">
+          <h3>All Professional Certifications</h3>
+          {certifications.map((cert) => (
+            <article key={cert.id} itemScope itemType="https://schema.org/EducationalOccupationalCredential">
+              <h4 itemProp="name">{cert.title}</h4>
+              <p itemProp="description">{cert.description}</p>
+              <span itemProp="recognizedBy" itemScope itemType="https://schema.org/Organization">
+                <span itemProp="name">{cert.issuer}</span>
+              </span>
+              <time itemProp="dateCreated">{cert.date}</time>
+              {cert.validUntil && <time itemProp="validUntil">{cert.validUntil}</time>}
+              <span>Skills: {cert.skills.join(", ")}</span>
+            </article>
+          ))}
+        </div>
+      </Section>
+    </>
   );
 }
 
 function CertificateCard({ certification }: { certification: Certification }) {
   return (
-    <div className="relative rounded-xl overflow-hidden bg-gray-900 text-white p-6 shadow-xl">
+    <article
+      className="relative rounded-xl overflow-hidden bg-gray-900 text-white p-6 shadow-xl"
+      itemScope
+      itemType="https://schema.org/EducationalOccupationalCredential"
+    >
       {/* Corner decorations */}
-      <div className="absolute top-4 left-4 w-8 h-8 border-l-2 border-t-2 border-yellow-500" />
-      <div className="absolute top-4 right-4 w-8 h-8 border-r-2 border-t-2 border-yellow-500" />
-      <div className="absolute bottom-4 left-4 w-8 h-8 border-l-2 border-b-2 border-yellow-500" />
-      <div className="absolute bottom-4 right-4 w-8 h-8 border-r-2 border-b-2 border-yellow-500" />
+      <div className="absolute top-4 left-4 w-8 h-8 border-l-2 border-t-2 border-yellow-500" aria-hidden="true" />
+      <div className="absolute top-4 right-4 w-8 h-8 border-r-2 border-t-2 border-yellow-500" aria-hidden="true" />
+      <div className="absolute bottom-4 left-4 w-8 h-8 border-l-2 border-b-2 border-yellow-500" aria-hidden="true" />
+      <div className="absolute bottom-4 right-4 w-8 h-8 border-r-2 border-b-2 border-yellow-500" aria-hidden="true" />
 
       {/* Content */}
       <div className="relative z-10 text-center space-y-4 py-4">
         {/* Date */}
-        <p className="text-gray-400 text-sm">{certification.date}</p>
+        <time className="text-gray-400 text-sm" itemProp="dateCreated">
+          {certification.date}
+        </time>
 
         {/* Certificate label */}
         <div>
@@ -114,18 +183,27 @@ function CertificateCard({ certification }: { certification: Certification }) {
         </div>
 
         {/* Title */}
-        <h3 className="text-xl font-bold px-4">{certification.title}</h3>
+        <h3 className="text-xl font-bold px-4" itemProp="name">
+          {certification.title}
+        </h3>
 
         {/* Description */}
-        <p className="text-gray-400 text-sm px-4 line-clamp-2">
+        <p className="text-gray-400 text-sm px-4 line-clamp-2" itemProp="description">
           {certification.description}
         </p>
 
         {/* Issuer */}
-        <p className="font-medium">{certification.issuer}</p>
+        <p
+          className="font-medium"
+          itemProp="recognizedBy"
+          itemScope
+          itemType="https://schema.org/Organization"
+        >
+          <span itemProp="name">{certification.issuer}</span>
+        </p>
 
         {/* Skills */}
-        <div className="flex flex-wrap justify-center gap-2">
+        <div className="flex flex-wrap justify-center gap-2" aria-label="Skills covered">
           {certification.skills.map((skill) => (
             <Badge
               key={skill}
@@ -139,14 +217,14 @@ function CertificateCard({ certification }: { certification: Certification }) {
         {/* Validity */}
         {certification.validUntil && (
           <p className="text-gray-400 text-sm">
-            Valid Until: {certification.validUntil}
+            Valid Until: <time itemProp="validUntil">{certification.validUntil}</time>
           </p>
         )}
 
         {/* Credential ID */}
         <div className="text-gray-500 text-xs">
           <p>Credential ID</p>
-          <p>{certification.credentialId}</p>
+          <p itemProp="identifier">{certification.credentialId}</p>
         </div>
 
         {/* Verify Button */}
@@ -156,12 +234,12 @@ function CertificateCard({ certification }: { certification: Certification }) {
           className="border-yellow-500/50 text-yellow-500 hover:bg-yellow-500/10"
           asChild
         >
-          <Link href={certification.verifyUrl} target="_blank">
+          <Link href={certification.verifyUrl} target="_blank" rel="noopener noreferrer">
             Verify Credential
-            <ExternalLink className="ml-2 h-3 w-3" />
+            <ExternalLink className="ml-2 h-3 w-3" aria-hidden="true" />
           </Link>
         </Button>
       </div>
-    </div>
+    </article>
   );
 }
