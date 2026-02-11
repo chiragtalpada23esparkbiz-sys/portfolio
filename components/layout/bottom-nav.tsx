@@ -49,8 +49,13 @@ export function BottomNav() {
   const [prevSection, setPrevSection] = React.useState("");
   const [showMessage, setShowMessage] = React.useState(true);
   const [isHovering, setIsHovering] = React.useState(false);
+  const [mounted, setMounted] = React.useState(false);
   const { setTheme, resolvedTheme } = useTheme();
   const timeoutRef = React.useRef<NodeJS.Timeout | null>(null);
+
+  React.useEffect(() => {
+    setMounted(true);
+  }, []);
 
   React.useEffect(() => {
     const handleScroll = () => {
@@ -155,7 +160,7 @@ export function BottomNav() {
         {/* Theme toggle integrated in nav for mobile only */}
         <div className="relative group sm:hidden">
           <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-3 px-3 py-1.5 rounded-lg bg-white dark:bg-zinc-800 text-zinc-900 dark:text-white text-xs font-medium shadow-lg border border-zinc-200 dark:border-zinc-700 whitespace-nowrap opacity-0 group-hover:opacity-100 transition-all duration-200 pointer-events-none">
-            {resolvedTheme === "dark" ? "Light" : "Dark"}
+            {mounted ? (resolvedTheme === "dark" ? "Light" : "Dark") : "Theme"}
             <div className="absolute -bottom-1 left-1/2 -translate-x-1/2 w-2 h-2 bg-white dark:bg-zinc-800 border-b border-r border-zinc-200 dark:border-zinc-700 rotate-45" />
           </div>
           <button
@@ -222,7 +227,7 @@ export function BottomNav() {
         {/* Dark Mode Toggle - Desktop */}
         <div className="relative group">
           <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-3 px-3 py-1.5 rounded-lg bg-white dark:bg-zinc-800 text-zinc-900 dark:text-white text-xs font-medium shadow-lg border border-zinc-200 dark:border-zinc-700 whitespace-nowrap opacity-0 group-hover:opacity-100 transition-all duration-200 pointer-events-none">
-            {resolvedTheme === "dark" ? "Light Mode" : "Dark Mode"}
+            {mounted ? (resolvedTheme === "dark" ? "Light Mode" : "Dark Mode") : "Theme"}
             <div className="absolute -bottom-1 left-1/2 -translate-x-1/2 w-2 h-2 bg-white dark:bg-zinc-800 border-b border-r border-zinc-200 dark:border-zinc-700 rotate-45" />
           </div>
           <button

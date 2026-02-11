@@ -160,7 +160,7 @@ export function Hero() {
 
               {/* Profile Image Container */}
               <div className="hover:shadow-2xl relative w-70 h-87.5 sm:w-[320px] sm:h-100 md:w-90 md:h-112.5 lg:w-95 lg:h-118.75 xl:w-105 xl:h-131.25 md-short:w-70 md-short:h-87.5 lg-short:w-[320px] lg-short:h-100 lg:max-h-[calc(100vh-8rem)] rounded-2xl shadow-2xl aspect-4/5 overflow-hidden">
-                {/* <Image
+                <Image
                   src="/face_shot.webp"
                   alt="Chirag Talpada - Full Stack JavaScript Developer specializing in React, Next.js, Node.js, and AI-powered solutions"
                   fill
@@ -169,7 +169,7 @@ export function Hero() {
                   fetchPriority="high"
                   sizes="(max-width: 768px) 320px, (max-width: 1024px) 360px, (max-width: 1280px) 380px, 420px"
                   quality={80}
-                /> */}
+                />
               </div>
             </div>
           </div>

@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { ArrowRight } from "lucide-react";
 import { getFeaturedAchievements } from "@/data/achievements";
 import { AchievementTiltCard } from "./achievement-tilt-card";
+import { BlurFade } from "../ui/blur-fade";
 
 export function AchievementsRecognition() {
   const featuredAchievements = getFeaturedAchievements();
@@ -32,8 +33,18 @@ export function AchievementsRecognition() {
 
       {/* Featured Achievements Grid */}
       <div className="grid md:grid-cols-3 gap-6 mb-10 items-stretch">
-        {featuredAchievements.map((achievement) => (
-          <AchievementTiltCard key={achievement.id} achievement={achievement} />
+        {featuredAchievements.map((achievement, i) => (
+          <BlurFade
+            key={achievement.id}
+            delay={0.1 + 0.15 * i}
+            inView
+            className="h-full"
+          >
+            <AchievementTiltCard
+              key={achievement.id}
+              achievement={achievement}
+            />
+          </BlurFade>
         ))}
       </div>
 

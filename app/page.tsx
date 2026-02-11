@@ -7,8 +7,6 @@ import {
   Projects,
   AchievementsRecognition,
   Testimonials,
-  Companies,
-  Approach,
   Contact,
   BlogPreview,
 } from "@/components/sections";
@@ -27,8 +25,6 @@ export default async function Home() {
       <Projects />
       <AchievementsRecognition />
       <Testimonials />
-      <Companies />
-      <Approach />
       <BlogPreview posts={posts.slice(0, 3)} />
       <Contact />
     </>

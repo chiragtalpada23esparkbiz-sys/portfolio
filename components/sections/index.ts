@@ -6,7 +6,5 @@ export { TechStack } from "./tech-stack";
 export { Projects } from "./projects";
 export { AchievementsRecognition } from "./achievements-recognition";
 export { Testimonials } from "./testimonials";
-export { Companies } from "./companies";
-export { Approach } from "./approach";
 export { Contact } from "./contact";
 export { BlogPreview } from "./blog-preview";
