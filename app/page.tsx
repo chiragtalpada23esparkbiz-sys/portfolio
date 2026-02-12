@@ -25,7 +25,7 @@ export default async function Home() {
       <Projects />
       <AchievementsRecognition />
       <Testimonials />
-      <BlogPreview posts={posts.slice(0, 3)} />
+      <BlogPreview posts={posts.slice(0, 3)} baseUrl={process.env.BASE_URL || ""} />
       <Contact />
     </>
   );

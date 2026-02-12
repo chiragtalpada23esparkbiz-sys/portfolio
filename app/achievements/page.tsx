@@ -3,6 +3,8 @@ import type { Metadata } from "next";
 import { AchievementsPageContent } from "./achievements-content";
 import { AchievementsJsonLd } from "@/components/seo/json-ld";
 
+const baseUrl = process.env.BASE_URL || "";
+
 export const metadata: Metadata = {
   title: "Achievements & Recognition | Chirag Talpada",
   description:
@@ -24,10 +26,10 @@ export const metadata: Metadata = {
     description:
       "Early-career programming achievements that reflect strong problem-solving foundations.",
     type: "website",
-    url: "https://chiragtalpada.dev/achievements",
+    url: `${baseUrl}/achievements`,
     images: [
       {
-        url: "https://chiragtalpada.dev/awards/awards-blind-coding.webp",
+        url: `${baseUrl}/awards/awards-blind-coding.webp`,
         width: 1200,
         height: 630,
         alt: "Chirag Talpada - Programming Achievements",
@@ -39,17 +41,17 @@ export const metadata: Metadata = {
     title: "Achievements & Recognition | Chirag Talpada",
     description:
       "Early-career programming achievements that reflect strong problem-solving foundations.",
-    images: ["https://chiragtalpada.dev/awards/awards-blind-coding.webp"],
+    images: [`${baseUrl}/awards/awards-blind-coding.webp`],
   },
   alternates: {
-    canonical: "https://chiragtalpada.dev/achievements",
+    canonical: `${baseUrl}/achievements`,
   },
 };
 
 export default function AchievementsPage() {
   return (
     <>
-      <AchievementsJsonLd />
+      <AchievementsJsonLd baseUrl={baseUrl} />
       <Suspense fallback={null}>
         <AchievementsPageContent />
       </Suspense>

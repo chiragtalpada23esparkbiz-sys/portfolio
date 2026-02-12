@@ -146,13 +146,17 @@ export function BlogPostJsonLd({ post, url }: BlogPostSchemaProps) {
   );
 }
 
-export function OrganizationJsonLd() {
+interface OrganizationSchemaProps {
+  baseUrl: string;
+}
+
+export function OrganizationJsonLd({ baseUrl }: OrganizationSchemaProps) {
   const schema = {
     "@context": "https://schema.org",
     "@type": "Organization",
     name: "Chirag Talpada",
-    url: "https://chiragtalpada.dev",
-    logo: "https://chiragtalpada.dev/og-image.png",
+    url: baseUrl,
+    logo: `${baseUrl}/og-image.png`,
     contactPoint: {
       "@type": "ContactPoint",
       email: "hello@chiragtalpada.dev",
@@ -170,10 +174,10 @@ export function OrganizationJsonLd() {
 
 interface ProjectSchemaProps {
   project: Project;
+  baseUrl: string;
 }
 
-export function ProjectJsonLd({ project }: ProjectSchemaProps) {
-  const baseUrl = "https://chiragtalpada.dev";
+export function ProjectJsonLd({ project, baseUrl }: ProjectSchemaProps) {
 
   const schema = {
     "@context": "https://schema.org",
@@ -242,8 +246,11 @@ export function ProjectJsonLd({ project }: ProjectSchemaProps) {
   );
 }
 
-export function AchievementsJsonLd() {
-  const baseUrl = "https://chiragtalpada.dev";
+interface AchievementsSchemaProps {
+  baseUrl: string;
+}
+
+export function AchievementsJsonLd({ baseUrl }: AchievementsSchemaProps) {
   const allAchievements = getAllAchievements();
 
   const schema = {
@@ -307,12 +314,16 @@ export function AchievementsJsonLd() {
   );
 }
 
-export function WorkExperienceJsonLd() {
+interface WorkExperienceSchemaProps {
+  baseUrl: string;
+}
+
+export function WorkExperienceJsonLd({ baseUrl }: WorkExperienceSchemaProps) {
   const schema = {
     "@context": "https://schema.org",
     "@type": "Person",
     name: "Chirag Talpada",
-    url: "https://chiragtalpada.dev",
+    url: baseUrl,
     hasOccupation: {
       "@type": "EmployeeRole",
       roleName: "Software Developer",
@@ -350,12 +361,16 @@ export function WorkExperienceJsonLd() {
   );
 }
 
-export function EducationJsonLd() {
+interface EducationSchemaProps {
+  baseUrl: string;
+}
+
+export function EducationJsonLd({ baseUrl }: EducationSchemaProps) {
   const schema = {
     "@context": "https://schema.org",
     "@type": "Person",
     name: "Chirag Talpada",
-    url: "https://chiragtalpada.dev",
+    url: baseUrl,
     alumniOf: [
       {
         "@type": "EducationalOrganization",

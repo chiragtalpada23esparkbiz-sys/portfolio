@@ -463,3 +463,24 @@ html {
   color: #50a14f;
   background-color: rgba(80, 161, 79, 0.1);
 }
+
+/* Ensure prose content doesn't overflow on small screens */
+.prose {
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+}
+
+.prose * {
+  max-width: 100%;
+}
+
+.prose pre {
+  white-space: pre-wrap;
+  word-wrap: break-word;
+}
+
+@media (max-width: 374px) {
+  .prose {
+    font-size: 0.9rem;
+  }
+}

@@ -30,10 +30,13 @@ export async function generateMetadata({
 }: PageProps): Promise<Metadata> {
   const { slug } = await params;
   const post = await getPostBySlug(slug);
+  const baseUrl = process.env.BASE_URL || "";
 
   if (!post) {
     return { title: "Post Not Found" };
   }
+
+  const postUrl = `${baseUrl}/blog/${slug}`;
 
   return {
     title: `${post.title} | Chirag Talpada`,
@@ -42,6 +45,7 @@ export async function generateMetadata({
       title: post.title,
       description: post.excerpt,
       type: "article",
+      url: postUrl,
       publishedTime: post.date,
       authors: [post.author.name],
       images: post.image ? [post.image] : [],
@@ -51,69 +55,72 @@ export async function generateMetadata({
       title: post.title,
       description: post.excerpt,
     },
+    alternates: {
+      canonical: postUrl,
+    },
   };
 }
 
 const mdxComponents = {
   h1: (props: React.HTMLAttributes<HTMLHeadingElement>) => (
-    <h1 className="text-3xl font-bold mt-10 mb-4 scroll-mt-24" {...props} />
+    <h1 className="text-2xl sm:text-3xl font-bold mt-8 sm:mt-10 mb-4 scroll-mt-24 break-words" {...props} />
   ),
   h2: (props: React.HTMLAttributes<HTMLHeadingElement>) => (
     <h2
-      className="text-2xl font-semibold mt-10 mb-4 scroll-mt-24 pb-2 border-b"
+      className="text-xl sm:text-2xl font-semibold mt-8 sm:mt-10 mb-4 scroll-mt-24 pb-2 border-b break-words"
       {...props}
     />
   ),
   h3: (props: React.HTMLAttributes<HTMLHeadingElement>) => (
-    <h3 className="text-xl font-semibold mt-8 mb-3 scroll-mt-24" {...props} />
+    <h3 className="text-lg sm:text-xl font-semibold mt-6 sm:mt-8 mb-3 scroll-mt-24 break-words" {...props} />
   ),
   h4: (props: React.HTMLAttributes<HTMLHeadingElement>) => (
-    <h4 className="text-lg font-semibold mt-6 mb-2 scroll-mt-24" {...props} />
+    <h4 className="text-base sm:text-lg font-semibold mt-5 sm:mt-6 mb-2 scroll-mt-24 break-words" {...props} />
   ),
   p: (props: React.HTMLAttributes<HTMLParagraphElement>) => (
-    <p className="mb-5 leading-relaxed text-foreground/90" {...props} />
+    <p className="mb-5 leading-relaxed text-foreground/90 break-words" {...props} />
   ),
   ul: (props: React.HTMLAttributes<HTMLUListElement>) => (
-    <ul className="list-disc pl-6 mb-5 space-y-2" {...props} />
+    <ul className="list-disc pl-4 sm:pl-6 mb-5 space-y-2" {...props} />
   ),
   ol: (props: React.HTMLAttributes<HTMLOListElement>) => (
-    <ol className="list-decimal pl-6 mb-5 space-y-2" {...props} />
+    <ol className="list-decimal pl-4 sm:pl-6 mb-5 space-y-2" {...props} />
   ),
   li: (props: React.HTMLAttributes<HTMLLIElement>) => (
-    <li className="leading-relaxed" {...props} />
+    <li className="leading-relaxed break-words" {...props} />
   ),
   a: (props: React.AnchorHTMLAttributes<HTMLAnchorElement>) => (
     <a
-      className="text-primary hover:underline underline-offset-4"
+      className="text-primary hover:underline underline-offset-4 break-words"
       suppressHydrationWarning
       {...props}
     />
   ),
   blockquote: (props: React.HTMLAttributes<HTMLQuoteElement>) => (
     <blockquote
-      className="border-l-4 border-primary/50 pl-6 py-2 my-6 text-muted-foreground italic bg-muted/30 rounded-r-lg"
+      className="border-l-4 border-primary/50 pl-4 sm:pl-6 py-2 my-6 text-muted-foreground italic bg-muted/30 rounded-r-lg"
       {...props}
     />
   ),
   code: (props: React.HTMLAttributes<HTMLElement>) => (
     <code
-      className="bg-zinc-100 dark:bg-zinc-800 px-1.5 py-0.5 rounded text-sm font-mono text-zinc-800 dark:text-zinc-200"
+      className="bg-zinc-100 dark:bg-zinc-800 px-1.5 py-0.5 rounded text-sm font-mono text-zinc-800 dark:text-zinc-200 break-words"
       {...props}
     />
   ),
   pre: (props: React.HTMLAttributes<HTMLPreElement>) => (
     <pre
-      className="bg-zinc-100 dark:bg-zinc-900 text-zinc-800 dark:text-zinc-100 p-4 rounded-xl overflow-x-auto mb-6 text-sm border border-zinc-200 dark:border-zinc-800"
+      className="bg-zinc-100 dark:bg-zinc-900 text-zinc-800 dark:text-zinc-100 p-3 sm:p-4 rounded-xl overflow-x-auto mb-6 text-xs sm:text-sm border border-zinc-200 dark:border-zinc-800 max-w-full"
       {...props}
     />
   ),
   hr: () => <hr className="my-8 border-muted" />,
   img: (props: React.ImgHTMLAttributes<HTMLImageElement>) => (
     // eslint-disable-next-line @next/next/no-img-element
-    <img className="rounded-xl my-6 w-full" alt={props.alt || ""} {...props} />
+    <img className="rounded-xl my-6 w-full max-w-full h-auto" alt={props.alt || ""} {...props} />
   ),
   table: (props: React.TableHTMLAttributes<HTMLTableElement>) => (
-    <div className="overflow-x-auto mb-6">
+    <div className="overflow-x-auto mb-6 max-w-full">
       <table
         className="w-full border-collapse border border-muted"
         {...props}
@@ -170,6 +177,9 @@ export default async function BlogPostPage({ params }: PageProps) {
   const otherPosts = await getOtherPosts(slug);
 
   // JSON-LD structured data for SEO
+  const baseUrl = process.env.BASE_URL || "";
+  const postUrl = `${baseUrl}/blog/${slug}`;
+
   const jsonLd = {
     "@context": "https://schema.org",
     "@type": "BlogPosting",
@@ -179,13 +189,26 @@ export default async function BlogPostPage({ params }: PageProps) {
     author: {
       "@type": "Person",
       name: post.author.name,
+      url: baseUrl,
     },
     publisher: {
       "@type": "Person",
       name: "Chirag Talpada",
+      url: baseUrl,
     },
-    url: `https://chiragtalpada.dev/blog/${slug}`,
-    image: post.image,
+    url: postUrl,
+    mainEntityOfPage: {
+      "@type": "WebPage",
+      "@id": postUrl,
+    },
+    ...(post.image && {
+      image: {
+        "@type": "ImageObject",
+        url: post.image.startsWith("http")
+          ? post.image
+          : `${baseUrl}${post.image}`,
+      },
+    }),
     keywords: post.tags.join(", "),
   };
 
@@ -200,7 +223,7 @@ export default async function BlogPostPage({ params }: PageProps) {
       <ReadingProgress />
 
       <article
-        className="min-h-screen"
+        className="min-h-screen overflow-x-hidden"
         itemScope
         itemType="https://schema.org/BlogPosting"
       >
@@ -304,12 +327,12 @@ export default async function BlogPostPage({ params }: PageProps) {
 
         {/* Main Content with TOC */}
         <Section className="py-8 md:py-12">
-          <div className="max-w-6xl mx-auto">
-            <div className="grid lg:grid-cols-[1fr_280px] gap-12">
+          <div className="max-w-6xl mx-auto w-full">
+            <div className="grid lg:grid-cols-[1fr_280px] gap-6 lg:gap-12">
               {/* Content */}
               <BlurFade delay={0.15} inView>
                 <div
-                  className="prose prose-lg dark:prose-invert max-w-none"
+                  className="prose prose-sm sm:prose-lg dark:prose-invert max-w-none w-full overflow-hidden break-words"
                   itemProp="articleBody"
                 >
                   <MDXRemote

@@ -6,6 +6,8 @@ import { BottomNav } from "@/components/layout/bottom-nav";
 import { PersonJsonLd, WebsiteJsonLd, WorkExperienceJsonLd, EducationJsonLd } from "@/components/seo/json-ld";
 import "./globals.css";
 
+const baseUrl = process.env.BASE_URL || "";
+
 const geistSans = Geist({
   variable: "--font-geist-sans",
   subsets: ["latin"],
@@ -28,7 +30,7 @@ export const viewport: Viewport = {
 };
 
 export const metadata: Metadata = {
-  metadataBase: new URL("https://chiragtalpada.dev"),
+  metadataBase: new URL(baseUrl || "https://chiragtalpada.dev"),
   title: {
     default: "Chirag Talpada | Full Stack Developer",
     template: "%s | Chirag Talpada",
@@ -113,7 +115,7 @@ export default function RootLayout({
         <PersonJsonLd
           name="Chirag Talpada"
           jobTitle="Full Stack Developer"
-          url="https://chiragtalpada.dev"
+          url={baseUrl}
           worksFor="eSparkBiz"
           sameAs={[
             "https://github.com/chiragtalpada",
@@ -123,11 +125,11 @@ export default function RootLayout({
         />
         <WebsiteJsonLd
           name="Chirag Talpada Portfolio"
-          url="https://chiragtalpada.dev"
+          url={baseUrl}
           description="Full Stack Developer portfolio showcasing web development and AI projects"
         />
-        <WorkExperienceJsonLd />
-        <EducationJsonLd />
+        <WorkExperienceJsonLd baseUrl={baseUrl} />
+        <EducationJsonLd baseUrl={baseUrl} />
       </head>
       <body
         className={`${geistSans.variable} ${geistMono.variable} font-sans antialiased`}

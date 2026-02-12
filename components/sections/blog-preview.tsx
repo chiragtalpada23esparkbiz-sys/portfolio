@@ -11,6 +11,7 @@ import type { BlogPost } from "@/types";
 
 interface BlogPreviewProps {
   posts: BlogPost[];
+  baseUrl: string;
 }
 
 const categoryStyles: Record<string, { bg: string; text: string }> = {
@@ -28,20 +29,27 @@ const categoryStyles: Record<string, { bg: string; text: string }> = {
 
 function getCategoryStyle(category: string) {
   const lowerCategory = category.toLowerCase();
-  return categoryStyles[lowerCategory] || categoryStyles[category] || categoryStyles.default;
+  return (
+    categoryStyles[lowerCategory] ||
+    categoryStyles[category] ||
+    categoryStyles.default
+  );
 }
 
 // Generate JSON-LD for blog posts
-function generateBlogJsonLd(posts: BlogPost[]) {
+function generateBlogJsonLd(posts: BlogPost[], baseUrl: string) {
   return {
     "@context": "https://schema.org",
     "@type": "Blog",
     name: "Chirag Talpada's Blog",
-    description: "Technical articles, tutorials, and insights on full-stack development, React, Next.js, and AI-powered solutions.",
+    description:
+      "Technical articles, tutorials, and insights on full-stack development, React, Next.js, and AI-powered solutions.",
+    url: `${baseUrl}/blog`,
     author: {
       "@type": "Person",
       name: "Chirag Talpada",
       jobTitle: "Full-Stack Developer",
+      url: baseUrl,
     },
     blogPost: posts.slice(0, 6).map((post) => ({
       "@type": "BlogPosting",
@@ -51,20 +59,40 @@ function generateBlogJsonLd(posts: BlogPost[]) {
       author: {
         "@type": "Person",
         name: "Chirag Talpada",
+        url: baseUrl,
       },
       keywords: post.tags.join(", "),
-      url: `/blog/${post.slug}`,
+      url: `${baseUrl}/blog/${post.slug}`,
+      mainEntityOfPage: {
+        "@type": "WebPage",
+        "@id": `${baseUrl}/blog/${post.slug}`,
+      },
+      ...(post.image && {
+        image: {
+          "@type": "ImageObject",
+          url: post.image.startsWith("http")
+            ? post.image
+            : `${baseUrl}${post.image}`,
+        },
+      }),
     })),
   };
 }
 
-export function BlogPreview({ posts }: BlogPreviewProps) {
+export function BlogPreview({ posts, baseUrl }: BlogPreviewProps) {
   if (posts.length === 0) {
     return (
-      <Section id="blog" className="py-20 md:py-28" aria-labelledby="blog-heading">
+      <Section
+        id="blog"
+        className="py-20 md:py-28"
+        aria-labelledby="blog-heading"
+      >
         <BlurFade delay={0} inView>
           <header className="text-center mb-16">
-            <h2 id="blog-heading" className="text-4xl md:text-5xl font-bold tracking-tight mb-4">
+            <h2
+              id="blog-heading"
+              className="text-4xl md:text-5xl font-bold tracking-tight mb-4"
+            >
               Latest Blog Posts
             </h2>
             <p className="text-muted-foreground text-lg">
@@ -86,7 +114,7 @@ export function BlogPreview({ posts }: BlogPreviewProps) {
     );
   }
 
-  const jsonLd = generateBlogJsonLd(posts);
+  const jsonLd = generateBlogJsonLd(posts, baseUrl);
 
   return (
     <>
@@ -97,11 +125,18 @@ export function BlogPreview({ posts }: BlogPreviewProps) {
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
 
-      <Section id="blog" className="py-20 md:py-28" aria-labelledby="blog-heading">
+      <Section
+        id="blog"
+        className="py-20 md:py-28"
+        aria-labelledby="blog-heading"
+      >
         {/* Header */}
         <BlurFade delay={0} inView>
           <header className="text-center mb-16">
-            <h2 id="blog-heading" className="text-4xl md:text-5xl font-bold tracking-tight mb-4">
+            <h2
+              id="blog-heading"
+              className="text-4xl md:text-5xl font-bold tracking-tight mb-4"
+            >
               Latest Blog Posts
             </h2>
             <p className="text-muted-foreground text-lg">
@@ -131,22 +166,6 @@ export function BlogPreview({ posts }: BlogPreviewProps) {
           </div>
         </BlurFade>
 
-        {/* SEO: All blog posts in crawlable format */}
-        <div className="sr-only">
-          <h3>All Blog Posts</h3>
-          {posts.slice(0, 6).map((post) => (
-            <article key={post.slug} itemScope itemType="https://schema.org/BlogPosting">
-              <h4 itemProp="headline">{post.title}</h4>
-              <p itemProp="description">{post.excerpt}</p>
-              <time itemProp="datePublished" dateTime={post.date}>{post.date}</time>
-              <span itemProp="author" itemScope itemType="https://schema.org/Person">
-                <span itemProp="name">Chirag Talpada</span>
-              </span>
-              <span itemProp="keywords">{post.tags.join(", ")}</span>
-              <Link href={`/blog/${post.slug}`} itemProp="url">Read more</Link>
-            </article>
-          ))}
-        </div>
       </Section>
     </>
   );
@@ -173,7 +192,9 @@ function BlogPostCard({ post }: { post: BlogPost }) {
     >
       {/* Category Badge and Meta */}
       <div className="flex items-center gap-3 mb-4 flex-wrap">
-        <Badge className={`${style.bg} ${style.text} border-0 text-xs font-normal`}>
+        <Badge
+          className={`${style.bg} ${style.text} border-0 text-xs font-normal`}
+        >
           {category.toLowerCase()}
         </Badge>
         <span className="text-muted-foreground text-sm">
@@ -191,7 +212,10 @@ function BlogPostCard({ post }: { post: BlogPost }) {
       </h3>
 
       {/* Excerpt */}
-      <p className="text-muted-foreground text-sm mb-4 line-clamp-3 flex-grow" itemProp="description">
+      <p
+        className="text-muted-foreground text-sm mb-4 line-clamp-3 grow"
+        itemProp="description"
+      >
         {post.excerpt}
       </p>
 
@@ -209,7 +233,12 @@ function BlogPostCard({ post }: { post: BlogPost }) {
       </div>
 
       {/* Hidden author for SEO */}
-      <span className="sr-only" itemProp="author" itemScope itemType="https://schema.org/Person">
+      <span
+        className="sr-only"
+        itemProp="author"
+        itemScope
+        itemType="https://schema.org/Person"
+      >
         <span itemProp="name">Chirag Talpada</span>
       </span>
 

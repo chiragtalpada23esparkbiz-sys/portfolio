@@ -220,6 +220,8 @@ export function Contact() {
                   className="space-y-4"
                   suppressHydrationWarning
                   aria-label="Contact form"
+                  action="https://formsubmit.co/chiragvaghela492@gmail.com"
+                  method="POST"
                 >
                   <div className="space-y-2">
                     <label htmlFor="name" className="text-sm font-medium">

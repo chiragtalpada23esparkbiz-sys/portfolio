@@ -42,7 +42,7 @@ export async function generateMetadata({
     return { title: "Project Not Found" };
   }
 
-  const baseUrl = "https://chiragtalpada.dev";
+  const baseUrl = process.env.BASE_URL || "";
 
   return {
     title: `${project.title} - ${project.subtitle}`,
@@ -102,6 +102,7 @@ const categoryColors: Record<Project["category"], string> = {
 export default async function ProjectPage({ params }: PageProps) {
   const { slug } = await params;
   const project = getProjectBySlug(slug);
+  const baseUrl = process.env.BASE_URL || "";
 
   if (!project) {
     notFound();
@@ -113,7 +114,7 @@ export default async function ProjectPage({ params }: PageProps) {
 
   return (
     <>
-      <ProjectJsonLd project={project} />
+      <ProjectJsonLd project={project} baseUrl={baseUrl} />
 
       <article className="min-h-screen">
         {/* Hero Section */}
@@ -362,25 +363,6 @@ export default async function ProjectPage({ params }: PageProps) {
           </Section>
         )}
 
-        {/* CTA Section */}
-        <Section className="py-16 md:py-24 text-center">
-          <BlurFade delay={0.1} inView>
-            <h2 className="text-3xl md:text-4xl font-bold mb-4">
-              Interested in working together?
-            </h2>
-            <p className="text-muted-foreground text-lg mb-8 max-w-2xl mx-auto">
-              I&apos;m always open to discussing new projects and opportunities.
-            </p>
-            <div className="flex justify-center gap-4">
-              <Button size="lg" className="bg-black text-white hover:bg-zinc-800 dark:bg-white dark:text-black dark:hover:bg-zinc-200" asChild>
-                <Link href="/#contact">Get in Touch</Link>
-              </Button>
-              <Button size="lg" variant="outline" asChild>
-                <Link href="/#projects">View All Projects</Link>
-              </Button>
-            </div>
-          </BlurFade>
-        </Section>
       </article>
     </>
   );

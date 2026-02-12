@@ -8,6 +8,8 @@ import { BlurFade } from "@/components/ui/blur-fade";
 import { Calendar, Clock, ArrowLeft, ArrowRight, BookOpen } from "lucide-react";
 import type { BlogPost } from "@/types";
 
+const baseUrl = process.env.BASE_URL || "";
+
 export const metadata: Metadata = {
   title: "Blog | Chirag Talpada",
   description:
@@ -17,6 +19,10 @@ export const metadata: Metadata = {
     description:
       "Thoughts, tutorials, and insights on web development, AI, and software engineering.",
     type: "website",
+    url: `${baseUrl}/blog`,
+  },
+  alternates: {
+    canonical: `${baseUrl}/blog`,
   },
 };
 
@@ -40,10 +46,11 @@ export default async function BlogPage() {
     name: "Chirag Talpada's Blog",
     description:
       "Thoughts, tutorials, and insights on web development, AI, and software engineering.",
-    url: "https://chiragtalpada.com/blog",
+    url: `${baseUrl}/blog`,
     author: {
       "@type": "Person",
       name: "Chirag Talpada",
+      url: baseUrl,
     },
     blogPost: posts.map((post) => ({
       "@type": "BlogPosting",
@@ -53,8 +60,22 @@ export default async function BlogPage() {
       author: {
         "@type": "Person",
         name: post.author.name,
+        url: baseUrl,
       },
-      url: `https://chiragtalpada.com/blog/${post.slug}`,
+      keywords: post.tags.join(", "),
+      url: `${baseUrl}/blog/${post.slug}`,
+      mainEntityOfPage: {
+        "@type": "WebPage",
+        "@id": `${baseUrl}/blog/${post.slug}`,
+      },
+      ...(post.image && {
+        image: {
+          "@type": "ImageObject",
+          url: post.image.startsWith("http")
+            ? post.image
+            : `${baseUrl}${post.image}`,
+        },
+      }),
     })),
   };
 
@@ -152,18 +173,6 @@ export default async function BlogPage() {
                 </BlurFade>
               )}
 
-              {/* Hidden content for SEO crawlers */}
-              <div className="sr-only">
-                {posts.map((post) => (
-                  <div key={post.slug}>
-                    <h3>{post.title}</h3>
-                    <p>{post.excerpt}</p>
-                    <span>Tags: {post.tags.join(", ")}</span>
-                    <span>By {post.author.name}</span>
-                    <span>Published on {post.date}</span>
-                  </div>
-                ))}
-              </div>
             </>
           )}
         </Section>

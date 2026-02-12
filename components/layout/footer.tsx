@@ -28,11 +28,11 @@ const socialLinks = [
 ];
 
 const navLinks = [
-  { href: "#about", label: "About" },
-  { href: "#experience", label: "Experience" },
-  { href: "#projects", label: "Projects" },
+  { href: "/#about", label: "About" },
+  { href: "/#experience", label: "Experience" },
+  { href: "/#projects", label: "Projects" },
   { href: "/blog", label: "Blog" },
-  { href: "#contact", label: "Contact" },
+  { href: "/#contact", label: "Contact" },
 ];
 
 export function Footer() {
@@ -43,10 +43,12 @@ export function Footer() {
   if (isBlogPage) {
     return (
       <footer className="border-t bg-muted/30">
-        <div className="container mx-auto px-4 md:px-6 py-8">
-          <p className="text-center text-sm text-muted-foreground">
-            &copy; {new Date().getFullYear()} Chirag Talpada
+        <div className="container mx-auto px-4 md:px-6 py-8 text-center text-sm text-muted-foreground">
+          <p>
+            &copy; {new Date().getFullYear()} Chirag Talpada. All rights
+            reserved.
           </p>
+          <p className="mt-1">Always learning. Always building.</p>
         </div>
       </footer>
     );
