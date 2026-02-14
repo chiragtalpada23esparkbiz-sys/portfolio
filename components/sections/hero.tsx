@@ -3,7 +3,14 @@
 import * as React from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { Mail, MapPin, CheckCircle, Download } from "lucide-react";
+import {
+  Mail,
+  MapPin,
+  CheckCircle,
+  Download,
+  MessageCircle,
+} from "lucide-react";
+import { useChat } from "@/components/chat/chat-context";
 import { Button } from "@/components/ui/button";
 import { InteractiveGrid } from "@/components/ui/interactive-grid";
 import { BlurFade } from "@/components/ui/blur-fade";
@@ -18,6 +25,7 @@ const roles = [
 export function Hero() {
   const [currentRoleIndex, setCurrentRoleIndex] = React.useState(0);
   const [key, setKey] = React.useState(0);
+  const { openChat } = useChat();
 
   React.useEffect(() => {
     const interval = setInterval(() => {
@@ -34,7 +42,10 @@ export function Hero() {
       className="relative min-h-fit lg:min-h-[calc(100vh-4rem)] lg-short:min-h-fit flex items-start lg:items-center overflow-hidden group/hero"
     >
       {/* Interactive Grid Background */}
-      <div className="absolute inset-0 -z-10 pointer-events-auto" aria-hidden="true">
+      <div
+        className="absolute inset-0 -z-10 pointer-events-auto"
+        aria-hidden="true"
+      >
         <InteractiveGrid />
       </div>
 
@@ -74,9 +85,9 @@ export function Hero() {
               <p className="text-muted-foreground text-base sm:text-lg lg:text-base xl:text-lg md-short:text-base lg-short:text-sm max-w-2xl leading-relaxed">
                 JavaScript-enthusiastic full-stack developer with 3+ years of
                 experience building scalable web applications and AI-powered
-                products. I specialize in React and Next.js on the frontend, build
-                reliable backend systems with Node.js, and integrate AI agents,
-                RAG-based chatbots, and automation workflows to deliver
+                products. I specialize in React and Next.js on the frontend,
+                build reliable backend systems with Node.js, and integrate AI
+                agents, RAG-based chatbots, and automation workflows to deliver
                 production-ready solutions on modern cloud architectures. I also
                 leverage tools like Cursor, ChatGPT, and Claude Code to boost
                 development productivity.
@@ -85,7 +96,10 @@ export function Hero() {
 
             {/* Social Buttons */}
             <BlurFade delay={0.3} direction="up">
-              <nav aria-label="Social links and actions" className="flex flex-wrap gap-2 sm:gap-3 lg:gap-2 md-short:gap-2">
+              <nav
+                aria-label="Social links and actions"
+                className="flex flex-wrap gap-2 sm:gap-3 lg:gap-2 md-short:gap-2"
+              >
                 <Button
                   variant="outline"
                   size="default"
@@ -147,14 +161,19 @@ export function Hero() {
               <address className="not-italic flex flex-wrap items-center gap-3 sm:gap-6 lg:gap-4 md-short:gap-4 lg-short:gap-3 text-xs sm:text-sm md-short:text-sm lg-short:text-xs text-muted-foreground pt-2 lg:pt-2 md-short:pt-1 lg-short:pt-1">
                 <div className="hidden sm:flex items-center gap-2">
                   <Mail className="h-4 w-4" aria-hidden="true" />
-                  <a href="mailto:chiragtalpada0227@gmail.com">chiragtalpada0227@gmail.com</a>
+                  <a href="mailto:chiragtalpada0227@gmail.com">
+                    chiragtalpada0227@gmail.com
+                  </a>
                 </div>
                 <div className="flex items-center gap-2">
                   <MapPin className="h-4 w-4 text-red-500" aria-hidden="true" />
                   <span>Gujarat, India</span>
                 </div>
                 <div className="flex items-center gap-2">
-                  <CheckCircle className="h-4 w-4 text-green-500" aria-hidden="true" />
+                  <CheckCircle
+                    className="h-4 w-4 text-green-500"
+                    aria-hidden="true"
+                  />
                   <span>Available for work</span>
                 </div>
               </address>
@@ -166,7 +185,10 @@ export function Hero() {
             <div className="relative flex justify-center lg:justify-end">
               <figure className="relative">
                 {/* Online Badge */}
-                <div className="absolute top-4 right-4 z-10 flex items-center gap-2 px-3 py-1.5 rounded-full bg-foreground text-background text-sm font-medium" aria-label="Status: Online">
+                <div
+                  className="absolute top-4 right-4 z-10 flex items-center gap-2 px-3 py-1.5 rounded-full bg-foreground text-background text-sm font-medium"
+                  aria-label="Status: Online"
+                >
                   <span className="relative flex h-2 w-2" aria-hidden="true">
                     <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
                     <span className="relative inline-flex rounded-full h-2 w-2 bg-green-500"></span>
@@ -174,20 +196,43 @@ export function Hero() {
                   Online
                 </div>
 
-                {/* Profile Image Container */}
-                <div className="hover:shadow-2xl relative w-70 h-87.5 sm:w-[320px] sm:h-100 md:w-90 md:h-112.5 lg:w-95 lg:h-118.75 xl:w-105 xl:h-131.25 md-short:w-70 md-short:h-87.5 lg-short:w-[320px] lg-short:h-100 lg:max-h-[calc(100vh-8rem)] rounded-2xl shadow-2xl aspect-4/5 overflow-hidden">
+                {/* Profile Image Container with Chat Overlay */}
+                <button
+                  suppressHydrationWarning
+                  onClick={openChat}
+                  className="group/chat relative w-70 h-87.5 sm:w-[320px] sm:h-100 md:w-90 md:h-112.5 lg:w-95 lg:h-118.75 xl:w-105 xl:h-131.25 md-short:w-70 md-short:h-87.5 lg-short:w-[320px] lg-short:h-100 lg:max-h-[calc(100vh-8rem)] rounded-2xl shadow-2xl aspect-4/5 overflow-hidden cursor-pointer focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2"
+                  aria-label="Chat with my AI Assistant"
+                >
                   <Image
                     src="/face_shot.webp"
                     alt="Chirag Talpada - Full Stack JavaScript Developer specializing in React, Next.js, Node.js, and AI-powered solutions"
                     fill
-                    className="object-cover z-0"
+                    className="object-cover z-0 transition-all duration-300 group-hover/chat:scale-105 group-hover/chat:blur-[2px]"
                     priority
                     fetchPriority="high"
                     sizes="(max-width: 768px) 320px, (max-width: 1024px) 360px, (max-width: 1280px) 380px, 420px"
                     quality={80}
                   />
-                </div>
-                <figcaption className="sr-only">Profile photo of Chirag Talpada</figcaption>
+
+                  {/* Hover Overlay */}
+                  <div className="absolute inset-0 bg-black/60 opacity-0 group-hover/chat:opacity-100 transition-opacity duration-300 flex flex-col items-center justify-center text-white z-10">
+                    <div className="transform translate-y-4 group-hover/chat:translate-y-0 transition-transform duration-300">
+                      <MessageCircle
+                        className="h-12 w-12 mx-auto mb-4"
+                        strokeWidth={1.5}
+                      />
+                      <p className="text-xl font-semibold mb-1">
+                        Chat with my AI assistant
+                      </p>
+                      <p className="text-sm text-white/70">
+                        Ask anything about me
+                      </p>
+                    </div>
+                  </div>
+                </button>
+                <figcaption className="sr-only">
+                  Profile photo of Chirag Talpada
+                </figcaption>
               </figure>
             </div>
           </BlurFade>

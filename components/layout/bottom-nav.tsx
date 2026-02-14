@@ -22,6 +22,7 @@ import {
 } from "lucide-react";
 import { useTheme } from "next-themes";
 import { cn } from "@/lib/utils";
+import { useChat } from "@/components/chat/chat-context";
 
 const navItems = [
   { href: "#", icon: Home, label: "Home", priority: true },
@@ -51,30 +52,13 @@ const navItems = [
   { href: "#contact", icon: Mail, label: "Contact", priority: true },
 ];
 
-const sectionMessages: Record<string, string> = {
-  "": "Hey! I'm Chirag. Let me show you around!",
-  hero: "Hey! I'm Chirag. Let me show you around!",
-  about: "Here's a bit about my journey.",
-  experience: "I've worked with some amazing teams.",
-  education: "My academic background.",
-  "tech-stack": "These are my tools of choice.",
-  projects: "Check out what I've built!",
-  achievements: "Recognition for my contributions.",
-  testimonials: "Hear from people I've worked with.",
-  blog: "Insights and tutorials.",
-  contact: "Let's connect and build something!",
-};
-
 export function BottomNav() {
   const pathname = usePathname();
   const [activeSection, setActiveSection] = React.useState("");
-  const [prevSection, setPrevSection] = React.useState("");
-  const [showMessage, setShowMessage] = React.useState(true);
-  const [isHovering, setIsHovering] = React.useState(false);
   const [mounted, setMounted] = React.useState(false);
   const [showMoreMenu, setShowMoreMenu] = React.useState(false);
   const { setTheme, resolvedTheme } = useTheme();
-  const timeoutRef = React.useRef<NodeJS.Timeout | null>(null);
+  const { openChat } = useChat();
   const moreMenuDesktopRef = React.useRef<HTMLDivElement>(null);
   const moreMenuMobileRef = React.useRef<HTMLDivElement>(null);
 
@@ -126,34 +110,6 @@ export function BottomNav() {
     handleScroll();
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
-
-  // Show message when section changes
-  React.useEffect(() => {
-    if (activeSection !== prevSection) {
-      setPrevSection(activeSection);
-      setShowMessage(true);
-
-      // Clear any existing timeout
-      if (timeoutRef.current) {
-        clearTimeout(timeoutRef.current);
-      }
-
-      // Auto-hide after 4 seconds if not hovering
-      timeoutRef.current = setTimeout(() => {
-        if (!isHovering) {
-          setShowMessage(false);
-        }
-      }, 4000);
-    }
-
-    return () => {
-      if (timeoutRef.current) {
-        clearTimeout(timeoutRef.current);
-      }
-    };
-  }, [activeSection, prevSection, isHovering]);
-
-  const currentMessage = sectionMessages[activeSection] || sectionMessages[""];
 
   const handleNavClick = (href: string) => {
     const targetId = href === "#" ? "hero" : href.slice(1);
@@ -377,31 +333,25 @@ export function BottomNav() {
 
       {/* Assistant Button - Mobile Only (Bottom Right) */}
       <div className="fixed bottom-4 right-4 z-50 sm:hidden">
-        <div className="relative">
-          <div
-            className={cn(
-              "absolute bottom-full right-0 mb-2 px-3 py-2 rounded-lg bg-white/90 dark:bg-zinc-800/90 backdrop-blur-md text-zinc-900 dark:text-white text-xs font-medium shadow-xl border border-zinc-200 dark:border-zinc-700 whitespace-nowrap transition-all duration-300",
-              showMessage
-                ? "opacity-100 translate-y-0"
-                : "opacity-0 translate-y-2 pointer-events-none",
-            )}
-          >
-            {currentMessage}
+        <div className="relative group/assistant">
+          {/* Hover tooltip */}
+          <div className="absolute bottom-full right-0 mb-2 px-3 py-2 rounded-lg bg-white/95 dark:bg-zinc-800/95 backdrop-blur-md text-zinc-900 dark:text-white text-xs font-medium shadow-xl border border-zinc-200 dark:border-zinc-700 whitespace-nowrap opacity-0 group-hover/assistant:opacity-100 transition-all duration-300 pointer-events-none">
+            Chat with my AI assistant
             <div className="absolute -bottom-1 right-3 w-2 h-2 bg-white dark:bg-zinc-800 border-b border-r border-zinc-200 dark:border-zinc-700 rotate-45" />
           </div>
 
           <button
-            className="relative w-10 h-10 rounded-full bg-linear-to-br from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 transition-all shadow-lg overflow-hidden"
-            aria-label="Open assistant"
-            onClick={() => setShowMessage(!showMessage)}
+            className="group/btn relative w-12 h-12 rounded-full bg-linear-to-br from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 transition-all shadow-lg hover:shadow-xl hover:scale-110 overflow-hidden ring-2 ring-purple-400/50 hover:ring-purple-400 animate-[bump_2s_ease-in-out_infinite]"
+            aria-label="Chat with AI Assistant"
+            onClick={openChat}
             suppressHydrationWarning
           >
             <Image
               src="/assistent_bot.webp"
               alt="AI Assistant"
               fill
-              className="object-cover"
-              sizes="40px"
+              className="object-cover transition-transform duration-300 group-hover/btn:scale-110"
+              sizes="48px"
             />
           </button>
         </div>
@@ -409,19 +359,6 @@ export function BottomNav() {
 
       {/* Right side controls - DESKTOP ONLY */}
       <div className="hidden sm:flex fixed bottom-6 right-6 items-center gap-3">
-        {/* Assistant Message Tooltip - Desktop */}
-        <div
-          className={cn(
-            "absolute bottom-full right-0 mb-3 px-4 py-2 rounded-lg bg-white dark:bg-zinc-800 text-zinc-900 dark:text-white text-sm font-medium shadow-xl border border-zinc-200 dark:border-zinc-700 whitespace-nowrap transition-all duration-300",
-            showMessage
-              ? "opacity-100 translate-y-0"
-              : "opacity-0 translate-y-2 pointer-events-none",
-          )}
-        >
-          {currentMessage}
-          <div className="absolute -bottom-1 right-8 w-2 h-2 bg-white dark:bg-zinc-800 border-b border-r border-zinc-200 dark:border-zinc-700 rotate-45" />
-        </div>
-
         {/* Dark Mode Toggle - Desktop */}
         <div className="relative group">
           <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-3 px-3 py-1.5 rounded-lg bg-white dark:bg-zinc-800 text-zinc-900 dark:text-white text-xs font-medium shadow-lg border border-zinc-200 dark:border-zinc-700 whitespace-nowrap opacity-0 group-hover:opacity-100 transition-all duration-200 pointer-events-none">
@@ -446,27 +383,31 @@ export function BottomNav() {
         </div>
 
         {/* Assistant Button - Desktop */}
-        <button
-          className="relative w-12 h-12 rounded-full bg-linear-to-br from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 transition-all shadow-2xl overflow-hidden"
-          aria-label="Open assistant"
-          onMouseEnter={() => {
-            setIsHovering(true);
-            setShowMessage(true);
-          }}
-          onMouseLeave={() => {
-            setIsHovering(false);
-          }}
-          onClick={() => setShowMessage(!showMessage)}
-          suppressHydrationWarning
-        >
-          <Image
-            src="/assistent_bot.webp"
-            alt="AI Assistant"
-            fill
-            className="object-cover"
-            sizes="48px"
-          />
-        </button>
+        <div className="relative group/assistant">
+          {/* Hover tooltip */}
+          <div className="absolute bottom-full right-0 mb-3 px-4 py-2.5 rounded-xl bg-white/95 dark:bg-zinc-800/95 backdrop-blur-md text-zinc-900 dark:text-white shadow-xl border border-zinc-200 dark:border-zinc-700 whitespace-nowrap opacity-0 group-hover/assistant:opacity-100 transition-all duration-300 pointer-events-none">
+            <p className="text-sm font-semibold">Chat with my AI assistant</p>
+            <p className="text-xs text-zinc-500 dark:text-zinc-400">
+              Ask anything about me
+            </p>
+            <div className="absolute -bottom-1 right-4 w-2 h-2 bg-white dark:bg-zinc-800 border-b border-r border-zinc-200 dark:border-zinc-700 rotate-45" />
+          </div>
+
+          <button
+            className="group/btn relative w-14 h-14 rounded-full bg-linear-to-br from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 transition-all duration-300 shadow-2xl hover:shadow-purple-500/25 hover:scale-110 overflow-hidden ring-2 ring-purple-400/50 hover:ring-purple-400 animate-[bump_2s_ease-in-out_infinite]"
+            aria-label="Chat with AI Assistant"
+            onClick={openChat}
+            suppressHydrationWarning
+          >
+            <Image
+              src="/assistent_bot.webp"
+              alt="AI Assistant"
+              fill
+              className="object-cover transition-transform duration-300 group-hover/btn:scale-110"
+              sizes="56px"
+            />
+          </button>
+        </div>
       </div>
     </div>
   );

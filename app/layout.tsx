@@ -9,6 +9,8 @@ import {
   WorkExperienceJsonLd,
   EducationJsonLd,
 } from "@/components/seo/json-ld";
+import { ChatProvider } from "@/components/chat/chat-context";
+import { ChatModal } from "@/components/chat/chat-modal";
 import "./globals.css";
 import { Toaster } from "@/components/ui/sonner";
 
@@ -147,10 +149,13 @@ export default function RootLayout({
           enableSystem
           disableTransitionOnChange
         >
-          <main className="min-h-screen">{children}</main>
-          <Footer />
-          <BottomNav />
-          <Toaster />
+          <ChatProvider>
+            <main className="min-h-screen">{children}</main>
+            <Footer />
+            <BottomNav />
+            <Toaster />
+            <ChatModal />
+          </ChatProvider>
         </ThemeProvider>
       </body>
     </html>
