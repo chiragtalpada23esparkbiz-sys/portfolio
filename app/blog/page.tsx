@@ -11,15 +11,31 @@ import type { BlogPost } from "@/types";
 const baseUrl = process.env.BASE_URL || "";
 
 export const metadata: Metadata = {
-  title: "Blog | Chirag Talpada",
+  title: "Blog - Web Development, AI & Software Engineering | Chirag Talpada",
   description:
-    "Thoughts, tutorials, and insights on web development, AI, and software engineering from Chirag Talpada.",
+    "Thoughts, tutorials, and insights on web development, AI, and software engineering from Chirag Talpada. Learn React, Next.js, TypeScript, and more.",
+  keywords: [
+    "web development blog",
+    "software engineering tutorials",
+    "React tutorials",
+    "Next.js guides",
+    "AI development",
+    "TypeScript tips",
+    "full stack developer blog",
+    "Chirag Talpada blog",
+  ],
   openGraph: {
-    title: "Blog | Chirag Talpada",
+    title: "Blog - Web Development & AI Insights | Chirag Talpada",
     description:
       "Thoughts, tutorials, and insights on web development, AI, and software engineering.",
     type: "website",
     url: `${baseUrl}/blog`,
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Blog - Web Development & AI Insights | Chirag Talpada",
+    description:
+      "Thoughts, tutorials, and insights on web development, AI, and software engineering.",
   },
   alternates: {
     canonical: `${baseUrl}/blog`,
@@ -172,7 +188,6 @@ export default async function BlogPage() {
                   </div>
                 </BlurFade>
               )}
-
             </>
           )}
         </Section>
