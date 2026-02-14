@@ -2,27 +2,28 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Github, Linkedin, Mail, Twitter } from "lucide-react";
+import { Linkedin, Mail } from "lucide-react";
+
+const XIcon = ({ className }: { className?: string }) => (
+  <svg viewBox="0 0 24 24" aria-hidden="true" className={className} fill="currentColor">
+    <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
+  </svg>
+);
 
 const socialLinks = [
   {
-    name: "GitHub",
-    href: "https://github.com/chiragtalpada",
-    icon: Github,
-  },
-  {
     name: "LinkedIn",
-    href: "https://linkedin.com/in/chiragtalpada",
+    href: "https://www.linkedin.com/in/chirag-talpada",
     icon: Linkedin,
   },
   {
     name: "Twitter",
-    href: "https://twitter.com/chiragtalpada",
-    icon: Twitter,
+    href: "https://x.com/CTalpada78529",
+    icon: XIcon,
   },
   {
     name: "Email",
-    href: "mailto:hello@chiragtalpada.dev",
+    href: "mailto:chiragtalpada0227@gmail.com",
     icon: Mail,
   },
 ];
@@ -75,8 +76,8 @@ export function Footer() {
 
           {/* Quick Links */}
           <div className="space-y-4">
-            <h3 className="font-semibold">Quick Links</h3>
-            <nav className="flex flex-col gap-2">
+            <h3 id="footer-nav-heading" className="font-semibold">Quick Links</h3>
+            <nav aria-labelledby="footer-nav-heading" className="flex flex-col gap-2">
               {navLinks.map((link) => (
                 <Link
                   key={link.href}
@@ -91,8 +92,8 @@ export function Footer() {
 
           {/* Social Links */}
           <div className="space-y-4">
-            <h3 className="font-semibold">Connect</h3>
-            <div className="flex gap-4">
+            <h3 id="footer-social-heading" className="font-semibold">Connect</h3>
+            <nav aria-labelledby="footer-social-heading" className="flex gap-4">
               {socialLinks.map((link) => (
                 <a
                   key={link.name}
@@ -100,12 +101,12 @@ export function Footer() {
                   target="_blank"
                   rel="noopener noreferrer"
                   className="text-muted-foreground hover:text-foreground transition-colors"
-                  aria-label={link.name}
+                  aria-label={`Follow on ${link.name}`}
                 >
                   <link.icon className="h-5 w-5" />
                 </a>
               ))}
-            </div>
+            </nav>
           </div>
         </div>
 

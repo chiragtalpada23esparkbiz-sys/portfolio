@@ -3,8 +3,14 @@ import { Geist, Geist_Mono } from "next/font/google";
 import { ThemeProvider } from "@/components/providers/theme-provider";
 import { Footer } from "@/components/layout/footer";
 import { BottomNav } from "@/components/layout/bottom-nav";
-import { PersonJsonLd, WebsiteJsonLd, WorkExperienceJsonLd, EducationJsonLd } from "@/components/seo/json-ld";
+import {
+  PersonJsonLd,
+  WebsiteJsonLd,
+  WorkExperienceJsonLd,
+  EducationJsonLd,
+} from "@/components/seo/json-ld";
 import "./globals.css";
+import { Toaster } from "@/components/ui/sonner";
 
 const baseUrl = process.env.BASE_URL || "";
 
@@ -144,6 +150,7 @@ export default function RootLayout({
           <main className="min-h-screen">{children}</main>
           <Footer />
           <BottomNav />
+          <Toaster />
         </ThemeProvider>
       </body>
     </html>

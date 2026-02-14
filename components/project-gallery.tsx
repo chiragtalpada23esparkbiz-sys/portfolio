@@ -41,31 +41,33 @@ export function ProjectGallery({ images }: ProjectGalleryProps) {
       <div className="grid md:grid-cols-2 gap-6">
         {images.map((image, index) => (
           <BlurFade key={index} delay={0.1 + index * 0.1} inView>
-          <figure
-            className="group relative rounded-xl overflow-hidden border shadow-lg cursor-pointer"
-            onClick={() => handleOpenModal(index)}
-          >
-            <div className="relative h-[240px] md:h-[280px] overflow-hidden">
-              <Image
-                src={image.src}
-                alt={image.alt}
-                fill
-                className="object-cover object-left-top transition-transform duration-300 group-hover:scale-105"
-                sizes="(max-width: 768px) 100vw, 50vw"
-              />
-              {/* Hover Overlay */}
-              <div className="absolute inset-0 bg-black/0 group-hover:bg-black/40 transition-colors duration-300 flex items-center justify-center">
-                <div className="opacity-0 group-hover:opacity-100 transition-opacity duration-300 p-3 rounded-full bg-white/20 backdrop-blur-sm">
-                  <Expand className="h-6 w-6 text-white" />
+            <figure
+              className="group relative rounded-xl overflow-hidden border shadow-lg cursor-pointer"
+              onClick={() => handleOpenModal(index)}
+            >
+              <div className="relative h-60 md:h-70 overflow-hidden">
+                <Image
+                  src={image.src}
+                  alt={image.alt}
+                  fill
+                  className="object-cover object-top-left transition-transform duration-300 group-hover:scale-105"
+                  sizes="(max-width: 768px) 100vw, 50vw"
+                />
+                {/* Hover Overlay */}
+                <div className="absolute inset-0 bg-black/0 group-hover:bg-black/40 transition-colors duration-300 flex items-center justify-center">
+                  <div className="opacity-0 group-hover:opacity-100 transition-opacity duration-300 p-3 rounded-full bg-white/20 backdrop-blur-sm">
+                    <Expand className="h-6 w-6 text-white" />
+                  </div>
                 </div>
               </div>
-            </div>
-            {image.caption && (
-              <figcaption className="p-4 bg-card border-t">
-                <p className="text-sm text-muted-foreground">{image.caption}</p>
-              </figcaption>
-            )}
-          </figure>
+              {image.caption && (
+                <figcaption className="p-4 bg-card border-t">
+                  <p className="text-sm text-muted-foreground">
+                    {image.caption}
+                  </p>
+                </figcaption>
+              )}
+            </figure>
           </BlurFade>
         ))}
       </div>

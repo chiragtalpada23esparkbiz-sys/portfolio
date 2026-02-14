@@ -12,12 +12,15 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { BlurFade } from "@/components/ui/blur-fade";
 import { Mail, Phone, MapPin, CheckCircle, AlertCircle } from "lucide-react";
+import { toast } from "sonner";
+import Image from "next/image";
 
 const contactSchema = z.object({
   name: z.string().min(2, "Name must be at least 2 characters"),
-  email: z.string().email("Please enter a valid email"),
-  subject: z.string().min(5, "Subject must be at least 5 characters"),
-  message: z.string().min(10, "Message must be at least 10 characters"),
+  email: z.email("Please enter a valid email"),
+  subject: z.string().min(4, "Subject must be at least 5 characters"),
+  message: z.string().min(5, "Message must be at least 10 characters"),
+  honeypot: z.string().optional(), // Honeypot field for bot detection
 });
 
 type ContactFormData = z.infer<typeof contactSchema>;
@@ -44,6 +47,7 @@ const contactInfo = [
 
 const socialLinks = [
   { label: "LinkedIn", href: "https://www.linkedin.com/in/chirag-talpada" },
+  { label: "X (Twitter)", href: "https://x.com/CTalpada78529" },
 ];
 
 // JSON-LD structured data for Contact Page
@@ -58,14 +62,23 @@ const jsonLd = {
     name: "Chirag Talpada",
     jobTitle: "Full-Stack Developer",
     email: "chiragtalpada0227@gmail.com",
+    telephone: "+917984296391",
     address: {
       "@type": "PostalAddress",
       addressLocality: "Gujarat",
-      addressCountry: "India",
+      addressCountry: "IN",
+    },
+    contactPoint: {
+      "@type": "ContactPoint",
+      telephone: "+917984296391",
+      email: "chiragtalpada0227@gmail.com",
+      contactType: "customer service",
+      availableLanguage: ["English", "Hindi", "Gujarati"],
     },
     sameAs: [
       "https://github.com/ChiragTalpworx",
       "https://www.linkedin.com/in/chirag-talpada",
+      "https://x.com/CTalpada78529",
     ],
   },
 };
@@ -93,14 +106,43 @@ export function Contact() {
         body: JSON.stringify(data),
       });
 
-      if (!response.ok) throw new Error("Failed to send message");
+      const result = await response.json();
+
+      if (!response.ok) {
+        const errorMsg =
+          response.status === 429
+            ? "Too many requests. Please try again in a few minutes."
+            : result.message || "Failed to send message";
+
+        toast.error("Oops! Something went wrong", {
+          description: errorMsg,
+          icon: <AlertCircle className="h-5 w-5" />,
+        });
+        throw new Error(errorMsg);
+      }
 
       setStatus("success");
       reset();
-      setTimeout(() => setStatus("idle"), 5000);
+
+      toast.success("Message sent successfully!", {
+        description:
+          "Thanks for reaching out! I'll get back to you within 24-48 hours.",
+        icon: (
+          <Image
+            src="/assistent_bot.webp"
+            alt="AI Assistant"
+            width={52}
+            height={52}
+            className="rounded-full object-cover"
+          />
+        ),
+        duration: 6000,
+      });
+
+      setTimeout(() => setStatus("idle"), 3000);
     } catch {
       setStatus("error");
-      setTimeout(() => setStatus("idle"), 5000);
+      setTimeout(() => setStatus("idle"), 3000);
     }
   };
 
@@ -220,9 +262,17 @@ export function Contact() {
                   className="space-y-4"
                   suppressHydrationWarning
                   aria-label="Contact form"
-                  action="https://formsubmit.co/chiragvaghela492@gmail.com"
-                  method="POST"
                 >
+                  {/* Honeypot field - hidden from users, visible to bots */}
+                  <input
+                    type="text"
+                    {...register("honeypot")}
+                    style={{ display: "none" }}
+                    tabIndex={-1}
+                    autoComplete="off"
+                    aria-hidden="true"
+                  />
+
                   <div className="space-y-2">
                     <label htmlFor="name" className="text-sm font-medium">
                       Name
@@ -232,7 +282,9 @@ export function Contact() {
                       placeholder="Your name"
                       autoComplete="name"
                       {...register("name")}
-                      className={errors.name ? "border-destructive" : ""}
+                      className={
+                        errors.name ? "border-destructive" : "" + "mt-1"
+                      }
                       aria-invalid={errors.name ? "true" : "false"}
                       aria-describedby={errors.name ? "name-error" : undefined}
                     />
@@ -257,7 +309,9 @@ export function Contact() {
                       placeholder="your.email@example.com"
                       autoComplete="email"
                       {...register("email")}
-                      className={errors.email ? "border-destructive" : ""}
+                      className={
+                        errors.email ? "border-destructive" : "" + "mt-1"
+                      }
                       aria-invalid={errors.email ? "true" : "false"}
                       aria-describedby={
                         errors.email ? "email-error" : undefined
@@ -282,7 +336,9 @@ export function Contact() {
                       id="subject"
                       placeholder="What's this about?"
                       {...register("subject")}
-                      className={errors.subject ? "border-destructive" : ""}
+                      className={
+                        errors.subject ? "border-destructive" : "" + "mt-1"
+                      }
                       aria-invalid={errors.subject ? "true" : "false"}
                       aria-describedby={
                         errors.subject ? "subject-error" : undefined
@@ -308,7 +364,9 @@ export function Contact() {
                       placeholder="Tell me about your project..."
                       rows={4}
                       {...register("message")}
-                      className={errors.message ? "border-destructive" : ""}
+                      className={
+                        errors.message ? "border-destructive" : "" + "mt-1"
+                      }
                       aria-invalid={errors.message ? "true" : "false"}
                       aria-describedby={
                         errors.message ? "message-error" : undefined

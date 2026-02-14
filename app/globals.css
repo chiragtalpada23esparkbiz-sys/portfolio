@@ -484,3 +484,15 @@ html {
     font-size: 0.9rem;
   }
 }
+
+/* Sonner toast icon size override */
+[data-sonner-toast] [data-icon] {
+  width: 52px !important;
+  height: 52px !important;
+  flex-shrink: 0;
+}
+
+[data-sonner-toast] [data-icon] > * {
+  width: 100% !important;
+  height: 100% !important;
+}

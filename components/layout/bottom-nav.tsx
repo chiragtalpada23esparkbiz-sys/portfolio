@@ -28,10 +28,25 @@ const navItems = [
   { href: "#about", icon: User, label: "About", priority: true },
   { href: "#tech-stack", icon: Wrench, label: "Tech Stack", priority: false },
   { href: "#experience", icon: Briefcase, label: "Experience", priority: true },
-  { href: "#education", icon: GraduationCap, label: "Education", priority: false },
+  {
+    href: "#education",
+    icon: GraduationCap,
+    label: "Education",
+    priority: false,
+  },
   { href: "#projects", icon: Code, label: "Projects", priority: true },
-  { href: "#achievements", icon: Trophy, label: "Achievements", priority: false },
-  { href: "#testimonials", icon: MessageSquareQuote, label: "Testimonials", priority: false },
+  {
+    href: "#achievements",
+    icon: Trophy,
+    label: "Achievements",
+    priority: false,
+  },
+  {
+    href: "#testimonials",
+    icon: MessageSquareQuote,
+    label: "Testimonials",
+    priority: false,
+  },
   { href: "#blog", icon: BookOpen, label: "Blog", priority: false },
   { href: "#contact", icon: Mail, label: "Contact", priority: true },
 ];
@@ -157,11 +172,17 @@ export function BottomNav() {
       <div className="fixed bottom-4 sm:bottom-6 right-4 sm:right-6 z-50">
         <div className="relative group">
           <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-3 px-3 py-1.5 rounded-lg bg-white dark:bg-zinc-800 text-zinc-900 dark:text-white text-xs font-medium shadow-lg border border-zinc-200 dark:border-zinc-700 whitespace-nowrap opacity-0 group-hover:opacity-100 transition-all duration-200 pointer-events-none">
-            {mounted ? (resolvedTheme === "dark" ? "Light Mode" : "Dark Mode") : "Theme"}
+            {mounted
+              ? resolvedTheme === "dark"
+                ? "Light Mode"
+                : "Dark Mode"
+              : "Theme"}
             <div className="absolute -bottom-1 left-1/2 -translate-x-1/2 w-2 h-2 bg-white dark:bg-zinc-800 border-b border-r border-zinc-200 dark:border-zinc-700 rotate-45" />
           </div>
           <button
-            onClick={() => setTheme(resolvedTheme === "dark" ? "light" : "dark")}
+            onClick={() =>
+              setTheme(resolvedTheme === "dark" ? "light" : "dark")
+            }
             className="relative p-3 rounded-full bg-white/80 dark:bg-zinc-900/80 backdrop-blur-md border border-zinc-200 dark:border-zinc-800 text-zinc-500 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-white hover:bg-zinc-100 dark:hover:bg-zinc-800/90 transition-all shadow-lg dark:shadow-2xl"
             aria-label="Toggle dark mode"
             suppressHydrationWarning
@@ -205,7 +226,7 @@ export function BottomNav() {
                     "hover:bg-zinc-100 dark:hover:bg-zinc-800",
                     isActive
                       ? "bg-zinc-100 dark:bg-zinc-800 text-zinc-900 dark:text-white"
-                      : "text-zinc-500 dark:text-zinc-400"
+                      : "text-zinc-500 dark:text-zinc-400",
                   )}
                   aria-label={item.label}
                 >
@@ -223,13 +244,14 @@ export function BottomNav() {
                 <div className="absolute -bottom-1 left-1/2 -translate-x-1/2 w-2 h-2 bg-white dark:bg-zinc-800 border-b border-r border-zinc-200 dark:border-zinc-700 rotate-45" />
               </div>
               <button
+                suppressHydrationWarning
                 onClick={() => setShowMoreMenu(!showMoreMenu)}
                 className={cn(
                   "block p-3 rounded-full transition-all duration-200",
                   "hover:bg-zinc-100 dark:hover:bg-zinc-800",
                   showMoreMenu
                     ? "bg-zinc-100 dark:bg-zinc-800 text-zinc-900 dark:text-white"
-                    : "text-zinc-500 dark:text-zinc-400"
+                    : "text-zinc-500 dark:text-zinc-400",
                 )}
                 aria-label="More options"
               >
@@ -243,7 +265,7 @@ export function BottomNav() {
 
             {/* More Menu Popup - Desktop */}
             {showMoreMenu && (
-              <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-3 p-2 rounded-xl bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-700 shadow-2xl z-[100]">
+              <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-3 p-2 rounded-xl bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-700 shadow-2xl z-100">
                 <div className="flex flex-col gap-1">
                   {moreItems.map((item) => {
                     const isActive = item.href === `#${activeSection}`;
@@ -261,7 +283,7 @@ export function BottomNav() {
                           "hover:bg-zinc-100 dark:hover:bg-zinc-800",
                           isActive
                             ? "bg-zinc-100 dark:bg-zinc-800 text-zinc-900 dark:text-white"
-                            : "text-zinc-600 dark:text-zinc-300"
+                            : "text-zinc-600 dark:text-zinc-300",
                         )}
                       >
                         <item.icon className="h-5 w-5" />
@@ -276,11 +298,13 @@ export function BottomNav() {
             )}
           </div>
         </div>
-
       </nav>
 
       {/* Mobile: Hamburger menu in top right corner */}
-      <div className="fixed top-4 right-4 z-50 sm:hidden" ref={moreMenuMobileRef}>
+      <div
+        className="fixed top-4 right-4 z-50 sm:hidden"
+        ref={moreMenuMobileRef}
+      >
         {/* Menu Toggle Button */}
         {!showMoreMenu && (
           <button
@@ -298,7 +322,9 @@ export function BottomNav() {
             {/* Top controls: Theme toggle and Close */}
             <div className="flex items-center gap-2">
               <button
-                onClick={() => setTheme(resolvedTheme === "dark" ? "light" : "dark")}
+                onClick={() =>
+                  setTheme(resolvedTheme === "dark" ? "light" : "dark")
+                }
                 className="relative p-3 rounded-full bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-700 text-zinc-600 dark:text-zinc-300 hover:text-zinc-900 dark:hover:text-white transition-all shadow-lg"
                 aria-label="Toggle dark mode"
                 suppressHydrationWarning
@@ -336,7 +362,7 @@ export function BottomNav() {
                       "hover:bg-zinc-100 dark:hover:bg-zinc-800",
                       isActive
                         ? "bg-zinc-100 dark:bg-zinc-800 text-zinc-900 dark:text-white"
-                        : "text-zinc-600 dark:text-zinc-300"
+                        : "text-zinc-600 dark:text-zinc-300",
                     )}
                     aria-label={item.label}
                   >
@@ -357,7 +383,7 @@ export function BottomNav() {
               "absolute bottom-full right-0 mb-2 px-3 py-2 rounded-lg bg-white/90 dark:bg-zinc-800/90 backdrop-blur-md text-zinc-900 dark:text-white text-xs font-medium shadow-xl border border-zinc-200 dark:border-zinc-700 whitespace-nowrap transition-all duration-300",
               showMessage
                 ? "opacity-100 translate-y-0"
-                : "opacity-0 translate-y-2 pointer-events-none"
+                : "opacity-0 translate-y-2 pointer-events-none",
             )}
           >
             {currentMessage}
@@ -389,7 +415,7 @@ export function BottomNav() {
             "absolute bottom-full right-0 mb-3 px-4 py-2 rounded-lg bg-white dark:bg-zinc-800 text-zinc-900 dark:text-white text-sm font-medium shadow-xl border border-zinc-200 dark:border-zinc-700 whitespace-nowrap transition-all duration-300",
             showMessage
               ? "opacity-100 translate-y-0"
-              : "opacity-0 translate-y-2 pointer-events-none"
+              : "opacity-0 translate-y-2 pointer-events-none",
           )}
         >
           {currentMessage}
@@ -399,11 +425,17 @@ export function BottomNav() {
         {/* Dark Mode Toggle - Desktop */}
         <div className="relative group">
           <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-3 px-3 py-1.5 rounded-lg bg-white dark:bg-zinc-800 text-zinc-900 dark:text-white text-xs font-medium shadow-lg border border-zinc-200 dark:border-zinc-700 whitespace-nowrap opacity-0 group-hover:opacity-100 transition-all duration-200 pointer-events-none">
-            {mounted ? (resolvedTheme === "dark" ? "Light Mode" : "Dark Mode") : "Theme"}
+            {mounted
+              ? resolvedTheme === "dark"
+                ? "Light Mode"
+                : "Dark Mode"
+              : "Theme"}
             <div className="absolute -bottom-1 left-1/2 -translate-x-1/2 w-2 h-2 bg-white dark:bg-zinc-800 border-b border-r border-zinc-200 dark:border-zinc-700 rotate-45" />
           </div>
           <button
-            onClick={() => setTheme(resolvedTheme === "dark" ? "light" : "dark")}
+            onClick={() =>
+              setTheme(resolvedTheme === "dark" ? "light" : "dark")
+            }
             className="relative p-3 rounded-full bg-white/80 dark:bg-zinc-900/80 backdrop-blur-md border border-zinc-200 dark:border-zinc-800 text-zinc-500 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-white hover:bg-zinc-100 dark:hover:bg-zinc-800/90 transition-all shadow-lg dark:shadow-2xl"
             aria-label="Toggle dark mode"
             suppressHydrationWarning
