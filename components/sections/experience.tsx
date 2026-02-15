@@ -1,6 +1,7 @@
 import { Section } from "@/components/ui/section";
 import { Badge } from "@/components/ui/badge";
 import { BlurFade } from "../ui/blur-fade";
+import portfolioData from "@/data/portfolio.json";
 
 interface Experience {
   id: string;
@@ -16,67 +17,19 @@ interface Experience {
   technologies: string[];
 }
 
-const experiences: Experience[] = [
-  {
-    id: "eSparkBiz",
-    title: "Software Developer",
-    company: "eSparkBiz",
-    type: "full-time",
-    startDate: "Jan 2023",
-    endDate: "Present",
-    location: "On site - Ahmedabad, India",
-    description:
-      "Dedicated Full Stack Developer working directly with international clients and stakeholders to design, build, and scale enterprise-grade SaaS products. Played a key role in delivering complex platforms across renewable energy, healthcare, UX intelligence, and AI-powered B2B SaaS, contributing from early-stage POCs to production systems used by thousands of users.",
-    responsibilities: [
-      "Worked as a dedicated developer for client projects, collaborating directly with founders, product owners, and stakeholders to deliver business-critical solutions",
-      "Led end-to-end feature development from requirement analysis and technical design to implementation, testing, and production deployment",
-      "Designed and developed scalable full-stack applications using React, Next.js, TypeScript, Node.js, GraphQL, Hasura and PostgreSQL",
-      "Built highly responsive, data-intensive dashboards and workflows, including planners, schedulers, analytics views, and AI-generated reports",
-      "Architected type-safe API layers using GraphQL (Hasura), tRPC, and code generation to ensure reliability and maintainability",
-      "Developed real-time systems using subscriptions, background jobs, queues, and streaming APIs for scheduling, notifications, and AI workflows",
-      "Built and maintained SEO-friendly applications using SSR, dynamic routing, structured data, and meta optimization",
-      "Implemented multi-tenant SaaS architectures with role-based access control and strict organization-level data isolation",
-      "Integrated third-party services including authentication, billing, notifications, file storage, analytics, and AI providers",
-      "Optimized frontend performance by improving Core Web Vitals (LCP, CLS) and reducing page load times across large datasets",
-      "Collaborated closely with backend teams, designers, and QA to deliver pixel-perfect, production-ready features",
-      "Mentored junior developers, conducted code reviews, assessed trainees, and supported internal training programs",
-      "Participated in technical interviews and campus recruitment drives, helping evaluate and onboard engineering talent",
-    ],
-    achievements: [
-      "Delivered 10+ major production features and multiple enterprise platforms while working as a dedicated client-facing developer",
-      "Successfully converted high-risk POCs into long-term projects, building client trust and enabling product scale and revenue growth",
-      "Reduced application load times by 25–40% through performance optimization, caching strategies, and efficient rendering",
-      "Improved Core Web Vitals by ~30%, significantly enhancing UX and SEO performance",
-      "Increased organic traffic by up to 40% through SSR, SEO best practices, and structured metadata",
-      "Built reusable UI component libraries, reducing code duplication by ~30% and improving development speed across teams",
-      "Built and scaled a multi-organization healthcare platform supporting EHRs, appointments, billing, insurance claims, and audit trails",
-      "Designed and implemented event-sourced financial workflows handling invoices, partial payments, refunds, and credits",
-      "Played a key role in launching 2 AI-powered SaaS products used by a growing user base.",
-      "Built RAG-based AI assistants and AI workflows that reduced manual reporting and analysis effort by up to 80%",
-      "Reduced API response times by up to 50% through query optimization and caching",
-      "Received internal recognition for delivering complex AI integrations and hard POCs under tight timelines",
-      "Built a production-grade appointment and scheduling system with live updates, waitlists, and calendar views",
-      "Achieved 99.9% streaming reliability with resumable stream architecture",
-    ],
-    technologies: [
-      "React",
-      "Next.js",
-      "Node.js",
-      "GraphQL",
-      "Hasura",
-      "PostgreSQL",
-      "LangGraph",
-      "tRPC",
-      "TypeScript",
-      "Redis",
-      "Tailwind CSS",
-      "Shadcn UI",
-      "Redux Toolkit",
-      "OpenAI",
-      "Claude",
-    ],
-  },
-];
+const experiences: Experience[] = portfolioData.experience.map((exp) => ({
+  id: exp.id,
+  title: exp.title,
+  company: exp.company,
+  type: exp.type,
+  startDate: exp.start_date,
+  endDate: exp.end_date,
+  location: exp.location,
+  description: exp.description,
+  responsibilities: exp.responsibilities,
+  achievements: exp.achievements,
+  technologies: exp.technologies,
+}));
 
 export function Experience() {
   return (

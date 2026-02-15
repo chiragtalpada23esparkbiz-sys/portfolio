@@ -14,6 +14,7 @@ import { BlurFade } from "@/components/ui/blur-fade";
 import { Mail, Phone, MapPin, CheckCircle, AlertCircle } from "lucide-react";
 import { toast } from "sonner";
 import Image from "next/image";
+import portfolioData from "@/data/portfolio.json";
 
 const contactSchema = z.object({
   name: z.string().min(2, "Name must be at least 2 characters"),
@@ -25,61 +26,43 @@ const contactSchema = z.object({
 
 type ContactFormData = z.infer<typeof contactSchema>;
 
-const contactInfo = [
-  {
-    icon: Mail,
-    label: "Email",
-    value: "chiragtalpada0227@gmail.com",
-    href: "mailto:chiragtalpada0227@gmail.com",
-  },
-  {
-    icon: Phone,
-    label: "Phone",
-    value: "+91 7984296391",
-    href: "tel:+917984296391",
-  },
-  {
-    icon: MapPin,
-    label: "Location",
-    value: "Gujarat, India",
-  },
-];
+const iconMap = { email: Mail, phone: Phone, location: MapPin };
+const personal = portfolioData.personal;
 
-const socialLinks = [
-  { label: "LinkedIn", href: "https://www.linkedin.com/in/chirag-talpada" },
-  { label: "X (Twitter)", href: "https://x.com/CTalpada78529" },
-];
+const contactInfo = portfolioData.contact.info.map((item) => ({
+  icon: iconMap[item.type as keyof typeof iconMap],
+  label: item.label,
+  value: item.value,
+  href: item.href,
+}));
+
+const socialLinks = portfolioData.contact.social_links;
 
 // JSON-LD structured data for Contact Page
 const jsonLd = {
   "@context": "https://schema.org",
   "@type": "ContactPage",
-  name: "Contact Chirag Talpada",
-  description:
-    "Get in touch with Chirag Talpada for full-stack web development, AI solutions, and software consulting services.",
+  name: `Contact ${personal.name}`,
+  description: `Get in touch with ${personal.name} for full-stack web development, AI solutions, and software consulting services.`,
   mainEntity: {
     "@type": "Person",
-    name: "Chirag Talpada",
-    jobTitle: "Full-Stack Developer",
-    email: "chiragtalpada0227@gmail.com",
-    telephone: "+917984296391",
+    name: personal.name,
+    jobTitle: personal.title,
+    email: personal.email,
+    telephone: personal.phone.replace(/\s/g, ""),
     address: {
       "@type": "PostalAddress",
-      addressLocality: "Gujarat",
+      addressLocality: personal.location.split(",")[0].trim(),
       addressCountry: "IN",
     },
     contactPoint: {
       "@type": "ContactPoint",
-      telephone: "+917984296391",
-      email: "chiragtalpada0227@gmail.com",
+      telephone: personal.phone.replace(/\s/g, ""),
+      email: personal.email,
       contactType: "customer service",
       availableLanguage: ["English", "Hindi", "Gujarati"],
     },
-    sameAs: [
-      "https://github.com/ChiragTalpworx",
-      "https://www.linkedin.com/in/chirag-talpada",
-      "https://x.com/CTalpada78529",
-    ],
+    sameAs: [personal.github, personal.linkedin, personal.twitter],
   },
 };
 

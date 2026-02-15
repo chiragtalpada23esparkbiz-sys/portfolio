@@ -7,6 +7,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { BlurFade } from "@/components/ui/blur-fade";
 import { ExternalLink } from "lucide-react";
+import portfolioData from "@/data/portfolio.json";
 
 interface Certification {
   id: string;
@@ -20,62 +21,29 @@ interface Certification {
   verifyUrl: string;
 }
 
-const certifications: Certification[] = [
-  {
-    id: "github-actions",
-    title: "GitHub Actions Professional Certificate",
-    issuer: "GitHub",
-    date: "September 10, 2023",
-    credentialId: "GH-PRO-16925-2023",
-    description:
-      "Certification showing expertise in building automated workflows and CI/CD pipelines with GitHub Actions.",
-    skills: ["GitHub Actions", "DevOps"],
-    verifyUrl: "#",
-  },
-  {
-    id: "aws-solutions-architect",
-    title: "AWS Certified Solutions Architect - Professional",
-    issuer: "Amazon Web Services",
-    date: "June 15, 2023",
-    validUntil: "June 15, 2026",
-    credentialId: "AWS-12345-9876",
-    description:
-      "Advanced AWS certification demonstrating expertise in designing distributed systems and applications on AWS platform.",
-    skills: ["AWS", "Docker", "Kubernetes"],
-    verifyUrl: "#",
-  },
-  {
-    id: "google-cloud",
-    title: "Google Cloud Professional Cloud Architect",
-    issuer: "Google Cloud",
-    date: "March 20, 2023",
-    validUntil: "March 20, 2025",
-    credentialId: "GCP-78901-2023",
-    description:
-      "Professional certification for designing and managing solutions on Google Cloud Platform.",
-    skills: ["GCP", "Cloud Architecture", "Terraform"],
-    verifyUrl: "#",
-  },
-  {
-    id: "kubernetes",
-    title: "Certified Kubernetes Administrator",
-    issuer: "Cloud Native Computing Foundation",
-    date: "January 20, 2023",
-    validUntil: "January 20, 2026",
-    credentialId: "CKA-45678-2023",
-    description:
-      "Certification demonstrating skills in Kubernetes cluster administration and container orchestration.",
-    skills: ["Kubernetes", "Docker", "Linux"],
-    verifyUrl: "#",
-  },
-];
+const personal = portfolioData.personal;
+
+// Map JSON data (snake_case) to TypeScript interface (camelCase)
+const certifications: Certification[] = portfolioData.certifications.map(
+  (cert) => ({
+    id: cert.id,
+    title: cert.title,
+    issuer: cert.issuer,
+    date: cert.date,
+    validUntil: cert.valid_until,
+    credentialId: cert.credential_id,
+    description: cert.description,
+    skills: cert.skills,
+    verifyUrl: cert.verify_url,
+  })
+);
 
 // JSON-LD structured data for Certifications
 const jsonLd = {
   "@context": "https://schema.org",
   "@type": "ItemList",
-  name: "Professional Certifications - Chirag Talpada",
-  description: "Professional certifications and credentials held by Chirag Talpada in cloud computing, DevOps, and software development.",
+  name: `Professional Certifications - ${personal.name}`,
+  description: `Professional certifications and credentials held by ${personal.name} in cloud computing, DevOps, and software development.`,
   itemListElement: certifications.map((cert, index) => ({
     "@type": "ListItem",
     position: index + 1,

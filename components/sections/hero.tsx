@@ -14,13 +14,10 @@ import { useChat } from "@/components/chat/chat-context";
 import { Button } from "@/components/ui/button";
 import { InteractiveGrid } from "@/components/ui/interactive-grid";
 import { BlurFade } from "@/components/ui/blur-fade";
+import portfolioData from "@/data/portfolio.json";
 
-const roles = [
-  "Full-Stack SaaS Apps",
-  "AI-Powered Solutions",
-  "Automation-Focused Systems",
-  "Modern Web Apps",
-];
+const roles = portfolioData.hero.roles;
+const personal = portfolioData.personal;
 
 export function Hero() {
   const [currentRoleIndex, setCurrentRoleIndex] = React.useState(0);
@@ -56,7 +53,7 @@ export function Hero() {
             {/* Name */}
             <BlurFade delay={0} direction="up">
               <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-5xl xl:text-6xl md-short:text-4xl lg-short:text-4xl font-bold tracking-tight">
-                Chirag Talpada
+                {personal.name}
               </h1>
             </BlurFade>
 
@@ -83,14 +80,7 @@ export function Hero() {
             {/* Description */}
             <BlurFade delay={0.2} direction="up">
               <p className="text-muted-foreground text-base sm:text-lg lg:text-base xl:text-lg md-short:text-base lg-short:text-sm max-w-2xl leading-relaxed">
-                JavaScript-enthusiastic full-stack developer with 3+ years of
-                experience building scalable web applications and AI-powered
-                products. I specialize in React and Next.js on the frontend,
-                build reliable backend systems with Node.js, and integrate AI
-                agents, RAG-based chatbots, and automation workflows to deliver
-                production-ready solutions on modern cloud architectures. I also
-                leverage tools like Cursor, ChatGPT, and Claude Code to boost
-                development productivity.
+                {portfolioData.hero.description}
               </p>
             </BlurFade>
 
@@ -107,7 +97,7 @@ export function Hero() {
                   asChild
                 >
                   <a
-                    href="https://mail.google.com/mail/?view=cm&fs=1&to=chiragtalpada0227@gmail.com"
+                    href={`https://mail.google.com/mail/?view=cm&fs=1&to=${personal.email}`}
                     target="_blank"
                     rel="noopener noreferrer"
                     suppressHydrationWarning
@@ -122,7 +112,7 @@ export function Hero() {
                   asChild
                 >
                   <a
-                    href="https://www.linkedin.com/in/chirag-talpada"
+                    href={personal.linkedin}
                     target="_blank"
                     rel="noopener noreferrer"
                     suppressHydrationWarning
@@ -137,7 +127,7 @@ export function Hero() {
                   asChild
                 >
                   <a
-                    href="/chirag_talpada_cv.pdf"
+                    href={personal.cv}
                     download
                     suppressHydrationWarning
                   >
@@ -161,21 +151,23 @@ export function Hero() {
               <address className="not-italic flex flex-wrap items-center gap-3 sm:gap-6 lg:gap-4 md-short:gap-4 lg-short:gap-3 text-xs sm:text-sm md-short:text-sm lg-short:text-xs text-muted-foreground pt-2 lg:pt-2 md-short:pt-1 lg-short:pt-1">
                 <div className="hidden sm:flex items-center gap-2">
                   <Mail className="h-4 w-4" aria-hidden="true" />
-                  <a href="mailto:chiragtalpada0227@gmail.com">
-                    chiragtalpada0227@gmail.com
+                  <a href={`mailto:${personal.email}`}>
+                    {personal.email}
                   </a>
                 </div>
                 <div className="flex items-center gap-2">
                   <MapPin className="h-4 w-4 text-red-500" aria-hidden="true" />
-                  <span>Gujarat, India</span>
+                  <span>{personal.location}</span>
                 </div>
-                <div className="flex items-center gap-2">
-                  <CheckCircle
-                    className="h-4 w-4 text-green-500"
-                    aria-hidden="true"
-                  />
-                  <span>Available for work</span>
-                </div>
+                {personal.available_for_work && (
+                  <div className="flex items-center gap-2">
+                    <CheckCircle
+                      className="h-4 w-4 text-green-500"
+                      aria-hidden="true"
+                    />
+                    <span>Available for work</span>
+                  </div>
+                )}
               </address>
             </BlurFade>
           </div>
@@ -204,8 +196,8 @@ export function Hero() {
                   aria-label="Chat with my AI Assistant"
                 >
                   <Image
-                    src="/face_shot.webp"
-                    alt="Chirag Talpada - Full Stack JavaScript Developer specializing in React, Next.js, Node.js, and AI-powered solutions"
+                    src={personal.profile_image}
+                    alt={`${personal.name} - ${personal.title} specializing in React, Next.js, Node.js, and AI-powered solutions`}
                     fill
                     className="object-cover z-0 transition-all duration-300 group-hover/chat:scale-105 group-hover/chat:blur-[2px]"
                     priority
@@ -231,7 +223,7 @@ export function Hero() {
                   </div>
                 </button>
                 <figcaption className="sr-only">
-                  Profile photo of Chirag Talpada
+                  Profile photo of {personal.name}
                 </figcaption>
               </figure>
             </div>

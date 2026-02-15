@@ -6,6 +6,7 @@ import { Code2, Brain, Database, Cloud, Workflow, Shield } from "lucide-react";
 import { TechIcons } from "@/components/tech_icons";
 import { ReactElement, useEffect, useState } from "react";
 import { BlurFade } from "../ui/blur-fade";
+import portfolioData from "@/data/portfolio.json";
 
 type TechIconType = {
   name: string;
@@ -64,51 +65,23 @@ const useIconSize = () => {
   return sizes;
 };
 
-// Expertise areas with descriptions
-const expertiseAreas = [
-  {
-    icon: Code2,
-    title: "Full-Stack Development",
-    description:
-      "Building complete web applications with React, Next.js, Node.js, and modern JavaScript/TypeScript ecosystems.",
-    color: "bg-blue-500/10 text-blue-600 dark:text-blue-400",
-  },
-  {
-    icon: Brain,
-    title: "AI & Automation",
-    description:
-      "Creating AI agents, RAG chatbots, and intelligent automation workflows using LangChain, LangGraph, and AI SDKs.",
-    color: "bg-purple-500/10 text-purple-600 dark:text-purple-400",
-  },
-  {
-    icon: Database,
-    title: "Database & APIs",
-    description:
-      "Designing efficient database schemas and APIs with PostgreSQL, MySQL, GraphQL, and REST architectures.",
-    color: "bg-green-500/10 text-green-600 dark:text-green-400",
-  },
-  {
-    icon: Cloud,
-    title: "DevOps & Collaboration",
-    description:
-      "Implementing Docker containerization, Git version control, and effective project management and teamwork practices.",
-    color: "bg-orange-500/10 text-orange-600 dark:text-orange-400",
-  },
-  {
-    icon: Workflow,
-    title: "Workflow Automation",
-    description:
-      "Building automated workflows and intelligent reporting systems to streamline processes.",
-    color: "bg-cyan-500/10 text-cyan-600 dark:text-cyan-400",
-  },
-  {
-    icon: Shield,
-    title: "Auth & Payments",
-    description:
-      "Implementing secure authentication with OAuth/JWT and payment integration with Stripe.",
-    color: "bg-pink-500/10 text-pink-600 dark:text-pink-400",
-  },
+// Icon and color mapping for expertise areas
+const expertiseConfig = [
+  { icon: Code2, color: "bg-blue-500/10 text-blue-600 dark:text-blue-400" },
+  { icon: Brain, color: "bg-purple-500/10 text-purple-600 dark:text-purple-400" },
+  { icon: Database, color: "bg-green-500/10 text-green-600 dark:text-green-400" },
+  { icon: Cloud, color: "bg-orange-500/10 text-orange-600 dark:text-orange-400" },
+  { icon: Workflow, color: "bg-cyan-500/10 text-cyan-600 dark:text-cyan-400" },
+  { icon: Shield, color: "bg-pink-500/10 text-pink-600 dark:text-pink-400" },
 ];
+
+// Expertise areas with descriptions from JSON
+const expertiseAreas = portfolioData.expertise_areas.map((area, index) => ({
+  icon: expertiseConfig[index].icon,
+  title: area.title,
+  description: area.description,
+  color: expertiseConfig[index].color,
+}));
 
 // Tech stack organized by category with actual icon components
 const techCategories = [

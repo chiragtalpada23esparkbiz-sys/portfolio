@@ -8,76 +8,17 @@ import { Button } from "@/components/ui/button";
 import { BlurFade } from "@/components/ui/blur-fade";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { cn } from "@/lib/utils";
+import portfolioData from "@/data/portfolio.json";
 
-const testimonials = [
-  {
-    id: 1,
-    name: "Ben Ford",
-    role: "Founder",
-    company: "Mission Ctrl",
-    content:
-      "Massive well done! Our seasoned health tech entrepreneur was blown away with what you've achieved. You cloned yourself, Chirag — this is a hell of a lot of work for a single day. Well done!",
-    image: "/testimonials/ben-ford.webp",
-    rating: 5,
-  },
-  {
-    id: 2,
-    name: "Fraser Dunk",
-    role: "Co-Founder & CEO",
-    company: "Jurnii LTD",
-    content:
-      "Stakeholders were super happy: 'This would have taken us three months in-house.' 'We paid $15K for an expert review - this is much better.' Reduced 3-month effort to near-instant delivery.",
-    image: "/testimonials/fraser-dunk.webp",
-    rating: 5,
-  },
-  {
-    id: 3,
-    name: "Tristan Dexter",
-    role: "Chief Experience Officer",
-    company: "Jurnii LTD",
-    content:
-      "Chirag is an absolute legend to work with. I handled the Figma designs and UI/UX direction, and he brought everything to life perfectly — pixel-perfect, responsive, and technically solid. Outstanding execution!",
-    image: "/testimonials/tristan-dexter.webp",
-    rating: 5,
-  },
-  {
-    id: 4,
-    name: "Yazid Jibrel",
-    role: "Associate CIO",
-    company: "NHS Trust",
-    content:
-      "Chirag consistently demonstrated strong ownership and the ability to navigate complex challenges. His backend expertise and attention to detail in UX/UI implementation impressed me. Highly recommended!",
-    image: "/testimonials/yazid-jibrel.webp",
-    rating: 5,
-  },
-  {
-    id: 5,
-    name: "Christopher Hunt",
-    role: "Head of UI/UX",
-    company: "FoshTech",
-    content:
-      "Chirag has done an amazing job on the front end — super quick delivery. I'm genuinely impressed with how fast things are progressing.",
-    image: "/testimonials/christopher-hunt.webp",
-    rating: 5,
-  },
-  {
-    id: 6,
-    name: "Sanket Lakhani",
-    role: "Team Lead",
-    company: "eSparkBiz",
-    content:
-      "Chirag and the team have delivered exceptional work over the past few months. Their dedication and results speak for themselves. Kudos to the team!",
-    image: "/testimonials/sanket-lakhani.webp",
-    rating: 5,
-  },
-];
+const testimonials = portfolioData.testimonials;
+const personal = portfolioData.personal;
 
 // JSON-LD structured data for SEO
 const jsonLd = {
   "@context": "https://schema.org",
   "@type": "WebPage",
-  name: "Client Testimonials - Chirag Talpada",
-  description: "Read what clients say about working with Chirag Talpada, a Full-Stack Developer specializing in React, Next.js, and modern web technologies.",
+  name: `Client Testimonials - ${personal.name}`,
+  description: `Read what clients say about working with ${personal.name}, a ${personal.title} specializing in React, Next.js, and modern web technologies.`,
   mainEntity: {
     "@type": "ItemList",
     itemListElement: testimonials.map((testimonial, index) => ({
@@ -102,7 +43,7 @@ const jsonLd = {
         },
         itemReviewed: {
           "@type": "ProfessionalService",
-          name: "Chirag Talpada - Full-Stack Development Services",
+          name: `${personal.name} - Full-Stack Development Services`,
           description: "Professional full-stack web development services",
         },
       },
@@ -341,7 +282,7 @@ export function Testimonials() {
                 <meta itemProp="bestRating" content="5" />
               </div>
               <div itemProp="itemReviewed" itemScope itemType="https://schema.org/ProfessionalService">
-                <meta itemProp="name" content="Chirag Talpada - Full-Stack Development Services" />
+                <meta itemProp="name" content={`${personal.name} - Full-Stack Development Services`} />
               </div>
             </article>
           ))}

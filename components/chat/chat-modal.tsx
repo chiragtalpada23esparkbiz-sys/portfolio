@@ -7,18 +7,13 @@ import { DefaultChatTransport, type UIMessage } from "ai";
 import { useChat } from "./chat-context";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
-import { X, User, Send, Loader2, Sparkles, Copy } from "lucide-react";
+import { X, User, Send, Loader2, Sparkles } from "lucide-react";
 import {
   Conversation,
   ConversationContent,
   ConversationScrollButton,
 } from "@/components/ai-elements/conversation";
-import {
-  Message,
-  MessageContent,
-  MessageActions,
-  MessageAction,
-} from "@/components/ai-elements/message";
+import { Message, MessageContent } from "@/components/ai-elements/message";
 import {
   PromptInput,
   PromptInputBody,
@@ -27,7 +22,6 @@ import {
   PromptInputSubmit,
   type PromptInputMessage,
 } from "@/components/ai-elements/prompt-input";
-import { toast } from "sonner";
 import { Markdown } from "../ui/Markdown";
 
 const suggestedQuestions = [
@@ -109,11 +103,6 @@ export function ChatModal() {
       text: question,
     });
   };
-
-  const handleCopyMessage = React.useCallback((text: string) => {
-    navigator.clipboard.writeText(text);
-    toast.success("Copied to clipboard");
-  }, []);
 
   if (!isOpen) return null;
 

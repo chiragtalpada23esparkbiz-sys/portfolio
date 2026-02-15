@@ -1,6 +1,7 @@
 import { Section } from "@/components/ui/section";
 import { Calendar, Award } from "lucide-react";
 import { BlurFade } from "../ui/blur-fade";
+import portfolioData from "@/data/portfolio.json";
 
 interface Education {
   id: string;
@@ -14,47 +15,17 @@ interface Education {
   achievements: string[];
 }
 
-const educationData: Education[] = [
-  {
-    id: "Master",
-    degree: "Master of Computer Application",
-    institution: "Sardar Patel University",
-    field: "Computer Applications",
-    startDate: "Apr 2021",
-    endDate: "Apr 2023",
-    gpa: "9.55/10",
-    description:
-      "Graduated with a Master of Computer Applications from Sardar Patel University, specializing in advanced computing and software systems. My postgraduate studies deepened my expertise in professional programming (Java, full-stack frameworks), algorithms, distributed systems, and application design. The curriculum combined theory with significant hands-on experience, including web technologies, system architecture, and large-scale project implementation. This strengthened my ability to architect scalable applications, collaborate effectively on cross-functional teams, and adapt to emerging technologies in cloud, data, and AI-focused environments.",
-    achievements: [
-      "Active Participant in Technical & Coding Competitions, demonstrating strong problem-solving and algorithmic skills",
-      "Ranked 3rd at College Level for academic excellence in MCA program",
-      "Consistently High Academic Performance with strong focus on advanced computing and software systems",
-      "Recognized for Technical Excellence in programming, database systems, and application development coursework",
-      "Led and Contributed to Complex Academic Projects, applying real-world software engineering and system design principles",
-      "2nd Rank – C Programming Competition - VP & RPTP Science College, Anand",
-    ],
-  },
-  {
-    id: "Bachelor",
-    degree: "Bachelor of Computer Application",
-    institution: "Sardar Patel University",
-    field: "Computer Applications",
-    startDate: "Apr 2018",
-    endDate: "Apr 2021",
-    gpa: "9.51/10",
-    description:
-      "Completed a rigorous Bachelor of Computer Applications program at Sardar Patel University, where I built strong foundations in software engineering, database systems, programming (C, Java), and web development. The curriculum emphasized hands-on labs, real-world project work, and problem-solving skills, preparing me to design efficient software solutions and work across full-stack application development. Through academic projects and coursework, I gained expertise in building responsive web apps, managing data systems, and applying core CS principles to practical scenarios.",
-    achievements: [
-      "Ranked 1st at College Level and 3rd at University Level (Sardar Patel University) for overall academic performance",
-      "1st Rank – State Level C Programming Competition - GH Patel PG Department of Computer Science & Technology — 2019 & 2020",
-      "Runner-Up – C Programming Blind Coding Competition - Charusat University, Changa",
-      "Runner-Up – DB Mania (SQL Competition) - Charusat University, Changa",
-      "Graduated with Distinction",
-      "Class Representative (BCA) — Acted as liaison between faculty and students, coordinated academic and technical activities",
-      "2nd Rank – Web Design Competition - Organized by Sardar Patel University",
-    ],
-  },
-];
+const educationData: Education[] = portfolioData.education.map((edu) => ({
+  id: edu.id,
+  degree: edu.degree,
+  institution: edu.institution,
+  field: edu.field,
+  startDate: edu.start_date,
+  endDate: edu.end_date,
+  gpa: edu.gpa,
+  description: edu.description,
+  achievements: edu.achievements,
+}));
 
 export function Education() {
   return (
