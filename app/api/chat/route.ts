@@ -310,18 +310,50 @@ function convertToModelMessages(messages: UIMessage[]) {
     });
 }
 
+// Helper to check if error is a rate limit error
+function isRateLimitError(error: unknown): boolean {
+  if (error && typeof error === "object") {
+    const err = error as { statusCode?: number; message?: string };
+    return (
+      err.statusCode === 429 ||
+      (err.message?.toLowerCase().includes("rate limit") ?? false)
+    );
+  }
+  return false;
+}
+
+// Create a rate limit error response
+function createRateLimitResponse() {
+  return new Response(
+    JSON.stringify({
+      error: "rate_limit",
+      message:
+        "Daily AI conversation limit reached. Please try again tomorrow.",
+      contact: {
+        email: portfolioData.personal.email,
+        linkedin: portfolioData.personal.linkedin,
+      },
+    }),
+    {
+      status: 429,
+      headers: { "Content-Type": "application/json" },
+    },
+  );
+}
+
 export async function POST(req: Request) {
-  const { messages } = await req.json();
+  try {
+    const { messages } = await req.json();
 
-  // Convert UIMessage format to model message format
-  const modelMessages = convertToModelMessages(messages);
+    // Convert UIMessage format to model message format
+    const modelMessages = convertToModelMessages(messages);
 
-  // Get the latest user message
-  const latestUserMessage =
-    modelMessages.filter((m) => m.role === "user").pop()?.content || "";
+    // Get the latest user message
+    const latestUserMessage =
+      modelMessages.filter((m) => m.role === "user").pop()?.content || "";
 
-  // Step 1: Classify the query to identify relevant portfolio properties
-  const classificationPrompt = `You are a query classifier. Given a user's question about a developer's portfolio, identify which sections are needed to answer it.
+    // Step 1: Classify the query to identify relevant portfolio properties
+    const classificationPrompt = `You are a query classifier. Given a user's question about a developer's portfolio, identify which sections are needed to answer it.
 
 Available sections: ${validProperties.join(", ")}
 
@@ -334,29 +366,58 @@ User's question: "${latestUserMessage}"
 
 Reply with ONLY the section names (comma-separated) that are needed. Example: "about, experience, projects"`;
 
-  const classification = await generateText({
-    model: openrouter.chatModel(FREE_MODELS[2]),
-    prompt: classificationPrompt,
-  });
+    let relevantProperties: PortfolioProperty[];
 
-  // Step 2: Parse the response and gather context
-  const relevantProperties = parseClassificationResponse(classification.text);
-  const context = gatherContext(relevantProperties);
+    try {
+      const classification = await generateText({
+        model: openrouter.chatModel(FREE_MODELS[2]),
+        prompt: classificationPrompt,
+      });
+      relevantProperties = parseClassificationResponse(classification.text);
+    } catch (classificationError) {
+      if (isRateLimitError(classificationError)) {
+        return createRateLimitResponse();
+      }
+      // If classification fails for other reasons, use default properties
+      console.error("Classification error:", classificationError);
+      relevantProperties = ["personal", "about", "experience"];
+    }
 
-  // Step 3: Generate response with relevant context
-  const result = streamText({
-    model: openrouter.chatModel(FREE_MODELS[2]),
-    system: `${responseSystemPrompt}
+    // Step 2: Gather context from identified properties
+    const context = gatherContext(relevantProperties);
+
+    // Step 3: Generate response with relevant context
+    const result = streamText({
+      model: openrouter.chatModel(FREE_MODELS[2]),
+      system: `${responseSystemPrompt}
 
 ## Context from Chirag's Portfolio
 The following information is available to answer the user's question:
 
 ${context}`,
-    messages: modelMessages,
-  });
+      messages: modelMessages,
+    });
 
-  return result.toUIMessageStreamResponse({
-    sendSources: true,
-    sendReasoning: true,
-  });
+    return result.toUIMessageStreamResponse({
+      sendSources: true,
+      sendReasoning: true,
+    });
+  } catch (error) {
+    console.error("Chat API error:", error);
+
+    if (isRateLimitError(error)) {
+      return createRateLimitResponse();
+    }
+
+    // Generic error response
+    return new Response(
+      JSON.stringify({
+        error: "Something went wrong. Please try again later.",
+      }),
+      {
+        status: 500,
+        headers: { "Content-Type": "application/json" },
+      },
+    );
+  }
 }

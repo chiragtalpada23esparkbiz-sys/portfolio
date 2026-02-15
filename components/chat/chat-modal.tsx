@@ -7,7 +7,7 @@ import { DefaultChatTransport, type UIMessage } from "ai";
 import { useChat } from "./chat-context";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
-import { X, User, Send, Loader2, Sparkles } from "lucide-react";
+import { X, User, Send, Loader2, Sparkles, AlertTriangle } from "lucide-react";
 import {
   Conversation,
   ConversationContent,
@@ -23,6 +23,7 @@ import {
   type PromptInputMessage,
 } from "@/components/ai-elements/prompt-input";
 import { Markdown } from "../ui/Markdown";
+import portfolioData from "@/data/portfolio.json";
 
 const suggestedQuestions = [
   "What technologies do you work with?",
@@ -56,17 +57,31 @@ export function ChatModal() {
   const { isOpen, closeChat } = useChat();
   const inputRef = React.useRef<HTMLTextAreaElement>(null);
   const [input, setInput] = React.useState("");
+  const [rateLimitError, setRateLimitError] = React.useState(false);
 
-  const { messages, sendMessage, status } = useAIChat({
+  const { messages, sendMessage, status, error } = useAIChat({
     id: "portfolio-chat",
     messages: [welcomeMessage],
     transport: new DefaultChatTransport({
       api: "/api/chat",
     }),
+    onError: (err) => {
+      // Check if it's a rate limit error
+      if (err.message?.includes("429") || err.message?.includes("rate")) {
+        setRateLimitError(true);
+      }
+    },
   });
 
   const isLoading = status === "submitted";
   const isStreaming = status === "streaming";
+
+  // Reset rate limit error when modal closes
+  React.useEffect(() => {
+    if (!isOpen) {
+      setRateLimitError(false);
+    }
+  }, [isOpen]);
 
   // Focus input when modal opens
   React.useEffect(() => {
@@ -250,6 +265,47 @@ export function ChatModal() {
               <div className="flex items-center justify-center">
                 <div className="bg-muted p-3 rounded-full">
                   <Loader2 className="h-4 w-4 animate-spin" />
+                </div>
+              </div>
+            )}
+
+            {/* Rate limit error message */}
+            {(rateLimitError || error) && (
+              <div className="flex gap-3">
+                <div className="relative shrink-0 w-8 h-8 rounded-full overflow-hidden">
+                  <Image
+                    src="/assistent_bot.webp"
+                    alt="AI Assistant"
+                    fill
+                    className="object-cover"
+                    sizes="32px"
+                  />
+                </div>
+                <div className="max-w-[80%] px-4 py-3 rounded-2xl rounded-bl-md bg-amber-500/10 border border-amber-500/20">
+                  <div className="flex items-center gap-2 text-amber-600 dark:text-amber-400 mb-2">
+                    <AlertTriangle className="h-4 w-4" />
+                    <span className="font-medium text-sm">Daily Limit Reached</span>
+                  </div>
+                  <p className="text-sm text-muted-foreground mb-3">
+                    We&apos;ve exceeded our daily AI conversation limit. Please try again tomorrow!
+                  </p>
+                  <div className="text-sm space-y-1">
+                    <p className="font-medium text-foreground">Reach Chirag directly:</p>
+                    <a
+                      href={`mailto:${portfolioData.personal.email}`}
+                      className="block text-primary hover:underline"
+                    >
+                      📧 {portfolioData.personal.email}
+                    </a>
+                    <a
+                      href={portfolioData.personal.linkedin}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="block text-primary hover:underline"
+                    >
+                      💼 LinkedIn Profile
+                    </a>
+                  </div>
                 </div>
               </div>
             )}

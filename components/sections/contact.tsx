@@ -62,7 +62,7 @@ const jsonLd = {
       contactType: "customer service",
       availableLanguage: ["English", "Hindi", "Gujarati"],
     },
-    sameAs: [personal.github, personal.linkedin, personal.twitter],
+    sameAs: [personal.linkedin, personal.twitter],
   },
 };
 
