@@ -57,7 +57,7 @@ export function ChatModal() {
   const { isOpen, closeChat } = useChat();
   const inputRef = React.useRef<HTMLTextAreaElement>(null);
   const [input, setInput] = React.useState("");
-  const [rateLimitError, setRateLimitError] = React.useState(false);
+  const [rateLimitError, setRateLimitError] = React.useState<string | null>(null);
 
   const { messages, sendMessage, status, error } = useAIChat({
     id: "portfolio-chat",
@@ -66,10 +66,18 @@ export function ChatModal() {
       api: "/api/chat",
     }),
     onError: (err) => {
-      // Check if it's a rate limit error
-      if (err.message?.includes("429") || err.message?.includes("rate")) {
-        setRateLimitError(true);
+      // err.message contains the raw response body text from the API
+      try {
+        const parsed = JSON.parse(err.message);
+        if (parsed.error === "user_limit" || parsed.error === "rate_limit") {
+          setRateLimitError(parsed.message);
+          return;
+        }
+      } catch {
+        // Not JSON — fall through
       }
+      // Fallback for unexpected error formats
+      setRateLimitError("Something went wrong. Please try again later.");
     },
   });
 
@@ -79,7 +87,7 @@ export function ChatModal() {
   // Reset rate limit error when modal closes
   React.useEffect(() => {
     if (!isOpen) {
-      setRateLimitError(false);
+      setRateLimitError(null);
     }
   }, [isOpen]);
 
@@ -284,10 +292,10 @@ export function ChatModal() {
                 <div className="max-w-[80%] px-4 py-3 rounded-2xl rounded-bl-md bg-amber-500/10 border border-amber-500/20">
                   <div className="flex items-center gap-2 text-amber-600 dark:text-amber-400 mb-2">
                     <AlertTriangle className="h-4 w-4" />
-                    <span className="font-medium text-sm">Daily Limit Reached</span>
+                    <span className="font-medium text-sm">Limit Reached</span>
                   </div>
                   <p className="text-sm text-muted-foreground mb-3">
-                    We&apos;ve exceeded our daily AI conversation limit. Please try again tomorrow!
+                    {rateLimitError || "Something went wrong. Please try again later."}
                   </p>
                   <div className="text-sm space-y-1">
                     <p className="font-medium text-foreground">Reach Chirag directly:</p>

@@ -126,11 +126,7 @@ export function Hero() {
                   className="sm:text-base"
                   asChild
                 >
-                  <a
-                    href={personal.cv}
-                    download
-                    suppressHydrationWarning
-                  >
+                  <a href={personal.cv} download suppressHydrationWarning>
                     <Download className="h-4 w-4 mr-2" aria-hidden="true" />
                     Download CV
                   </a>
@@ -151,9 +147,7 @@ export function Hero() {
               <address className="not-italic flex flex-wrap items-center gap-3 sm:gap-6 lg:gap-4 md-short:gap-4 lg-short:gap-3 text-xs sm:text-sm md-short:text-sm lg-short:text-xs text-muted-foreground pt-2 lg:pt-2 md-short:pt-1 lg-short:pt-1">
                 <div className="hidden sm:flex items-center gap-2">
                   <Mail className="h-4 w-4" aria-hidden="true" />
-                  <a href={`mailto:${personal.email}`}>
-                    {personal.email}
-                  </a>
+                  <a href={`mailto:${personal.email}`}>{personal.email}</a>
                 </div>
                 <div className="flex items-center gap-2">
                   <MapPin className="h-4 w-4 text-red-500" aria-hidden="true" />
@@ -195,7 +189,7 @@ export function Hero() {
                   className="group/chat relative w-70 h-87.5 sm:w-[320px] sm:h-100 md:w-90 md:h-112.5 lg:w-95 lg:h-118.75 xl:w-105 xl:h-131.25 md-short:w-70 md-short:h-87.5 lg-short:w-[320px] lg-short:h-100 lg:max-h-[calc(100vh-8rem)] rounded-2xl shadow-2xl aspect-4/5 overflow-hidden cursor-pointer focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2"
                   aria-label="Chat with my AI Assistant"
                 >
-                  <Image
+                  {/* <Image
                     src={personal.profile_image}
                     alt={`${personal.name} - ${personal.title} specializing in React, Next.js, Node.js, and AI-powered solutions`}
                     fill
@@ -204,7 +198,7 @@ export function Hero() {
                     fetchPriority="high"
                     sizes="(max-width: 768px) 320px, (max-width: 1024px) 360px, (max-width: 1280px) 380px, 420px"
                     quality={80}
-                  />
+                  /> */}
 
                   {/* Hover Overlay */}
                   <div className="absolute inset-0 bg-black/60 opacity-0 group-hover/chat:opacity-100 transition-opacity duration-300 flex flex-col items-center justify-center text-white z-10">

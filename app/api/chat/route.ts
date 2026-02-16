@@ -6,9 +6,30 @@ export const maxDuration = 30;
 
 const FREE_MODELS = [
   "openai/gpt-oss-120b:free",
-  "z-ai/glm-4.6v",
   "x-ai/grok-4.1-fast",
+  "z-ai/glm-4.6v",
 ];
+
+// Module-level state to remember which model to start from.
+// Persists across requests within the same server process.
+// Resets to the first model at the start of each new day (UTC).
+let currentModelIndex = 0;
+let lastResetDate = new Date().toISOString().slice(0, 10); // "YYYY-MM-DD"
+
+function getStartModelIndex(): number {
+  const today = new Date().toISOString().slice(0, 10);
+  if (today !== lastResetDate) {
+    currentModelIndex = 0;
+    lastResetDate = today;
+  }
+  return currentModelIndex;
+}
+
+function advanceModelIndex(): void {
+  if (currentModelIndex < FREE_MODELS.length - 1) {
+    currentModelIndex++;
+  }
+}
 
 // Create OpenRouter client using OpenAI-compatible provider
 const openrouter = createOpenAICompatible({
@@ -322,6 +343,53 @@ function isRateLimitError(error: unknown): boolean {
   return false;
 }
 
+// Per-user daily request limiting (in-memory, resets on server restart & daily)
+const DAILY_USER_LIMIT = 5;
+const userRequestCounts = new Map<string, { count: number; date: string }>();
+
+function getClientIp(req: Request): string {
+  const forwarded = req.headers.get("x-forwarded-for");
+  if (forwarded) return forwarded.split(",")[0].trim();
+  const realIp = req.headers.get("x-real-ip");
+  if (realIp) return realIp;
+  return "unknown";
+}
+
+/** Returns true if the user is allowed, false if limit reached. */
+function checkAndIncrementUserLimit(ip: string): boolean {
+  const today = new Date().toISOString().slice(0, 10);
+  const entry = userRequestCounts.get(ip);
+
+  if (!entry || entry.date !== today) {
+    userRequestCounts.set(ip, { count: 1, date: today });
+    return true;
+  }
+
+  if (entry.count >= DAILY_USER_LIMIT) {
+    return false;
+  }
+
+  entry.count++;
+  return true;
+}
+
+function createUserLimitResponse() {
+  return new Response(
+    JSON.stringify({
+      error: "user_limit",
+      message: `You've used all ${DAILY_USER_LIMIT} questions for today. Please contact Chirag directly or come back tomorrow to chat with me.`,
+      contact: {
+        email: portfolioData.personal.email,
+        linkedin: portfolioData.personal.linkedin,
+      },
+    }),
+    {
+      status: 429,
+      headers: { "Content-Type": "application/json" },
+    },
+  );
+}
+
 // Create a rate limit error response
 function createRateLimitResponse() {
   return new Response(
@@ -343,6 +411,12 @@ function createRateLimitResponse() {
 
 export async function POST(req: Request) {
   try {
+    // Check per-user daily limit before doing any work
+    const clientIp = getClientIp(req);
+    if (!checkAndIncrementUserLimit(clientIp)) {
+      return createUserLimitResponse();
+    }
+
     const { messages } = await req.json();
 
     // Convert UIMessage format to model message format
@@ -366,29 +440,47 @@ User's question: "${latestUserMessage}"
 
 Reply with ONLY the section names (comma-separated) that are needed. Example: "about, experience, projects"`;
 
-    let relevantProperties: PortfolioProperty[];
+    let relevantProperties: PortfolioProperty[] = [
+      "personal",
+      "about",
+      "experience",
+    ];
+    const startIndex = getStartModelIndex();
+    let workingModelIndex = startIndex;
 
-    try {
-      const classification = await generateText({
-        model: openrouter.chatModel(FREE_MODELS[2]),
-        prompt: classificationPrompt,
-      });
-      relevantProperties = parseClassificationResponse(classification.text);
-    } catch (classificationError) {
-      if (isRateLimitError(classificationError)) {
-        return createRateLimitResponse();
+    // Step 1b: Try each model in order starting from the remembered index
+    let classified = false;
+    for (let i = startIndex; i < FREE_MODELS.length; i++) {
+      try {
+        const classification = await generateText({
+          model: openrouter.chatModel(FREE_MODELS[i]),
+          prompt: classificationPrompt,
+        });
+        relevantProperties = parseClassificationResponse(classification.text);
+        workingModelIndex = i;
+        classified = true;
+        break;
+      } catch (error) {
+        console.error(`Classification failed with ${FREE_MODELS[i]}:`, error);
+        // This model is exhausted — advance the remembered index for future requests
+        advanceModelIndex();
+        if (i === FREE_MODELS.length - 1) {
+          // All models exhausted — show rate limit message
+          return createRateLimitResponse();
+        }
       }
-      // If classification fails for other reasons, use default properties
-      console.error("Classification error:", classificationError);
-      relevantProperties = ["personal", "about", "experience"];
+    }
+
+    if (!classified) {
+      return createRateLimitResponse();
     }
 
     // Step 2: Gather context from identified properties
     const context = gatherContext(relevantProperties);
 
-    // Step 3: Generate response with relevant context
+    // Step 3: Generate response using the model that succeeded for classification
     const result = streamText({
-      model: openrouter.chatModel(FREE_MODELS[2]),
+      model: openrouter.chatModel(FREE_MODELS[workingModelIndex]),
       system: `${responseSystemPrompt}
 
 ## Context from Chirag's Portfolio
