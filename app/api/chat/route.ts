@@ -309,7 +309,10 @@ const responseSystemPrompt = `You are Chirag Talpada's AI assistant on his portf
 7. Use a conversational tone - technical yet approachable
 8. NEVER use markdown tables - they don't display well in chat. Use bullet points or simple lists instead
 9. Keep formatting simple: use bold for emphasis, bullet points for lists, and short paragraphs
-10. When listing multiple items, pick the most relevant ones rather than listing everything`;
+10. When listing multiple items, pick the most relevant ones rather than listing everything
+
+NOTE:- Do not misspelled develoer name, always use "Chirag" or "Chirag talpada"
+`;
 
 // Convert UIMessage format to model message format
 function convertToModelMessages(messages: UIMessage[]) {
