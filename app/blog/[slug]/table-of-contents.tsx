@@ -28,7 +28,7 @@ export function TableOfContents({ headings }: TableOfContentsProps) {
       {
         rootMargin: "-80px 0px -80% 0px",
         threshold: 0,
-      }
+      },
     );
 
     headings.forEach((heading) => {
@@ -48,10 +48,7 @@ export function TableOfContents({ headings }: TableOfContentsProps) {
     };
   }, [headings]);
 
-  const handleClick = (
-    e: React.MouseEvent<HTMLAnchorElement>,
-    id: string
-  ) => {
+  const handleClick = (e: React.MouseEvent<HTMLAnchorElement>, id: string) => {
     e.preventDefault();
     const element = document.getElementById(id);
     if (element) {
@@ -74,7 +71,7 @@ export function TableOfContents({ headings }: TableOfContentsProps) {
         <List className="h-4 w-4 text-muted-foreground" aria-hidden="true" />
         <span className="font-semibold text-sm">On this page</span>
       </div>
-      <ul className="space-y-2">
+      <ul className="space-y-2 max-h-[calc(100vh-15rem)] overflow-y-auto pr-1 toc-scrollbar">
         {headings.map((heading) => (
           <li
             key={heading.id}

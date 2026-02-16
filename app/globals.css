@@ -477,6 +477,34 @@ html {
   max-width: 100%;
 }
 
+/* Thin scrollbar for table of contents */
+.toc-scrollbar {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(150, 150, 150, 0.3) rgba(150, 150, 150, 0.1);
+}
+
+.toc-scrollbar:hover {
+  scrollbar-color: rgba(150, 150, 150, 0.5) rgba(150, 150, 150, 0.1);
+}
+
+.toc-scrollbar::-webkit-scrollbar {
+  width: 5px;
+}
+
+.toc-scrollbar::-webkit-scrollbar-track {
+  background: rgba(150, 150, 150, 0.1);
+  border-radius: 10px;
+}
+
+.toc-scrollbar::-webkit-scrollbar-thumb {
+  background-color: rgba(150, 150, 150, 0.3);
+  border-radius: 10px;
+}
+
+.toc-scrollbar:hover::-webkit-scrollbar-thumb {
+  background-color: rgba(150, 150, 150, 0.5);
+}
+
 .prose pre {
   white-space: pre-wrap;
   word-wrap: break-word;

@@ -76,6 +76,7 @@ export interface BlogPost {
   readingTime: string;
   tags: string[];
   image?: string;
+  featured?: boolean;
   author: {
     name: string;
     avatar?: string;

@@ -1,3 +1,4 @@
+import dynamic from "next/dynamic";
 import {
   Hero,
   About,
@@ -7,10 +8,13 @@ import {
   Projects,
   AchievementsRecognition,
   Testimonials,
-  Contact,
   BlogPreview,
 } from "@/components/sections";
 import { getAllPosts } from "@/lib/mdx";
+
+const Contact = dynamic(() =>
+  import("@/components/sections/contact").then((mod) => mod.Contact),
+);
 
 export default async function Home() {
   const posts = await getAllPosts();

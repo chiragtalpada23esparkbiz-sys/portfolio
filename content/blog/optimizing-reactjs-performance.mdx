@@ -1,0 +1,1103 @@
+---
+title: "Optimizing React.js Performance: Proven Techniques to Build Blazing-Fast Apps"
+excerpt: "A practical guide to React performance optimization — from eliminating unnecessary re-renders and code splitting to memoization, virtualization, and profiling. Real patterns you can apply today."
+date: "2026-01-20"
+tags: ["React", "Performance", "TypeScript", "Web Development"]
+image: "/blog/react_optimized-cover.webp"
+author:
+  name: "Chirag Talpada"
+---
+
+# Optimizing React.js Performance: Proven Techniques to Build Blazing-Fast Apps
+
+React is fast by default — until it isn't. As your component tree grows, small inefficiencies compound into sluggish UIs, janky interactions, and frustrated users. I've spent years optimizing React apps in production, and the difference between a good app and a great one almost always comes down to understanding how React renders and knowing where to intervene.
+
+This guide covers the techniques that actually matter, with TypeScript examples you can apply immediately.
+
+## Why React Performance Matters
+
+Performance isn't just about speed — it directly impacts business metrics:
+
+- **53% of mobile users** abandon sites that take longer than 3 seconds to load
+- A **100ms delay** in response time can reduce conversion rates by 7%
+- Google uses **Core Web Vitals** (LCP, INP, CLS) as ranking signals — slow apps rank lower
+
+React's virtual DOM is efficient, but it can't save you from bad patterns. The key is understanding when React re-renders and making sure it only re-renders what's necessary.
+
+## Understanding React's Rendering Behavior
+
+Before optimizing, you need to understand the problem. React re-renders a component when:
+
+1. Its **state** changes
+2. Its **props** change
+3. Its **parent re-renders** (even if the child's props haven't changed)
+4. The **context** it consumes changes
+
+Rule #3 is where most performance issues hide. A single state update at the top of your tree can cascade into hundreds of unnecessary re-renders below.
+
+```typescript
+// This re-renders ExpensiveChild on EVERY keystroke
+function SearchPage() {
+  const [query, setQuery] = useState("");
+  const [results, setResults] = useState<Result[]>([]);
+
+  return (
+    <div>
+      <input value={query} onChange={(e) => setQuery(e.target.value)} />
+      <ExpensiveChild data={results} /> {/* Re-renders even though results didn't change */}
+    </div>
+  );
+}
+```
+
+## Technique 1: Memoize Components with React.memo
+
+`React.memo` prevents a component from re-rendering if its props haven't changed (shallow comparison):
+
+```typescript
+interface ProductCardProps {
+  product: Product;
+  onAddToCart: (id: string) => void;
+}
+
+const ProductCard = React.memo(function ProductCard({
+  product,
+  onAddToCart,
+}: ProductCardProps) {
+  return (
+    <div className="border rounded-lg p-4">
+      <h3>{product.name}</h3>
+      <p>${product.price}</p>
+      <button onClick={() => onAddToCart(product.id)}>Add to Cart</button>
+    </div>
+  );
+});
+```
+
+**When to use it:**
+
+- Components that render often with the same props
+- Components that are expensive to render (large lists, complex UIs)
+- Child components below frequently updating parents
+
+**When NOT to use it:**
+
+- Components that almost always receive new props
+- Very simple/cheap components — the comparison overhead isn't worth it
+
+## Technique 2: Stabilize References with useMemo and useCallback
+
+`React.memo` only works if prop references are stable. If you pass a new object or function on every render, memoization is useless:
+
+```typescript
+function ProductList({ products }: { products: Product[] }) {
+  // Bad: creates a new function reference every render
+  // const handleAddToCart = (id: string) => { ... };
+
+  // Good: stable reference, only changes when dependencies change
+  const handleAddToCart = useCallback((id: string) => {
+    setCart((prev) => [...prev, id]);
+  }, []);
+
+  // Bad: creates a new sorted array every render
+  // const sortedProducts = products.sort((a, b) => a.price - b.price);
+
+  // Good: only re-sorts when products change
+  const sortedProducts = useMemo(
+    () => [...products].sort((a, b) => a.price - b.price),
+    [products]
+  );
+
+  return (
+    <div>
+      {sortedProducts.map((product) => (
+        <ProductCard
+          key={product.id}
+          product={product}
+          onAddToCart={handleAddToCart}
+        />
+      ))}
+    </div>
+  );
+}
+```
+
+**Rule of thumb:** If you pass a function or computed value as a prop to a memoized child, wrap it in `useCallback` or `useMemo`. Otherwise, you're just adding complexity with no benefit.
+
+## Technique 3: Move State Down (Component Composition)
+
+The simplest optimization is often restructuring your components so that state lives closer to where it's used:
+
+```typescript
+// Before: entire page re-renders on every keystroke
+function Page() {
+  const [search, setSearch] = useState("");
+  return (
+    <div>
+      <input value={search} onChange={(e) => setSearch(e.target.value)} />
+      <HeavyDashboard />
+      <ExpensiveChart />
+      <UserList />
+    </div>
+  );
+}
+
+// After: only SearchInput re-renders on keystrokes
+function Page() {
+  return (
+    <div>
+      <SearchInput />
+      <HeavyDashboard />
+      <ExpensiveChart />
+      <UserList />
+    </div>
+  );
+}
+
+function SearchInput() {
+  const [search, setSearch] = useState("");
+  return <input value={search} onChange={(e) => setSearch(e.target.value)} />;
+}
+```
+
+This pattern is free — no extra API, no memoization overhead. Just better architecture.
+
+## Technique 4: Code Splitting with React.lazy
+
+Don't ship JavaScript the user doesn't need yet. Split heavy components so they load on demand:
+
+```typescript
+import { lazy, Suspense } from "react";
+
+// These bundles are only loaded when the route is visited
+const Dashboard = lazy(() => import("./pages/Dashboard"));
+const Settings = lazy(() => import("./pages/Settings"));
+const Analytics = lazy(() => import("./pages/Analytics"));
+
+function App() {
+  return (
+    <Suspense fallback={<PageSkeleton />}>
+      <Routes>
+        <Route path="/dashboard" element={<Dashboard />} />
+        <Route path="/settings" element={<Settings />} />
+        <Route path="/analytics" element={<Analytics />} />
+      </Routes>
+    </Suspense>
+  );
+}
+```
+
+**Split aggressively:**
+
+- Route-level components
+- Modals, drawers, and dialogs (loaded on interaction)
+- Heavy libraries (chart libraries, rich text editors, date pickers)
+
+```typescript
+// Load a heavy chart library only when the user opens the analytics tab
+const ChartView = lazy(() => import("./ChartView"));
+
+function AnalyticsTab({ isActive }: { isActive: boolean }) {
+  if (!isActive) return null;
+  return (
+    <Suspense fallback={<div className="h-64 animate-pulse bg-muted rounded" />}>
+      <ChartView />
+    </Suspense>
+  );
+}
+```
+
+## Technique 5: Virtualize Long Lists
+
+Rendering 1,000 DOM nodes when only 20 are visible is wasteful. Use virtualization to render only what's on screen:
+
+```typescript
+import { useVirtualizer } from "@tanstack/react-virtual";
+import { useRef } from "react";
+
+interface VirtualListProps {
+  items: Item[];
+}
+
+function VirtualList({ items }: VirtualListProps) {
+  const parentRef = useRef<HTMLDivElement>(null);
+
+  const virtualizer = useVirtualizer({
+    count: items.length,
+    getScrollElement: () => parentRef.current,
+    estimateSize: () => 72, // estimated row height in pixels
+    overscan: 5, // render 5 extra items above/below viewport
+  });
+
+  return (
+    <div ref={parentRef} className="h-[600px] overflow-auto">
+      <div
+        style={{ height: `${virtualizer.getTotalSize()}px`, position: "relative" }}
+      >
+        {virtualizer.getVirtualItems().map((virtualItem) => (
+          <div
+            key={virtualItem.key}
+            style={{
+              position: "absolute",
+              top: 0,
+              transform: `translateY(${virtualItem.start}px)`,
+              height: `${virtualItem.size}px`,
+              width: "100%",
+            }}
+          >
+            <ItemRow item={items[virtualItem.index]} />
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+```
+
+**When to virtualize:**
+
+- Lists with 100+ items
+- Tables with many rows
+- Any scrollable container with repetitive items
+
+With `@tanstack/react-virtual`, a list of 10,000 items renders just as smoothly as a list of 10.
+
+## Technique 6: Debounce Expensive Operations
+
+User input events fire rapidly. Debounce them to avoid triggering expensive operations on every keystroke:
+
+```typescript
+import { useState, useMemo } from "react";
+import { debounce } from "lodash-es";
+
+function SearchComponent() {
+  const [results, setResults] = useState<SearchResult[]>([]);
+  const [isSearching, setIsSearching] = useState(false);
+
+  const debouncedSearch = useMemo(
+    () =>
+      debounce(async (query: string) => {
+        if (!query.trim()) {
+          setResults([]);
+          setIsSearching(false);
+          return;
+        }
+        setIsSearching(true);
+        const data = await searchAPI(query);
+        setResults(data);
+        setIsSearching(false);
+      }, 300),
+    []
+  );
+
+  return (
+    <div>
+      <input
+        placeholder="Search..."
+        onChange={(e) => debouncedSearch(e.target.value)}
+      />
+      {isSearching && <Spinner />}
+      {results.map((result) => (
+        <ResultCard key={result.id} result={result} />
+      ))}
+    </div>
+  );
+}
+```
+
+## Technique 7: Optimize Context to Prevent Cascade Re-renders
+
+A single context update re-renders every consumer. Split your context by update frequency:
+
+```typescript
+// Bad: one giant context that changes frequently
+const AppContext = createContext<{
+  user: User;
+  theme: Theme;
+  notifications: Notification[];
+  cart: CartItem[];
+}>({} as any);
+
+// Good: split into separate contexts by update frequency
+const UserContext = createContext<User>({} as User);
+const ThemeContext = createContext<Theme>({} as Theme);
+const NotificationContext = createContext<Notification[]>([]);
+const CartContext = createContext<CartItem[]>([]);
+```
+
+For contexts that update frequently, memoize the value to prevent unnecessary re-renders:
+
+```typescript
+function CartProvider({ children }: { children: React.ReactNode }) {
+  const [items, setItems] = useState<CartItem[]>([]);
+
+  const value = useMemo(
+    () => ({
+      items,
+      addItem: (item: CartItem) => setItems((prev) => [...prev, item]),
+      removeItem: (id: string) => setItems((prev) => prev.filter((i) => i.id !== id)),
+      total: items.reduce((sum, item) => sum + item.price * item.quantity, 0),
+    }),
+    [items]
+  );
+
+  return <CartContext.Provider value={value}>{children}</CartContext.Provider>;
+}
+```
+
+## Technique 8: Optimize Images and Assets
+
+Images are often the largest payload on any page. Handle them properly:
+
+```typescript
+function OptimizedImage({
+  src,
+  alt,
+  width,
+  height,
+}: {
+  src: string;
+  alt: string;
+  width: number;
+  height: number;
+}) {
+  return (
+    <img
+      src={src}
+      alt={alt}
+      width={width}
+      height={height}
+      loading="lazy"              // Defer off-screen images
+      decoding="async"            // Don't block the main thread
+      style={{ aspectRatio: `${width}/${height}` }} // Prevent CLS
+    />
+  );
+}
+```
+
+**Key practices:**
+
+- Always set `width` and `height` (or `aspect-ratio`) to prevent Cumulative Layout Shift
+- Use `loading="lazy"` for below-the-fold images
+- Serve images in WebP/AVIF format for 25-50% smaller file sizes
+- Use `srcset` for responsive images so mobile devices don't download desktop-sized files
+
+## Technique 9: Use the React Profiler to Find Bottlenecks
+
+Stop guessing — measure. React DevTools Profiler shows you exactly which components re-render and why:
+
+**Step 1:** Open React DevTools → Profiler tab → click Record
+
+**Step 2:** Interact with your app (type, click, navigate)
+
+**Step 3:** Stop recording and analyze the flame graph
+
+```typescript
+// Programmatic profiling for production monitoring
+import { Profiler } from "react";
+
+function onRender(
+  id: string,
+  phase: "mount" | "update",
+  actualDuration: number
+) {
+  if (actualDuration > 16) {
+    // Longer than one frame (60fps)
+    console.warn(`Slow render: ${id} took ${actualDuration.toFixed(1)}ms (${phase})`);
+  }
+}
+
+function App() {
+  return (
+    <Profiler id="App" onRender={onRender}>
+      <Dashboard />
+    </Profiler>
+  );
+}
+```
+
+**What to look for:**
+
+- Components that re-render when they shouldn't (grey in profiler = "did not render" is what you want)
+- Components with high "actual duration" — these are your optimization targets
+- Cascading re-renders from a single state change
+
+## Technique 10: Web Workers for Heavy Computation
+
+Move CPU-intensive work off the main thread so the UI stays responsive:
+
+```typescript
+// worker.ts
+self.onmessage = (event: MessageEvent<{ data: RawData[] }>) => {
+  const { data } = event.data;
+
+  // Heavy computation that would block the main thread
+  const processed = data
+    .filter((item) => item.isValid)
+    .map((item) => ({
+      ...item,
+      score: calculateComplexScore(item),
+      rank: 0,
+    }))
+    .sort((a, b) => b.score - a.score)
+    .map((item, index) => ({ ...item, rank: index + 1 }));
+
+  self.postMessage({ result: processed });
+};
+
+// useWorker.ts
+function useDataProcessor() {
+  const [result, setResult] = useState<ProcessedData[]>([]);
+  const workerRef = useRef<Worker | null>(null);
+
+  useEffect(() => {
+    workerRef.current = new Worker(new URL("./worker.ts", import.meta.url));
+    workerRef.current.onmessage = (event) => {
+      setResult(event.data.result);
+    };
+    return () => workerRef.current?.terminate();
+  }, []);
+
+  const process = useCallback((data: RawData[]) => {
+    workerRef.current?.postMessage({ data });
+  }, []);
+
+  return { result, process };
+}
+```
+
+**Good candidates for Web Workers:**
+
+- Sorting or filtering large datasets (1,000+ items)
+- CSV/JSON parsing
+- Image processing or canvas operations
+- Complex calculations (statistics, search scoring)
+
+## Technique 11: Concurrent Features (React 18+)
+
+React 18 introduced concurrent rendering — the ability to prepare multiple versions of the UI at the same time. The key concept is **urgent vs non-urgent updates**:
+
+- **Urgent updates** — typing, clicking, pressing — need immediate response
+- **Non-urgent updates** — search results, filtering a list, rendering a new page — can be deferred
+
+### useTransition
+
+`useTransition` marks a state update as non-urgent. React keeps the current UI responsive while rendering the new state in the background:
+
+```typescript
+import { useState, useTransition } from "react";
+
+function FilterableList({ items }: { items: Product[] }) {
+  const [query, setQuery] = useState("");
+  const [filteredItems, setFilteredItems] = useState(items);
+  const [isPending, startTransition] = useTransition();
+
+  const handleSearch = (value: string) => {
+    // Urgent: update the input immediately
+    setQuery(value);
+
+    // Non-urgent: filter the list in the background
+    startTransition(() => {
+      const filtered = items.filter((item) =>
+        item.name.toLowerCase().includes(value.toLowerCase())
+      );
+      setFilteredItems(filtered);
+    });
+  };
+
+  return (
+    <div>
+      <input value={query} onChange={(e) => handleSearch(e.target.value)} />
+      {isPending && <p className="text-muted-foreground">Updating...</p>}
+      <ul className={isPending ? "opacity-70" : ""}>
+        {filteredItems.map((item) => (
+          <ProductCard key={item.id} product={item} />
+        ))}
+      </ul>
+    </div>
+  );
+}
+```
+
+The input stays snappy because React prioritizes the urgent `setQuery` update. The expensive `setFilteredItems` renders in the background without blocking user interaction.
+
+### useDeferredValue
+
+`useDeferredValue` is a simpler alternative when you don't control the state update — it gives you a "stale" version of a value that lags behind:
+
+```typescript
+import { useDeferredValue, useMemo } from "react";
+
+function SearchResults({ query }: { query: string }) {
+  // deferredQuery lags behind the actual query during rapid typing
+  const deferredQuery = useDeferredValue(query);
+  const isStale = query !== deferredQuery;
+
+  const results = useMemo(
+    () => heavyFilterOperation(deferredQuery),
+    [deferredQuery]
+  );
+
+  return (
+    <div className={isStale ? "opacity-60 transition-opacity" : ""}>
+      {results.map((result) => (
+        <ResultCard key={result.id} result={result} />
+      ))}
+    </div>
+  );
+}
+```
+
+### Automatic Batching
+
+Before React 18, state updates inside `setTimeout`, `fetch`, or event listeners were **not** batched — each triggered a separate re-render. React 18 batches all updates automatically:
+
+```typescript
+// React 17: 3 separate re-renders
+// React 18: 1 single re-render (automatic batching)
+fetch("/api/data").then((res) => res.json()).then((data) => {
+  setLoading(false);
+  setResults(data.items);
+  setCount(data.total);
+  // React 18 batches all three into one render
+});
+```
+
+This is a free performance win — no code changes needed. Just upgrade to React 18+.
+
+## Technique 12: Optimizing Forms in React
+
+Forms are a common source of performance issues. Every keystroke in a controlled input triggers a re-render of the parent component and all its children.
+
+### Controlled vs Uncontrolled Inputs
+
+```typescript
+// Controlled: re-renders the entire form on every keystroke
+function SlowForm() {
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [bio, setBio] = useState("");
+
+  return (
+    <form>
+      <input value={name} onChange={(e) => setName(e.target.value)} />
+      <input value={email} onChange={(e) => setEmail(e.target.value)} />
+      <textarea value={bio} onChange={(e) => setBio(e.target.value)} />
+      <ExpensiveSidebar /> {/* Re-renders on every keystroke */}
+    </form>
+  );
+}
+
+// Uncontrolled: no re-renders during typing
+function FastForm() {
+  const nameRef = useRef<HTMLInputElement>(null);
+  const emailRef = useRef<HTMLInputElement>(null);
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    const data = {
+      name: nameRef.current?.value,
+      email: emailRef.current?.value,
+    };
+    submitForm(data);
+  };
+
+  return (
+    <form onSubmit={handleSubmit}>
+      <input ref={nameRef} defaultValue="" />
+      <input ref={emailRef} defaultValue="" />
+      <ExpensiveSidebar /> {/* Never re-renders during typing */}
+    </form>
+  );
+}
+```
+
+### React Hook Form: Best of Both Worlds
+
+React Hook Form uses uncontrolled inputs under the hood with **field-level rendering** — only the field that changed re-renders, not the entire form:
+
+```typescript
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { z } from "zod";
+
+const schema = z.object({
+  name: z.string().min(2, "Name must be at least 2 characters"),
+  email: z.string().email("Invalid email address"),
+  company: z.string().optional(),
+  message: z.string().min(10, "Message must be at least 10 characters"),
+});
+
+type FormData = z.infer<typeof schema>;
+
+function ContactForm() {
+  const {
+    register,
+    handleSubmit,
+    formState: { errors, isSubmitting },
+  } = useForm<FormData>({
+    resolver: zodResolver(schema),
+  });
+
+  const onSubmit = async (data: FormData) => {
+    await submitToAPI(data);
+  };
+
+  return (
+    <form onSubmit={handleSubmit(onSubmit)}>
+      <div>
+        <input {...register("name")} placeholder="Name" />
+        {errors.name && <span className="text-red-500">{errors.name.message}</span>}
+      </div>
+      <div>
+        <input {...register("email")} placeholder="Email" />
+        {errors.email && <span className="text-red-500">{errors.email.message}</span>}
+      </div>
+      <div>
+        <input {...register("company")} placeholder="Company" />
+      </div>
+      <div>
+        <textarea {...register("message")} placeholder="Message" />
+        {errors.message && <span className="text-red-500">{errors.message.message}</span>}
+      </div>
+      <button type="submit" disabled={isSubmitting}>
+        {isSubmitting ? "Sending..." : "Send"}
+      </button>
+    </form>
+  );
+}
+```
+
+**Why React Hook Form is fast:**
+
+- Uses `ref`-based tracking — no state updates during typing
+- Validation runs per-field, not per-form
+- The form component itself doesn't re-render when individual fields change
+- On a form with 20+ fields, this can mean **90% fewer re-renders** compared to controlled inputs
+
+## Technique 13: Avoiding Heavy Third-Party Bundles
+
+Third-party libraries are the #1 cause of bloated bundles. A single `import` can add hundreds of KB to your bundle without you realizing it.
+
+### Analyze Your Bundle First
+
+```bash
+# Install the analyzer
+npm install --save-dev @next/bundle-analyzer
+# or for CRA / Vite
+npm install --save-dev source-map-explorer
+```
+
+```typescript
+// next.config.ts — for Next.js projects
+import withBundleAnalyzer from "@next/bundle-analyzer";
+
+const config = withBundleAnalyzer({
+  enabled: process.env.ANALYZE === "true",
+})({
+  // your existing config
+});
+
+export default config;
+```
+
+```bash
+# Run the analyzer
+ANALYZE=true npm run build
+```
+
+### Tree Shaking: Import Only What You Need
+
+Tree shaking eliminates unused code — but only if you import correctly:
+
+```typescript
+// Bad: imports the ENTIRE lodash library (~70KB gzipped)
+import _ from "lodash";
+_.debounce(fn, 300);
+
+// Better: imports only debounce (~1KB gzipped)
+import debounce from "lodash/debounce";
+
+// Best: use a tree-shakeable ESM package
+import { debounce } from "lodash-es";
+```
+
+The same applies to icon libraries, UI kits, and utility packages:
+
+```typescript
+// Bad: pulls in every icon (~200KB)
+import { icons } from "lucide-react";
+
+// Good: only the icons you use (~2KB)
+import { Search, Menu, X } from "lucide-react";
+
+// Bad: entire date library
+import moment from "moment"; // ~300KB with locales
+
+// Good: lightweight alternative
+import { format, parseISO } from "date-fns"; // ~5KB per function (tree-shakeable)
+```
+
+### ESM vs CJS: Why It Matters
+
+- **ESM (ES Modules):** `import/export` — supports tree shaking, static analysis
+- **CJS (CommonJS):** `require/module.exports` — does NOT support tree shaking
+
+When choosing libraries, check if they ship ESM builds. Look for `"module"` or `"exports"` in their `package.json`. If a library only ships CJS, the bundler can't eliminate unused code.
+
+```json
+// Good — library supports ESM
+{
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.mjs",
+  "exports": {
+    ".": {
+      "import": "./dist/index.mjs",
+      "require": "./dist/index.cjs"
+    }
+  }
+}
+```
+
+## Technique 14: Production Build Optimizations
+
+Your development build is 5-10x larger than production. Make sure your production pipeline is properly configured.
+
+### Environment and Minification
+
+```bash
+# Always build with production mode
+NODE_ENV=production npm run build
+```
+
+React strips out development warnings, PropTypes checks, and debug tooling in production mode. This alone can reduce React's footprint by ~30%.
+
+For Vite projects, ensure minification is enabled (it is by default):
+
+```typescript
+// vite.config.ts
+import { defineConfig } from "vite";
+import react from "@vitejs/plugin-react";
+
+export default defineConfig({
+  plugins: [react()],
+  build: {
+    minify: "terser", // or "esbuild" (faster, slightly larger output)
+    terserOptions: {
+      compress: {
+        drop_console: true, // Remove console.log in production
+        drop_debugger: true,
+      },
+    },
+    rollupOptions: {
+      output: {
+        // Split vendor chunks for better caching
+        manualChunks: {
+          vendor: ["react", "react-dom"],
+          router: ["react-router-dom"],
+        },
+      },
+    },
+  },
+});
+```
+
+### Compression: Gzip and Brotli
+
+Compression reduces transfer size by 60-80%. Configure your server or CDN to serve compressed assets:
+
+```typescript
+// Express server example
+import compression from "compression";
+import express from "express";
+
+const app = express();
+
+// Enable gzip compression for all responses
+app.use(compression());
+
+// Serve pre-compressed static files (best performance)
+app.use(
+  express.static("build", {
+    setHeaders: (res, path) => {
+      if (path.endsWith(".js") || path.endsWith(".css")) {
+        res.setHeader("Cache-Control", "public, max-age=31536000, immutable");
+      }
+    },
+  })
+);
+```
+
+For pre-compression at build time (recommended for static files):
+
+```bash
+# Install compression plugins
+npm install --save-dev vite-plugin-compression
+```
+
+```typescript
+// vite.config.ts
+import viteCompression from "vite-plugin-compression";
+
+export default defineConfig({
+  plugins: [
+    react(),
+    viteCompression({ algorithm: "gzip" }),
+    viteCompression({ algorithm: "brotliCompress" }), // ~15% smaller than gzip
+  ],
+});
+```
+
+### CDN: Serve Assets From the Edge
+
+Put your static assets on a CDN so users download them from the nearest edge server instead of your origin:
+
+- **Vercel / Netlify** — automatic CDN for all static assets
+- **Cloudflare** — free tier with global CDN
+- **AWS CloudFront** — pair with S3 for full control
+
+Set immutable cache headers for hashed assets so the browser never re-downloads unchanged files:
+
+```
+Cache-Control: public, max-age=31536000, immutable
+```
+
+## Technique 15: Advanced Patterns
+
+These patterns separate senior engineers from everyone else. They combine multiple techniques for maximum impact.
+
+### Windowing + Suspense: Lazy-Load List Items on Scroll
+
+Combine virtualization with `Suspense` to lazy-load data as the user scrolls — no upfront data fetching for off-screen items:
+
+```typescript
+import { Suspense, lazy, useRef } from "react";
+import { useVirtualizer } from "@tanstack/react-virtual";
+
+const LazyItemDetail = lazy(() => import("./ItemDetail"));
+
+function InfiniteProductList({ productIds }: { productIds: string[] }) {
+  const parentRef = useRef<HTMLDivElement>(null);
+
+  const virtualizer = useVirtualizer({
+    count: productIds.length,
+    getScrollElement: () => parentRef.current,
+    estimateSize: () => 120,
+    overscan: 3,
+  });
+
+  return (
+    <div ref={parentRef} className="h-[80vh] overflow-auto">
+      <div style={{ height: virtualizer.getTotalSize(), position: "relative" }}>
+        {virtualizer.getVirtualItems().map((virtualItem) => (
+          <div
+            key={virtualItem.key}
+            style={{
+              position: "absolute",
+              top: 0,
+              transform: `translateY(${virtualItem.start}px)`,
+              height: `${virtualItem.size}px`,
+              width: "100%",
+            }}
+          >
+            <Suspense fallback={<ProductSkeleton />}>
+              <LazyItemDetail productId={productIds[virtualItem.index]} />
+            </Suspense>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+```
+
+Only the visible items trigger their `Suspense` boundary. Off-screen items are never loaded. Combined with virtualization, this handles 100K+ item lists with near-zero memory overhead.
+
+### Server Components vs Client Components
+
+React Server Components (RSC) run on the server and send zero JavaScript to the client. Use them for the right things:
+
+```typescript
+// server-component.tsx — runs on server, 0KB client JS
+// Ideal for: data fetching, heavy computation, static content
+async function ProductPage({ params }: { params: { id: string } }) {
+  const product = await db.products.findUnique({ where: { id: params.id } });
+  const reviews = await db.reviews.findMany({ where: { productId: params.id } });
+
+  return (
+    <div>
+      <h1>{product.name}</h1>
+      <p>{product.description}</p>
+      <ReviewList reviews={reviews} />
+      {/* Only this interactive part ships JS to the client */}
+      <AddToCartButton productId={product.id} price={product.price} />
+    </div>
+  );
+}
+
+// client-component.tsx — ships JS to client
+// Ideal for: interactivity, event handlers, browser APIs
+"use client";
+
+function AddToCartButton({ productId, price }: { productId: string; price: number }) {
+  const [added, setAdded] = useState(false);
+
+  return (
+    <button onClick={() => {
+      addToCart(productId);
+      setAdded(true);
+    }}>
+      {added ? "Added!" : `Add to Cart — $${price}`}
+    </button>
+  );
+}
+```
+
+**The mental model:**
+
+- Default to Server Components — they're free (no client JS)
+- Add `"use client"` only when you need `useState`, `useEffect`, event handlers, or browser APIs
+- Push `"use client"` boundaries as deep as possible into the component tree
+
+### Streaming SSR
+
+Traditional SSR waits for all data before sending anything to the client. Streaming SSR sends the shell immediately and streams in content as it becomes ready:
+
+```typescript
+// layout.tsx — sent to client immediately
+export default function Layout({ children }: { children: React.ReactNode }) {
+  return (
+    <html>
+      <body>
+        <Header />
+        <Suspense fallback={<PageSkeleton />}>
+          {children}
+        </Suspense>
+        <Footer />
+      </body>
+    </html>
+  );
+}
+
+// page.tsx — streamed in when data is ready
+async function DashboardPage() {
+  return (
+    <div>
+      <h1>Dashboard</h1>
+
+      {/* Fast data — streams in quickly */}
+      <Suspense fallback={<StatsSkeleton />}>
+        <StatsPanel />
+      </Suspense>
+
+      {/* Slow data — streams in later without blocking the rest */}
+      <Suspense fallback={<ChartSkeleton />}>
+        <AnalyticsChart />
+      </Suspense>
+
+      {/* Very slow data — page is already interactive before this loads */}
+      <Suspense fallback={<TableSkeleton />}>
+        <RecentOrders />
+      </Suspense>
+    </div>
+  );
+}
+```
+
+**Why streaming matters:**
+
+- **Time to First Byte (TTFB)** drops dramatically — the shell arrives in milliseconds
+- Users see a loading skeleton instantly instead of a blank page
+- Fast sections become interactive while slow sections are still loading
+- Each `Suspense` boundary is an independent streaming chunk — slow APIs don't block fast ones
+
+### Edge Rendering
+
+Edge rendering runs your server logic at CDN edge nodes (200+ locations globally) instead of a single origin server. The result: 50-200ms response times instead of 500ms+.
+
+```typescript
+// Next.js edge runtime
+export const runtime = "edge";
+
+export default async function Page() {
+  // This runs at the CDN edge closest to the user
+  const data = await fetch("https://api.example.com/data", {
+    next: { revalidate: 60 }, // ISR: regenerate every 60 seconds
+  });
+
+  return <Dashboard data={await data.json()} />;
+}
+```
+
+**When to use edge rendering:**
+
+- Pages that depend on user location (localization, geo-pricing)
+- Personalized content (user-specific dashboards)
+- API routes that need low latency (auth checks, redirects)
+
+**When NOT to use it:**
+
+- Heavy database queries (edge nodes are far from your database)
+- Long-running computations (edge has CPU/memory limits)
+- Operations that need Node.js APIs not available in edge runtime
+
+## Performance Optimization Checklist
+
+Before shipping, run through this checklist:
+
+### Rendering
+
+- No unnecessary re-renders (verify with React Profiler)
+- Expensive components wrapped in `React.memo` where appropriate
+- Callbacks and computed values stabilized with `useCallback` / `useMemo`
+- State colocated as close to usage as possible
+
+### Bundle Size
+
+- Route-level code splitting with `React.lazy`
+- Heavy libraries loaded on demand
+- Tree-shaking working (import `{ debounce }` not `import _`)
+- Bundle analyzed with `source-map-explorer` or `webpack-bundle-analyzer`
+
+### Runtime
+
+- Long lists virtualized (100+ items)
+- User input debounced for search/filter operations
+- Heavy computation moved to Web Workers
+- Images lazy-loaded with proper dimensions
+
+### Concurrent & Forms
+
+- Using `useTransition` for non-urgent updates (filtering, navigation)
+- Using `useDeferredValue` for expensive derived renders
+- Forms use uncontrolled inputs or React Hook Form for field-level rendering
+
+### Production & Deployment
+
+- Building with `NODE_ENV=production`
+- Gzip/Brotli compression enabled
+- Static assets served from CDN with immutable cache headers
+- Console logs and debugger statements stripped in production
+
+### Measurement
+
+- Core Web Vitals passing (LCP < 2.5s, INP < 200ms, CLS < 0.1)
+- Lighthouse score above 90
+- Real User Monitoring (RUM) set up for production
+
+## Wrapping Up
+
+React performance optimization isn't about applying every technique everywhere — it's about knowing which technique to use when. Start by profiling your app to find the actual bottlenecks, then apply the right fix.
+
+The techniques that give you the most impact with the least effort:
+
+1. **Move state down** — free, no API needed, fixes most re-render issues
+2. **Code split routes** — one-time setup, massive bundle size reduction
+3. **Virtualize long lists** — turns unusable UIs into smooth ones
+4. **useTransition** — keeps the UI responsive during heavy updates for free
+5. **React Hook Form** — eliminates form re-render problems at the library level
+6. **Server Components** — zero client JS for non-interactive content
+
+For senior-level impact, combine techniques: virtualization with Suspense for infinite lists, streaming SSR with edge rendering for instant page loads, and Server Components to minimize your client bundle. The best React apps aren't just fast — they feel instant.
+
+Measure before and after every change. If you can't measure the improvement, it probably wasn't worth the added complexity.

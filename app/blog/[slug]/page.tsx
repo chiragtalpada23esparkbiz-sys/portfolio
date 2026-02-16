@@ -63,22 +63,34 @@ export async function generateMetadata({
 
 const mdxComponents = {
   h1: (props: React.HTMLAttributes<HTMLHeadingElement>) => (
-    <h1 className="text-2xl sm:text-3xl font-bold mt-8 sm:mt-10 mb-4 scroll-mt-24 break-words" {...props} />
+    <h1
+      className="text-2xl sm:text-3xl font-bold mt-8 sm:mt-10 mb-4 scroll-mt-24 wrap-break-word"
+      {...props}
+    />
   ),
   h2: (props: React.HTMLAttributes<HTMLHeadingElement>) => (
     <h2
-      className="text-xl sm:text-2xl font-semibold mt-8 sm:mt-10 mb-4 scroll-mt-24 pb-2 border-b break-words"
+      className="text-xl sm:text-2xl font-semibold mt-8 sm:mt-10 mb-4 scroll-mt-24 pb-2 border-b wrap-break-word"
       {...props}
     />
   ),
   h3: (props: React.HTMLAttributes<HTMLHeadingElement>) => (
-    <h3 className="text-lg sm:text-xl font-semibold mt-6 sm:mt-8 mb-3 scroll-mt-24 break-words" {...props} />
+    <h3
+      className="text-lg sm:text-xl font-semibold mt-6 sm:mt-8 mb-3 scroll-mt-24 wrap-break-word"
+      {...props}
+    />
   ),
   h4: (props: React.HTMLAttributes<HTMLHeadingElement>) => (
-    <h4 className="text-base sm:text-lg font-semibold mt-5 sm:mt-6 mb-2 scroll-mt-24 break-words" {...props} />
+    <h4
+      className="text-base sm:text-lg font-semibold mt-5 sm:mt-6 mb-2 scroll-mt-24 wrap-break-word"
+      {...props}
+    />
   ),
   p: (props: React.HTMLAttributes<HTMLParagraphElement>) => (
-    <p className="mb-5 leading-relaxed text-foreground/90 break-words" {...props} />
+    <p
+      className="mb-5 leading-relaxed text-foreground/90 wrap-break-word"
+      {...props}
+    />
   ),
   ul: (props: React.HTMLAttributes<HTMLUListElement>) => (
     <ul className="list-disc pl-4 sm:pl-6 mb-5 space-y-2" {...props} />
@@ -87,11 +99,11 @@ const mdxComponents = {
     <ol className="list-decimal pl-4 sm:pl-6 mb-5 space-y-2" {...props} />
   ),
   li: (props: React.HTMLAttributes<HTMLLIElement>) => (
-    <li className="leading-relaxed break-words" {...props} />
+    <li className="leading-relaxed wrap-break-word" {...props} />
   ),
   a: (props: React.AnchorHTMLAttributes<HTMLAnchorElement>) => (
     <a
-      className="text-primary hover:underline underline-offset-4 break-words"
+      className="text-primary hover:underline underline-offset-4 wrap-break-word"
       suppressHydrationWarning
       {...props}
     />
@@ -104,7 +116,7 @@ const mdxComponents = {
   ),
   code: (props: React.HTMLAttributes<HTMLElement>) => (
     <code
-      className="bg-zinc-100 dark:bg-zinc-800 px-1.5 py-0.5 rounded text-sm font-mono text-zinc-800 dark:text-zinc-200 break-words"
+      className="bg-zinc-100 dark:bg-zinc-800 px-1.5 py-0.5 rounded text-sm font-mono text-zinc-800 dark:text-zinc-200 wrap-break-word"
       {...props}
     />
   ),
@@ -117,7 +129,11 @@ const mdxComponents = {
   hr: () => <hr className="my-8 border-muted" />,
   img: (props: React.ImgHTMLAttributes<HTMLImageElement>) => (
     // eslint-disable-next-line @next/next/no-img-element
-    <img className="rounded-xl my-6 w-full max-w-full h-auto" alt={props.alt || ""} {...props} />
+    <img
+      className="rounded-xl my-6 w-full max-w-full h-auto"
+      alt={props.alt || ""}
+      {...props}
+    />
   ),
   table: (props: React.TableHTMLAttributes<HTMLTableElement>) => (
     <div className="overflow-x-auto mb-6 max-w-full">
@@ -142,7 +158,7 @@ const mdxComponents = {
 function extractHeadings(
   content: string,
 ): Array<{ id: string; text: string; level: number }> {
-  const headingRegex = /^(#{2,4})\s+(.+)$/gm;
+  const headingRegex = /^(#{2})\s+(.+)$/gm;
   const headings: Array<{ id: string; text: string; level: number }> = [];
   let match;
 
@@ -151,7 +167,8 @@ function extractHeadings(
     const text = match[2].trim();
     const id = text
       .toLowerCase()
-      .replace(/[^a-z0-9]+/g, "-")
+      .replace(/[^\w\s-]/g, "")
+      .replace(/\s+/g, "-")
       .replace(/(^-|-$)/g, "");
     headings.push({ id, text, level });
   }
@@ -223,7 +240,7 @@ export default async function BlogPostPage({ params }: PageProps) {
       <ReadingProgress />
 
       <article
-        className="min-h-screen overflow-x-hidden"
+        className="min-h-screen"
         itemScope
         itemType="https://schema.org/BlogPosting"
       >
@@ -315,7 +332,7 @@ export default async function BlogPostPage({ params }: PageProps) {
                   src={post.image}
                   alt={post.title}
                   fill
-                  className="object-cover"
+                  className="object-cover object-top"
                   sizes="(max-width: 768px) 100vw, 896px"
                   priority
                   itemProp="image"
@@ -332,7 +349,7 @@ export default async function BlogPostPage({ params }: PageProps) {
               {/* Content */}
               <BlurFade delay={0.15} inView>
                 <div
-                  className="prose prose-sm sm:prose-lg dark:prose-invert max-w-none w-full overflow-hidden break-words"
+                  className="prose prose-sm sm:prose-lg dark:prose-invert max-w-none w-full overflow-hidden wrap-break-word"
                   itemProp="articleBody"
                 >
                   <MDXRemote
@@ -350,12 +367,8 @@ export default async function BlogPostPage({ params }: PageProps) {
 
               {/* Sidebar with TOC */}
               {headings.length > 0 && (
-                <aside className="hidden lg:block">
-                  <div className="sticky top-24">
-                    <BlurFade delay={0.2} inView>
-                      <TableOfContents headings={headings} />
-                    </BlurFade>
-                  </div>
+                <aside className="hidden lg:block sticky top-24 h-fit">
+                  <TableOfContents headings={headings} />
                 </aside>
               )}
             </div>

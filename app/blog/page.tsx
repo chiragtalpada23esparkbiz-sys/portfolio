@@ -52,8 +52,8 @@ function getAllTags(posts: BlogPost[]): string[] {
 export default async function BlogPage() {
   const posts = await getAllPosts();
   const allTags = getAllTags(posts);
-  const featuredPost = posts[0];
-  const remainingPosts = posts.slice(1);
+  const featuredPost = posts.find((post) => post.featured) || posts[0];
+  const remainingPosts = posts.filter((post) => post !== featuredPost);
 
   // JSON-LD structured data for SEO
   const jsonLd = {
@@ -207,7 +207,7 @@ function FeaturedPostCard({ post }: { post: BlogPost }) {
       <article className="relative overflow-hidden rounded-2xl border bg-card hover:shadow-xl transition-all duration-300 hover:border-primary/30">
         <div className="grid md:grid-cols-2 gap-0">
           {/* Image Section */}
-          <div className="relative h-64 md:h-80 bg-linear-to-br from-primary/20 via-primary/10 to-transparent overflow-hidden">
+          <div className="relative h-64 md:h-auto md:min-h-full bg-linear-to-br from-primary/20 via-primary/10 to-transparent overflow-hidden">
             {post.image ? (
               <Image
                 src={post.image}
@@ -318,7 +318,7 @@ function PostCard({ post }: { post: BlogPost }) {
               src={post.image}
               alt={post.title}
               fill
-              className="object-cover group-hover:scale-105 transition-transform duration-500"
+              className="object-cover object-top group-hover:scale-105 transition-transform duration-500"
               sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
               itemProp="image"
             />

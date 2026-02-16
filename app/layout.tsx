@@ -10,9 +10,10 @@ import {
   EducationJsonLd,
 } from "@/components/seo/json-ld";
 import { ChatProvider } from "@/components/chat/chat-context";
-import { ChatModal } from "@/components/chat/chat-modal";
+import { LazyChatModal } from "@/components/chat/lazy-chat-modal";
 import "./globals.css";
 import { Toaster } from "@/components/ui/sonner";
+import { Analytics } from "@vercel/analytics/next";
 
 const baseUrl = process.env.BASE_URL || "";
 
@@ -61,6 +62,10 @@ export const metadata: Metadata = {
   authors: [{ name: "Chirag Talpada", url: "https://chiragtalpada.dev" }],
   creator: "Chirag Talpada",
   publisher: "Chirag Talpada",
+  icons: {
+    icon: "/favicon.ico",
+    apple: "/apple-touch-icon.png",
+  },
   formatDetection: {
     email: false,
     address: false,
@@ -154,9 +159,10 @@ export default function RootLayout({
             <Footer />
             <BottomNav />
             <Toaster />
-            <ChatModal />
+            <LazyChatModal />
           </ChatProvider>
         </ThemeProvider>
+        <Analytics />
       </body>
     </html>
   );

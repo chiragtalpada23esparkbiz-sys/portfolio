@@ -31,6 +31,7 @@ export async function getAllPosts(): Promise<BlogPost[]> {
         readingTime: readingTime(content).text,
         tags: data.tags || [],
         image: data.image,
+        featured: data.featured || false,
         author: {
           name: data.author?.name || "Chirag Talpada",
           avatar: data.author?.avatar,
@@ -61,6 +62,7 @@ export async function getPostBySlug(slug: string): Promise<BlogPost | null> {
     readingTime: readingTime(content).text,
     tags: data.tags || [],
     image: data.image,
+    featured: data.featured || false,
     author: {
       name: data.author?.name || "Chirag Talpada",
       avatar: data.author?.avatar,
