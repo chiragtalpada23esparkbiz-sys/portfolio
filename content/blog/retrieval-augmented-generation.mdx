@@ -1,0 +1,515 @@
+---
+title: "Retrieval-Augmented Generation (RAG): The Developer's Guide to Building Context-Aware AI Apps"
+excerpt: "A practical, production-focused guide to RAG — from chunking strategies and embeddings to vector stores and retrieval. Real TypeScript code, real patterns, zero hand-waving."
+date: "2026-02-15"
+featured: true
+tags: ["AI", "RAG", "LLM", "TypeScript"]
+image: "/blog/RAG.webp"
+author:
+  name: "Chirag Talpada"
+---
+
+# Retrieval-Augmented Generation (RAG): The Developer's Guide to Building Context-Aware AI Apps
+
+Every developer building with LLMs hits the same wall: the model doesn't know about your data. It doesn't know your product docs, your company policies, your customer records, or anything that happened after its training cutoff. You can fine-tune, but that's expensive, slow, and hard to keep current. RAG is the practical alternative — and once you understand the pattern, you'll use it everywhere.
+
+I've built RAG pipelines for customer support bots, internal knowledge bases, and AI-powered search features. This guide covers everything I've learned — the architecture, the gotchas, and the TypeScript code to make it work in production.
+
+## Why RAG Matters
+
+LLMs have three fundamental problems that RAG solves:
+
+**1. Hallucination.** Ask GPT-4 about your company's refund policy and it'll confidently make one up. It doesn't know — but it doesn't know that it doesn't know. RAG grounds the model in your actual data, so it answers from facts instead of imagination.
+
+**2. Knowledge cutoff.** Models are frozen in time. They don't know about the API change you shipped last week, the blog post you published yesterday, or the pricing update that went live this morning. RAG lets you feed the model current information at query time.
+
+**3. Context window limits.** Even models with 128K token windows can't hold your entire knowledge base. And even if they could, stuffing everything in is slow, expensive, and dilutes relevance. RAG retrieves only the pieces that matter for the current question.
+
+The result: instead of hoping the model knows the answer, you give it the answer and ask it to explain. That's the core insight behind RAG.
+
+## How RAG Works — The Big Picture
+
+RAG is a three-phase pattern:
+
+1. **Ingest** — Load your documents, split them into chunks, convert chunks into embeddings, and store them in a vector database.
+2. **Retrieve** — When a user asks a question, convert the question into an embedding, search the vector database for similar chunks, and pull back the most relevant ones.
+3. **Generate** — Pass the retrieved chunks as context to the LLM along with the user's question, and let the model generate an answer grounded in your data.
+
+That's it. The rest of this post is about doing each step well — because the difference between a demo and a production system is in the details.
+
+## Step 1: Source Your Data
+
+Before you can chunk anything, you need to load it. RAG pipelines ingest data from all kinds of sources — Markdown files, PDFs, databases, APIs, HTML pages, Notion exports, Slack messages. LangChain provides document loaders for most of them:
+
+```typescript
+import { DirectoryLoader } from "langchain/document_loaders/fs/directory";
+import { TextLoader } from "langchain/document_loaders/fs/text";
+import { PDFLoader } from "@langchain/community/document_loaders/fs/pdf";
+import { JSONLoader } from "langchain/document_loaders/fs/json";
+
+// Load everything from a docs directory
+const loader = new DirectoryLoader("./knowledge-base", {
+  ".md": (path) => new TextLoader(path),
+  ".pdf": (path) => new PDFLoader(path),
+  ".json": (path) => new JSONLoader(path),
+});
+
+const rawDocs = await loader.load();
+console.log(`Loaded ${rawDocs.length} documents`);
+```
+
+Each document comes back as a `Document` object with `pageContent` (the text) and `metadata` (source file, page number, etc.). The metadata is important — you'll use it later for filtering and citation.
+
+**Tips from production:**
+
+- Always store the source in metadata. When the LLM answers a question, you want to tell the user where the answer came from.
+- Normalize your data before chunking. Strip HTML tags, fix encoding issues, remove boilerplate headers and footers. Garbage in, garbage out.
+- For APIs and databases, write a simple script that pulls data and converts it to `Document` objects. Don't over-engineer the loader — a `fetch` call and some string formatting is usually enough.
+
+## Step 2: Chunk the Data
+
+Raw documents are too long for embedding models and too long for LLM context windows. You need to split them into chunks — small enough to be specific, large enough to be meaningful.
+
+Chunking is the most underrated part of RAG. Bad chunks = bad retrieval = bad answers. No amount of prompt engineering fixes irrelevant context.
+
+### Text-Based Chunking Strategies
+
+**Fixed-size chunking** is the simplest approach. You split text into chunks of N characters (or tokens) with an overlap between consecutive chunks:
+
+```typescript
+import { RecursiveCharacterTextSplitter } from "langchain/text_splitter";
+
+const splitter = new RecursiveCharacterTextSplitter({
+  chunkSize: 1000, // ~250 tokens
+  chunkOverlap: 200, // overlap prevents cutting mid-sentence
+  separators: ["\n\n", "\n", ". ", " ", ""], // split at natural boundaries first
+});
+
+const chunks = await splitter.splitDocuments(rawDocs);
+console.log(`Created ${chunks.length} chunks from ${rawDocs.length} documents`);
+```
+
+The `RecursiveCharacterTextSplitter` is smart about where it splits. It tries `\n\n` (paragraph breaks) first, then `\n` (line breaks), then `. ` (sentences), and only falls back to splitting mid-word as a last resort. The overlap ensures that if a concept spans a chunk boundary, both chunks contain enough context.
+
+**Sentence-based chunking** splits on sentence boundaries, then groups sentences into chunks. This preserves semantic units better than character counting:
+
+```typescript
+import { RecursiveCharacterTextSplitter } from "langchain/text_splitter";
+
+const sentenceSplitter = new RecursiveCharacterTextSplitter({
+  chunkSize: 800,
+  chunkOverlap: 100,
+  separators: ["\n\n", "\n", "(?<=\\. )", " ", ""], // regex to split after sentences
+});
+
+const sentenceChunks = await sentenceSplitter.splitDocuments(rawDocs);
+```
+
+**Paragraph-based chunking** treats each paragraph (or section) as a natural chunk. This works well for structured content like docs, FAQs, and knowledge base articles where each section answers a distinct question:
+
+```typescript
+import { MarkdownTextSplitter } from "langchain/text_splitter";
+
+// Splits on markdown headers, preserving section structure
+const markdownSplitter = new MarkdownTextSplitter({
+  chunkSize: 1500,
+  chunkOverlap: 100,
+});
+
+const mdChunks = await markdownSplitter.splitDocuments(rawDocs);
+```
+
+**Overlapping chunks** are critical regardless of which strategy you use. Without overlap, you'll lose information at chunk boundaries. A question about "refund policy for enterprise customers" might match a chunk about refunds and a chunk about enterprise plans — but neither chunk contains the full answer. Overlap increases the chance that related information stays together.
+
+**How to choose chunk size:**
+
+| Chunk Size      | Best For                  | Trade-off                                |
+| --------------- | ------------------------- | ---------------------------------------- |
+| 200-500 chars   | FAQs, short answers       | Very specific, but may lack context      |
+| 500-1000 chars  | General docs, articles    | Good balance for most use cases          |
+| 1000-2000 chars | Technical docs, tutorials | More context, but less precise retrieval |
+
+Start with 500-1000 characters and 20% overlap. Adjust based on retrieval quality — if answers are too vague, try smaller chunks. If they lack context, try larger ones.
+
+### Table / Database Chunking Strategies
+
+Text chunking doesn't work for structured data like tables, spreadsheets, and databases. You need different strategies.
+
+**Row-to-text conversion** transforms each database row into a natural language description. This works well when each row represents a distinct entity (a product, a user, a policy):
+
+```typescript
+import { Document } from "@langchain/core/documents";
+
+interface Product {
+  id: string;
+  name: string;
+  price: number;
+  category: string;
+  description: string;
+}
+
+function productToDocument(product: Product): Document {
+  // Convert structured data to natural language
+  const text = [
+    `Product: ${product.name}`,
+    `Category: ${product.category}`,
+    `Price: $${(product.price / 100).toFixed(2)}`,
+    `Description: ${product.description}`,
+  ].join("\n");
+
+  return new Document({
+    pageContent: text,
+    metadata: {
+      source: "products-db",
+      productId: product.id,
+      category: product.category,
+    },
+  });
+}
+
+// Convert all products to documents for indexing
+const products = await db.products.findMany();
+const productDocs = products.map(productToDocument);
+```
+
+**Tool-based approach** skips chunking entirely. Instead of pre-indexing database content, you give the LLM a tool that generates and executes SQL queries. This works best for analytical questions ("What's our best-selling product?") where the answer depends on aggregation:
+
+```typescript
+import { tool } from "@langchain/core/tools";
+import { z } from "zod";
+
+const queryProducts = tool(
+  async ({ query }: { query: string }) => {
+    // In production, validate and sanitize the query
+    const results = await db.$queryRawUnsafe(query);
+    return JSON.stringify(results, null, 2);
+  },
+  {
+    name: "query_products",
+    description: `Query the products database. The table has columns:
+      id (text), name (text), price (integer cents), category (text),
+      description (text), created_at (timestamp).
+      Write a PostgreSQL SELECT query. Never write UPDATE or DELETE.`,
+    schema: z.object({
+      query: z.string().describe("A read-only PostgreSQL SELECT query"),
+    }),
+  },
+);
+```
+
+In practice, you'll often combine both: pre-index rows as text for simple lookups, and provide a query tool for complex analytical questions.
+
+## Step 3: Create Embeddings
+
+Embeddings are the bridge between text and math. An embedding model converts a chunk of text into a vector — a list of numbers (typically 1536 dimensions for OpenAI's model) that captures the semantic meaning of the text. Similar texts produce similar vectors, which is how we find relevant chunks later.
+
+```typescript
+import { OpenAIEmbeddings } from "@langchain/openai";
+
+const embeddings = new OpenAIEmbeddings({
+  modelName: "text-embedding-3-small", // fast, cheap, good enough for most use cases
+});
+
+// Embed a single text
+const vector = await embeddings.embedQuery("What is your refund policy?");
+console.log(vector.length); // 1536
+console.log(vector.slice(0, 5)); // [0.0123, -0.0456, 0.0789, ...]
+
+// Embed multiple texts at once (batch is faster and cheaper)
+const vectors = await embeddings.embedDocuments([
+  "Refunds must be requested within 30 days.",
+  "Enterprise plans include priority support.",
+  "Free tier users get 100 API calls per day.",
+]);
+```
+
+**Key things to understand about embeddings:**
+
+- The same model must be used for both indexing (chunks) and querying (user questions). Mixing models produces incompatible vectors.
+- Embedding models are different from chat models. They don't generate text — they map text to a point in high-dimensional space.
+- Shorter texts embed faster and cost less. This is another reason to chunk your data rather than embedding entire documents.
+- `text-embedding-3-small` is the sweet spot for most applications. It's fast, cheap ($0.02 per million tokens), and produces good results. Use `text-embedding-3-large` only if you need maximum accuracy and can afford the latency.
+
+## Step 4: Store in a Vector Database
+
+Once you have embeddings, you need somewhere to store and search them. A vector database is optimized for similarity search — given a query vector, find the N most similar vectors in the database.
+
+For development and small datasets, an in-memory store works fine:
+
+```typescript
+import { MemoryVectorStore } from "langchain/vectorstores/memory";
+import { OpenAIEmbeddings } from "@langchain/openai";
+
+const embeddings = new OpenAIEmbeddings({
+  modelName: "text-embedding-3-small",
+});
+
+// Create the store and index all chunks in one call
+const vectorStore = await MemoryVectorStore.fromDocuments(
+  chunks, // the chunks from Step 2
+  embeddings,
+);
+```
+
+For production, you'll want a persistent vector database. Pinecone, Weaviate, Qdrant, and pgvector (Postgres extension) are popular choices. Here's an example with Pinecone:
+
+```typescript
+import { PineconeStore } from "@langchain/pinecone";
+import { Pinecone } from "@pinecone-database/pinecone";
+import { OpenAIEmbeddings } from "@langchain/openai";
+
+const pinecone = new Pinecone();
+const index = pinecone.index("knowledge-base");
+
+const embeddings = new OpenAIEmbeddings({
+  modelName: "text-embedding-3-small",
+});
+
+// Index documents
+const vectorStore = await PineconeStore.fromDocuments(chunks, embeddings, {
+  pineconeIndex: index,
+});
+
+// Or connect to an existing index
+const existingStore = await PineconeStore.fromExistingIndex(embeddings, {
+  pineconeIndex: index,
+});
+```
+
+**Adding documents incrementally** is how most production systems work. You don't re-index everything on every update — you add new documents as they arrive:
+
+```typescript
+// Add new documents to an existing store
+const newDocs = [
+  new Document({
+    pageContent: "We now offer a 60-day refund window for annual plans.",
+    metadata: { source: "policy-update-2026-02.md", updatedAt: "2026-02-10" },
+  }),
+];
+
+await vectorStore.addDocuments(newDocs);
+```
+
+**Metadata filtering** is essential in production. Instead of searching all documents, filter by source, date, category, or any other metadata field:
+
+```typescript
+// Search only within a specific category
+const results = await vectorStore.similaritySearch(
+  "refund policy",
+  3, // top 3 results
+  { source: "policies" }, // metadata filter
+);
+```
+
+## Step 5: Retrieve and Generate
+
+This is where everything comes together. The user asks a question, you retrieve relevant chunks, and you pass them to the LLM as context.
+
+**Similarity search** finds the chunks most relevant to the user's question:
+
+```typescript
+const question = "What's the refund policy for enterprise customers?";
+
+// Retrieve the top 4 most relevant chunks
+const relevantDocs = await vectorStore.similaritySearch(question, 4);
+
+// Each result includes the text and metadata
+relevantDocs.forEach((doc, i) => {
+  console.log(`\n--- Result ${i + 1} [${doc.metadata.source}] ---`);
+  console.log(doc.pageContent.slice(0, 200));
+});
+```
+
+**Passing context to the LLM** is where you construct the final prompt. The retrieved chunks become the model's knowledge base for this specific question:
+
+```typescript
+import { ChatOpenAI } from "@langchain/openai";
+
+const model = new ChatOpenAI({ modelName: "gpt-4o", temperature: 0 });
+
+async function answerWithRAG(question: string): Promise<string> {
+  // 1. Retrieve relevant chunks
+  const relevantDocs = await vectorStore.similaritySearch(question, 4);
+
+  // 2. Format context with source attribution
+  const context = relevantDocs
+    .map((doc) => `[Source: ${doc.metadata.source}]\n${doc.pageContent}`)
+    .join("\n\n---\n\n");
+
+  // 3. Generate answer grounded in context
+  const response = await model.invoke(
+    `You are a helpful assistant. Answer the user's question using ONLY
+the context provided below. If the context doesn't contain enough
+information to answer, say "I don't have information about that."
+
+Do not make up facts, policies, or details not present in the context.
+When possible, cite the source document.
+
+CONTEXT:
+${context}
+
+QUESTION: ${question}`,
+  );
+
+  return response.content as string;
+}
+
+const answer = await answerWithRAG(
+  "What's the refund policy for enterprise customers?",
+);
+console.log(answer);
+// "According to the refund policy (Source: refund-policy.md), enterprise customers
+//  can request a refund within 60 days of purchase..."
+```
+
+**Setting a relevance threshold** prevents the model from being confused by irrelevant context. If no chunks are similar enough to the question, it's better to say "I don't know" than to inject noise:
+
+```typescript
+async function answerWithThreshold(question: string): Promise<string> {
+  // similaritySearchWithScore returns [doc, score] pairs
+  const results = await vectorStore.similaritySearchWithScore(question, 4);
+
+  // Filter out low-relevance results (threshold depends on your model)
+  const relevant = results.filter(([_, score]) => score > 0.7);
+
+  if (relevant.length === 0) {
+    return "I don't have enough information to answer that question.";
+  }
+
+  const context = relevant
+    .map(([doc]) => `[${doc.metadata.source}]\n${doc.pageContent}`)
+    .join("\n\n---\n\n");
+
+  const response = await model.invoke(
+    `Answer using ONLY this context:\n\n${context}\n\nQuestion: ${question}`,
+  );
+
+  return response.content as string;
+}
+```
+
+## Putting It All Together
+
+Here's a complete RAG pipeline you can adapt for your own projects — from loading documents to answering questions:
+
+```typescript
+import { ChatOpenAI, OpenAIEmbeddings } from "@langchain/openai";
+import { MemoryVectorStore } from "langchain/vectorstores/memory";
+import { RecursiveCharacterTextSplitter } from "langchain/text_splitter";
+import { DirectoryLoader } from "langchain/document_loaders/fs/directory";
+import { TextLoader } from "langchain/document_loaders/fs/text";
+import { Document } from "@langchain/core/documents";
+
+// --- Configuration ---
+const CHUNK_SIZE = 1000;
+const CHUNK_OVERLAP = 200;
+const TOP_K = 4;
+const EMBEDDING_MODEL = "text-embedding-3-small";
+const CHAT_MODEL = "gpt-4o";
+
+// --- Step 1: Load documents ---
+const loader = new DirectoryLoader("./knowledge-base", {
+  ".md": (path) => new TextLoader(path),
+  ".txt": (path) => new TextLoader(path),
+});
+const rawDocs = await loader.load();
+console.log(`Loaded ${rawDocs.length} documents`);
+
+// --- Step 2: Chunk ---
+const splitter = new RecursiveCharacterTextSplitter({
+  chunkSize: CHUNK_SIZE,
+  chunkOverlap: CHUNK_OVERLAP,
+});
+const chunks = await splitter.splitDocuments(rawDocs);
+console.log(`Split into ${chunks.length} chunks`);
+
+// --- Step 3 & 4: Embed and store ---
+const embeddings = new OpenAIEmbeddings({ modelName: EMBEDDING_MODEL });
+const vectorStore = await MemoryVectorStore.fromDocuments(chunks, embeddings);
+console.log("Vector store ready");
+
+// --- Step 5: Retrieve and generate ---
+const model = new ChatOpenAI({ modelName: CHAT_MODEL, temperature: 0 });
+
+async function ask(question: string): Promise<{
+  answer: string;
+  sources: string[];
+}> {
+  const relevantDocs = await vectorStore.similaritySearch(question, TOP_K);
+
+  const context = relevantDocs
+    .map((doc) => `[Source: ${doc.metadata.source}]\n${doc.pageContent}`)
+    .join("\n\n---\n\n");
+
+  const sources = [...new Set(relevantDocs.map((doc) => doc.metadata.source))];
+
+  const response = await model.invoke(
+    `You are a knowledgeable assistant. Answer the question using ONLY
+the context below. If the context doesn't contain the answer, say
+"I don't have information about that." Cite sources when possible.
+
+CONTEXT:
+${context}
+
+QUESTION: ${question}`,
+  );
+
+  return {
+    answer: response.content as string,
+    sources,
+  };
+}
+
+// --- Use it ---
+const { answer, sources } = await ask("What is the refund policy?");
+console.log("Answer:", answer);
+console.log("Sources:", sources);
+```
+
+This is a working RAG pipeline in ~60 lines. Swap `MemoryVectorStore` for Pinecone or pgvector when you're ready for production, and swap the `DirectoryLoader` for whatever data source you have.
+
+## RAG Checklist
+
+### Data
+
+- Documents loaded with metadata (source, date, category)
+- Text normalized — no HTML artifacts, encoding issues, or boilerplate
+- Incremental indexing set up for new/updated documents
+- Stale documents have a deletion or refresh strategy
+
+### Chunking
+
+- Chunk size tuned for your content type (500-1000 chars is a good start)
+- Overlap enabled (15-20% of chunk size)
+- Splitting respects natural boundaries (paragraphs, sections, sentences)
+- Structured data (tables, databases) handled separately from free text
+
+### Retrieval
+
+- Same embedding model used for indexing and querying
+- Top-K tuned — start with 3-5, increase if answers lack context
+- Metadata filters narrow search scope where possible
+- Relevance threshold set to avoid injecting low-quality context
+
+### Production
+
+- Vector database is persistent (not in-memory) for production workloads
+- Source attribution included in every answer
+- Fallback response when no relevant documents are found
+- Logging and monitoring on retrieval quality (what questions return no results?)
+- Embedding costs tracked — batch operations where possible
+- Chunk size and overlap re-evaluated as content library grows
+
+## Wrapping Up
+
+RAG is the most practical pattern for building AI apps that know about your data. Here's the summary:
+
+1. **Load your data** — from files, databases, APIs, wherever it lives
+2. **Chunk it** — split into pieces that are small enough to be specific, large enough to be meaningful
+3. **Embed it** — convert text chunks into vectors that capture semantic meaning
+4. **Store it** — put vectors in a database optimized for similarity search
+5. **Retrieve and generate** — find the relevant chunks, pass them to the LLM, get a grounded answer
+
+The pattern is simple. The craft is in the details — choosing the right chunk size, setting relevance thresholds, filtering by metadata, and handling edge cases where no good context exists.
+
+Start with the complete pipeline in this post, get it working with your own data, and iterate from there. The best RAG system is the one that answers your users' questions correctly — and you won't know what "correctly" looks like until you test it with real questions.
