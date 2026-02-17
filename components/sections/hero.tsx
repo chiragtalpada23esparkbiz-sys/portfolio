@@ -7,7 +7,7 @@ import {
   Mail,
   MapPin,
   CheckCircle,
-  Download,
+  // Download,
   MessageCircle,
 } from "lucide-react";
 import { useChat } from "@/components/chat/chat-context";
@@ -120,7 +120,7 @@ export function Hero() {
                     LinkedIn
                   </a>
                 </Button>
-                <Button
+                {/* <Button
                   variant="outline"
                   size="default"
                   className="sm:text-base"
@@ -130,7 +130,7 @@ export function Hero() {
                     <Download className="h-4 w-4 mr-2" aria-hidden="true" />
                     Download CV
                   </a>
-                </Button>
+                </Button> */}
                 <Button
                   variant="outline"
                   size="default"
