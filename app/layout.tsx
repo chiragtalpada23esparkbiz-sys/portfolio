@@ -39,7 +39,7 @@ export const viewport: Viewport = {
 };
 
 export const metadata: Metadata = {
-  metadataBase: new URL(baseUrl || "https://chiragtalpada.dev"),
+  metadataBase: new URL(baseUrl || "https://chirag-talpada.vercel.app"),
   title: {
     default: "Chirag Talpada | Full Stack Developer",
     template: "%s | Chirag Talpada",
@@ -59,7 +59,7 @@ export const metadata: Metadata = {
     "Backend Developer",
     "Chirag Talpada",
   ],
-  authors: [{ name: "Chirag Talpada", url: "https://chiragtalpada.dev" }],
+  authors: [{ name: "Chirag Talpada", url: baseUrl }],
   creator: "Chirag Talpada",
   publisher: "Chirag Talpada",
   icons: {
@@ -74,7 +74,7 @@ export const metadata: Metadata = {
   openGraph: {
     type: "website",
     locale: "en_US",
-    url: "https://chiragtalpada.dev",
+    url: baseUrl,
     siteName: "Chirag Talpada Portfolio",
     title: "Chirag Talpada | Full Stack Developer",
     description:

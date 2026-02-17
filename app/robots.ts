@@ -1,7 +1,7 @@
 import type { MetadataRoute } from "next";
 
 export default function robots(): MetadataRoute.Robots {
-  const baseUrl = "https://chiragtalpada.dev";
+  const baseUrl = process.env.BASE_URL || "https://chirag-talpada.vercel.app";
 
   return {
     rules: [
