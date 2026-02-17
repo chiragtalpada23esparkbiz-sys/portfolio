@@ -54,6 +54,7 @@ export async function generateMetadata({
       card: "summary_large_image",
       title: post.title,
       description: post.excerpt,
+      images: post.image ? [post.image] : [],
     },
     alternates: {
       canonical: postUrl,
@@ -380,7 +381,7 @@ export default async function BlogPostPage({ params }: PageProps) {
           <BlurFade delay={0} inView>
             <ShareCard
               title={post.title}
-              url={`${process.env.BASE_URL}/blog/${slug}`}
+              url={`${process.env.BASE_URL || ""}/blog/${slug}`}
             />
           </BlurFade>
         </Section>

@@ -94,7 +94,7 @@ export const metadata: Metadata = {
     description:
       "Full Stack Developer specializing in React, Next.js, Node.js, and AI-powered applications.",
     images: ["/og-image.png"],
-    creator: "@chiragtalpada",
+    creator: "@CTalpada78529",
   },
   robots: {
     index: true,

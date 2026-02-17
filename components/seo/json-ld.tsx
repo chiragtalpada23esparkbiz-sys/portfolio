@@ -146,32 +146,6 @@ export function BlogPostJsonLd({ post, url }: BlogPostSchemaProps) {
   );
 }
 
-interface OrganizationSchemaProps {
-  baseUrl: string;
-}
-
-export function OrganizationJsonLd({ baseUrl }: OrganizationSchemaProps) {
-  const schema = {
-    "@context": "https://schema.org",
-    "@type": "Organization",
-    name: "Chirag Talpada",
-    url: baseUrl,
-    logo: `${baseUrl}/og-image.png`,
-    contactPoint: {
-      "@type": "ContactPoint",
-      email: "hello@chiragtalpada.dev",
-      contactType: "customer service",
-    },
-  };
-
-  return (
-    <script
-      type="application/ld+json"
-      dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }}
-    />
-  );
-}
-
 interface ProjectSchemaProps {
   project: Project;
   baseUrl: string;
