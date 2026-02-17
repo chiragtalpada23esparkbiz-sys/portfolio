@@ -40,6 +40,9 @@ export const viewport: Viewport = {
 
 export const metadata: Metadata = {
   metadataBase: new URL(baseUrl || "https://chirag-talpada.vercel.app"),
+  verification: {
+    google: "9AObw_9gkBMwcuya1azPGP17GgzXVefDgWsFPEgO3FI",
+  },
   title: {
     default: "Chirag Talpada | Full Stack Developer",
     template: "%s | Chirag Talpada",
