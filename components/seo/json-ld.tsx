@@ -104,6 +104,63 @@ export function WebsiteJsonLd({ name, url, description }: WebsiteSchemaProps) {
       "@type": "Person",
       name: "Chirag Talpada",
     },
+    publisher: {
+      "@type": "Person",
+      name: "Chirag Talpada",
+    },
+    potentialAction: {
+      "@type": "SearchAction",
+      target: {
+        "@type": "EntryPoint",
+        urlTemplate: `${url}/blog?q={search_term_string}`,
+      },
+      "query-input": "required name=search_term_string",
+    },
+  };
+
+  return (
+    <script
+      type="application/ld+json"
+      dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }}
+    />
+  );
+}
+
+interface ProfilePageSchemaProps {
+  name: string;
+  url: string;
+  description: string;
+  image: string;
+  sameAs: string[];
+}
+
+export function ProfilePageJsonLd({
+  name,
+  url,
+  description,
+  image,
+  sameAs,
+}: ProfilePageSchemaProps) {
+  const schema = {
+    "@context": "https://schema.org",
+    "@type": "ProfilePage",
+    name: `${name} - Full Stack Developer Portfolio`,
+    url,
+    description,
+    mainEntity: {
+      "@type": "Person",
+      name,
+      url,
+      image,
+      sameAs,
+      jobTitle: "Full Stack Developer",
+      worksFor: {
+        "@type": "Organization",
+        name: "eSparkBiz",
+      },
+    },
+    dateCreated: "2024-01-01",
+    dateModified: new Date().toISOString().split("T")[0],
   };
 
   return (

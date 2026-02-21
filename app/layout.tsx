@@ -8,6 +8,7 @@ import {
   WebsiteJsonLd,
   WorkExperienceJsonLd,
   EducationJsonLd,
+  ProfilePageJsonLd,
 } from "@/components/seo/json-ld";
 import { ChatProvider } from "@/components/chat/chat-context";
 import { LazyChatModal } from "@/components/chat/lazy-chat-modal";
@@ -69,16 +70,23 @@ export const metadata: Metadata = {
     icon: "/favicon.ico",
     apple: "/apple-touch-icon.png",
   },
+  applicationName: "Chirag Talpada Portfolio",
+  other: {
+    "application-name": "Chirag Talpada Portfolio",
+  },
   formatDetection: {
     email: false,
     address: false,
     telephone: false,
   },
+  alternates: {
+    canonical: baseUrl || "https://chirag-talpada.vercel.app",
+  },
   openGraph: {
     type: "website",
     locale: "en_US",
     url: baseUrl,
-    siteName: "Chirag Talpada Portfolio",
+    siteName: "Chirag Talpada",
     title: "Chirag Talpada | Full Stack Developer",
     description:
       "Full Stack Developer specializing in React, Next.js, Node.js, and AI-powered applications.",
@@ -146,6 +154,17 @@ export default function RootLayout({
         />
         <WorkExperienceJsonLd baseUrl={baseUrl} />
         <EducationJsonLd baseUrl={baseUrl} />
+        <ProfilePageJsonLd
+          name="Chirag Talpada"
+          url={baseUrl}
+          description="Full Stack Developer portfolio showcasing web development projects, AI applications, and technical expertise"
+          image={`${baseUrl}/face_shot.webp`}
+          sameAs={[
+            "https://github.com/chiragtalpada",
+            "https://linkedin.com/in/chiragtalpada",
+            "https://twitter.com/chiragtalpada",
+          ]}
+        />
       </head>
       <body
         className={`${geistSans.variable} ${geistMono.variable} font-sans antialiased`}
