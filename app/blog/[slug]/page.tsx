@@ -198,12 +198,16 @@ export default async function BlogPostPage({ params }: PageProps) {
   const baseUrl = process.env.BASE_URL || "";
   const postUrl = `${baseUrl}/blog/${slug}`;
 
+  // Convert date to full ISO 8601 format for Google structured data
+  const publishedDate = new Date(post.date).toISOString();
+
   const jsonLd = {
     "@context": "https://schema.org",
     "@type": "BlogPosting",
     headline: post.title,
     description: post.excerpt,
-    datePublished: post.date,
+    datePublished: publishedDate,
+    dateModified: publishedDate,
     author: {
       "@type": "Person",
       name: post.author.name,
