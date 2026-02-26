@@ -68,9 +68,18 @@ const useIconSize = () => {
 // Icon and color mapping for expertise areas
 const expertiseConfig = [
   { icon: Code2, color: "bg-blue-500/10 text-blue-600 dark:text-blue-400" },
-  { icon: Brain, color: "bg-purple-500/10 text-purple-600 dark:text-purple-400" },
-  { icon: Database, color: "bg-green-500/10 text-green-600 dark:text-green-400" },
-  { icon: Cloud, color: "bg-orange-500/10 text-orange-600 dark:text-orange-400" },
+  {
+    icon: Brain,
+    color: "bg-purple-500/10 text-purple-600 dark:text-purple-400",
+  },
+  {
+    icon: Database,
+    color: "bg-green-500/10 text-green-600 dark:text-green-400",
+  },
+  {
+    icon: Cloud,
+    color: "bg-orange-500/10 text-orange-600 dark:text-orange-400",
+  },
   { icon: Workflow, color: "bg-cyan-500/10 text-cyan-600 dark:text-cyan-400" },
   { icon: Shield, color: "bg-pink-500/10 text-pink-600 dark:text-pink-400" },
 ];
@@ -94,6 +103,7 @@ const techCategories = [
       { name: "JavaScript", Icon: TechIcons.Javascript },
       { name: "Tailwind CSS", Icon: TechIcons.Tailwind },
       { name: "shadcn/ui", Icon: TechIcons.ShadcnUI },
+      { name: "Tanstack Query", Icon: TechIcons.reactQuery },
       { name: "HTML5", Icon: TechIcons.HTML5 },
       { name: "CSS3", Icon: TechIcons.CSS3 },
       { name: "Redux", Icon: TechIcons.Redux },
@@ -128,6 +138,7 @@ const techCategories = [
       { name: "Anthropic", Icon: TechIcons.Anthropic },
       { name: "Claude", Icon: TechIcons.Claude },
       { name: "LangChain/LangGraph", Icon: TechIcons.LangChain },
+      { name: "AI SDK", Icon: TechIcons.aiSdk },
     ],
   },
   {
@@ -223,7 +234,12 @@ export function TechStack() {
         <h3 className="sr-only">Areas of Expertise</h3>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
           {expertiseAreas.map((expertise, index) => (
-            <BlurFade key={expertise.title} delay={0.1 + index * 0.1} inView className="h-full">
+            <BlurFade
+              key={expertise.title}
+              delay={0.1 + index * 0.1}
+              inView
+              className="h-full"
+            >
               <ExpertiseCard expertise={expertise} />
             </BlurFade>
           ))}

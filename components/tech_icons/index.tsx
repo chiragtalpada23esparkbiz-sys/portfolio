@@ -1139,4 +1139,24 @@ export const TechIcons = {
       loading="lazy"
     />
   ),
+  aiSdk: (
+    <Image
+      src={"/ai-sdk.webp"}
+      height={80}
+      width={80}
+      alt="AI SDK for building AI-powered applications"
+      title="AI SDK"
+      loading="lazy"
+    />
+  ),
+  reactQuery: (
+    <Image
+      src={"/react-query.webp"}
+      height={80}
+      width={80}
+      alt="React Query for managing server state in React applications"
+      title="React Query"
+      loading="lazy"
+    />
+  ),
 };

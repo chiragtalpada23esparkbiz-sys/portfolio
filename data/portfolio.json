@@ -12,7 +12,7 @@
     "linkedin": "https://www.linkedin.com/in/chirag-talpada",
     "twitter": "https://x.com/CTalpada78529",
     "profile_image": "/face_shot.webp",
-    "cv": "/chirag_talpada_cv.pdf"
+    "cv": "/chirag_talpada_fullstack_developer_resume.pdf"
   },
 
   "about": {
@@ -20,7 +20,7 @@
     "detailed_bio": [
       "I'm a Full-Stack JavaScript Developer with 3+ years of professional experience, currently working at eSparkBiz, where I help build modern web applications used in real-world production environments.",
       "Full-Stack Expertise: I specialize in building end-to-end web and SaaS products. On the frontend, I work extensively with React and Next.js, crafting clean, responsive, and user-friendly interfaces using Tailwind CSS and shadcn/ui. On the backend, I design and develop reliable, scalable systems using Node.js, along with PostgreSQL, MySQL, and Hasura for API and data orchestration.",
-      "AI-Driven Solutions: Beyond traditional full-stack development, I've been actively working with AI-powered applications. I've built AI agents and RAG-based chatbots using LangChain, LangGraph, vector databases, and AI SDKs—integrating them into real products that deliver intelligent, context-aware experiences.",
+      "AI-Driven Solutions: Beyond traditional full-stack development, I've been actively working with AI-powered applications. I've built AI agents and RAG-based chatbots using LangChain, LangGraph, vector databases, AI SDKs, and prompt engineering—integrating them into real products that deliver intelligent, context-aware experiences.",
       "Automation & Workflows: I've developed automation workflows using tools like Windmill and Hyperbrowser to streamline processes and generate intelligent reports, helping teams work smarter and faster.",
       "End-to-End Ownership: I've implemented authentication systems, integrated Stripe payments, designed database schemas, and contributed to architectural decisions—taking ownership of features from idea to production.",
       "At my core, I enjoy solving real-world problems, learning new technologies, and building scalable, maintainable software that delivers actual value - not just code."
@@ -166,7 +166,14 @@
       "Zitadel",
       "Better-auth"
     ],
-    "ai_ml": ["OpenAI", "Anthropic", "Claude", "LangChain", "LangGraph"],
+    "ai_ml": [
+      "OpenAI",
+      "Anthropic",
+      "Claude",
+      "LangChain",
+      "LangGraph",
+      "AI SDK"
+    ],
     "devops": [
       "Docker",
       "Git",
@@ -187,7 +194,7 @@
     },
     {
       "title": "AI & Automation",
-      "description": "Creating AI agents, RAG chatbots, and intelligent automation workflows using LangChain, LangGraph, and AI SDKs."
+      "description": "Creating AI agents, RAG chatbots, and intelligent automation workflows using LangChain, LangGraph, AI SDKs, and prompt engineering."
     },
     {
       "title": "Database & APIs",
@@ -830,52 +837,6 @@
       "year": "2020",
       "organization": "C P Patel & F H Shah Commerce College - SPU",
       "image": "/recognition/recognitions-farewell.webp"
-    }
-  ],
-
-  "certifications": [
-    {
-      "id": "github-actions",
-      "title": "GitHub Actions Professional Certificate",
-      "issuer": "GitHub",
-      "date": "September 10, 2023",
-      "credential_id": "GH-PRO-16925-2023",
-      "description": "Certification showing expertise in building automated workflows and CI/CD pipelines with GitHub Actions.",
-      "skills": ["GitHub Actions", "DevOps"],
-      "verify_url": "#"
-    },
-    {
-      "id": "aws-solutions-architect",
-      "title": "AWS Certified Solutions Architect - Professional",
-      "issuer": "Amazon Web Services",
-      "date": "June 15, 2023",
-      "valid_until": "June 15, 2026",
-      "credential_id": "AWS-12345-9876",
-      "description": "Advanced AWS certification demonstrating expertise in designing distributed systems and applications on AWS platform.",
-      "skills": ["AWS", "Docker", "Kubernetes"],
-      "verify_url": "#"
-    },
-    {
-      "id": "google-cloud",
-      "title": "Google Cloud Professional Cloud Architect",
-      "issuer": "Google Cloud",
-      "date": "March 20, 2023",
-      "valid_until": "March 20, 2025",
-      "credential_id": "GCP-78901-2023",
-      "description": "Professional certification for designing and managing solutions on Google Cloud Platform.",
-      "skills": ["GCP", "Cloud Architecture", "Terraform"],
-      "verify_url": "#"
-    },
-    {
-      "id": "kubernetes",
-      "title": "Certified Kubernetes Administrator",
-      "issuer": "Cloud Native Computing Foundation",
-      "date": "January 20, 2023",
-      "valid_until": "January 20, 2026",
-      "credential_id": "CKA-45678-2023",
-      "description": "Certification demonstrating skills in Kubernetes cluster administration and container orchestration.",
-      "skills": ["Kubernetes", "Docker", "Linux"],
-      "verify_url": "#"
     }
   ]
 }

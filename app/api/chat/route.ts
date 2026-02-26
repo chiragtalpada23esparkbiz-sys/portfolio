@@ -65,8 +65,6 @@ const portfolioSchema = {
     "Portfolio projects: detailed project info including titles, descriptions, technologies used, responsibilities, achievements, live URLs, and images",
   achievements:
     "Awards and recognition: competition wins, academic achievements, certificates, with descriptions, years, and organizations",
-  certifications:
-    "Professional certifications: titles, issuers, dates, descriptions, skills covered, and verification URLs",
 };
 
 // Valid portfolio property keys
@@ -82,7 +80,6 @@ const validProperties = [
   "contact",
   "projects",
   "achievements",
-  "certifications",
 ] as const;
 
 type PortfolioProperty = (typeof validProperties)[number];
@@ -274,22 +271,6 @@ ${ach.description}
   .join("\n")}`);
         break;
 
-      case "certifications":
-        contextParts.push(`## Certifications
-${portfolioData.certifications
-  .map(
-    (cert) => `
-### ${cert.title}
-- Issuer: ${cert.issuer}
-- Date: ${cert.date}
-${cert.valid_until ? `- Valid Until: ${cert.valid_until}` : ""}
-- Skills: ${cert.skills.join(", ")}
-
-${cert.description}
-`,
-  )
-  .join("\n")}`);
-        break;
     }
   }
 
