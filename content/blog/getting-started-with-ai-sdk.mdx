@@ -1,0 +1,1314 @@
+---
+title: "Getting Started with Vercel AI SDK: Build AI-Powered Apps with React and Next.js"
+excerpt: "Learn how to build production-ready AI applications using Vercel AI SDK. From streaming chat interfaces to tool calling and structured outputs - master the modern way to integrate LLMs into your apps."
+date: "2026-02-27"
+tags: ["AI", "AI SDK", "React", "Next.js", "TypeScript"]
+image: "/blog/ai_sdk_blog.webp"
+featured: true
+author:
+  name: "Chirag Talpada"
+---
+
+# Getting Started with Vercel AI SDK: Build AI-Powered Apps with React and Next.js
+
+If you've been building AI applications, you know the pain: managing streaming responses, handling different LLM providers, implementing chat interfaces, and dealing with the complexity of tool calling. **Vercel AI SDK** solves all of these problems with an elegant, unified API that just works.
+
+In this comprehensive guide, I'll walk you through everything you need to know to build production-ready AI applications using the AI SDK. We'll cover streaming, chat interfaces, tool calling, structured outputs, and advanced patterns that will level up your AI development game.
+
+## Why AI SDK?
+
+Before we dive into code, let's understand why AI SDK has become the go-to choice for developers building AI applications:
+
+### The Problem with Raw LLM APIs
+
+When working directly with LLM provider APIs, you face several challenges:
+
+```typescript
+// Without AI SDK - handling OpenAI streams manually
+const response = await fetch("https://api.openai.com/v1/chat/completions", {
+  method: "POST",
+  headers: {
+    Authorization: `Bearer ${process.env.OPENAI_API_KEY}`,
+    "Content-Type": "application/json",
+  },
+  body: JSON.stringify({
+    model: "gpt-5.1-codex",
+    messages: [{ role: "user", content: "Hello!" }],
+    stream: true,
+  }),
+});
+
+// Now you need to handle SSE parsing, error handling,
+// reconnection logic, and UI state management...
+```
+
+This gets messy fast, especially when you want to:
+
+- Support multiple LLM providers (OpenAI, Anthropic, Google, etc.)
+- Build streaming chat interfaces
+- Implement tool calling and function execution
+- Handle structured outputs with type safety
+
+### The AI SDK Solution
+
+AI SDK provides a **unified, provider-agnostic API** that handles all the complexity:
+
+```typescript
+// With AI SDK - clean and simple
+import { streamText } from "ai";
+import { openai } from "@ai-sdk/openai";
+
+const result = streamText({
+  model: openai("gpt-5.1-codex"),
+  messages: [{ role: "user", content: "Hello!" }],
+});
+```
+
+## Setting Up Your Project
+
+Let's build a real AI application from scratch. We'll create a Next.js app with a streaming chat interface.
+
+### Installation
+
+First, create a new Next.js project and install the required packages:
+
+```bash
+npx create-next-app@latest ai-chat-app
+cd ai-chat-app
+
+# Install AI SDK core and provider packages
+npm install ai @ai-sdk/openai @ai-sdk/anthropic
+```
+
+### Environment Setup
+
+Create a `.env.local` file with your API keys:
+
+```env
+OPENAI_API_KEY=sk-...
+ANTHROPIC_API_KEY=sk-ant-...
+```
+
+### Project Structure
+
+Here's the structure we'll build:
+
+| Path | Description |
+|------|-------------|
+| `app/api/chat/route.ts` | API endpoint for chat |
+| `app/page.tsx` | Chat UI component |
+| `app/layout.tsx` | Root layout |
+| `components/chat-message.tsx` | Message component |
+| `lib/ai-config.ts` | AI configuration |
+
+## Core Concepts: Understanding AI SDK Architecture
+
+AI SDK is built around three core packages:
+
+### 1. AI SDK Core (`ai`)
+
+The foundation that provides:
+
+- `generateText` - Generate text completions
+- `streamText` - Stream text responses
+- `Output.object()` - Generate typed objects with `generateText`/`streamText`
+- `Output.array()` - Generate typed arrays
+- `Output.enum()` - Generate enum classifications
+- Tool execution framework
+
+### 2. AI SDK UI (`ai/react`)
+
+React hooks for building chat interfaces:
+
+- `useChat` - Full chat state management
+- `useCompletion` - Single completion management
+- `useAssistant` - OpenAI Assistants integration
+
+### 3. AI SDK Providers (`@ai-sdk/*`)
+
+Provider-specific implementations:
+
+- `@ai-sdk/openai` - OpenAI models
+- `@ai-sdk/anthropic` - Claude models
+- `@ai-sdk/google` - Gemini models
+- `@ai-sdk/mistral` - Mistral models
+- And many more...
+
+## Building a Streaming Chat Interface
+
+Let's build a complete chat application step by step.
+
+### Step 1: Create the API Route
+
+Create the chat API endpoint at `app/api/chat/route.ts`:
+
+```typescript
+import { streamText, Message } from "ai";
+import { openai } from "@ai-sdk/openai";
+
+// Allow streaming responses up to 30 seconds
+export const maxDuration = 30;
+
+export async function POST(req: Request) {
+  const { messages }: { messages: Message[] } = await req.json();
+
+  const result = streamText({
+    model: openai("gpt-5.1-codex"),
+    system: `You are a helpful AI assistant. Be concise and friendly.`,
+    messages,
+  });
+
+  return result.toDataStreamResponse();
+}
+```
+
+That's it! The `toDataStreamResponse()` method handles all the streaming complexity for you.
+
+### Step 2: Build the Chat UI
+
+Create the chat interface at `app/page.tsx`:
+
+```typescript
+'use client';
+
+import { useChat } from 'ai/react';
+import { Send, Bot, User } from 'lucide-react';
+
+export default function ChatPage() {
+  const { messages, input, handleInputChange, handleSubmit, isLoading } = useChat();
+
+  return (
+    <div className="flex flex-col h-screen max-w-3xl mx-auto">
+      {/* Header */}
+      <header className="border-b p-4">
+        <h1 className="text-xl font-semibold">AI Chat</h1>
+      </header>
+
+      {/* Messages */}
+      <div className="flex-1 overflow-y-auto p-4 space-y-4">
+        {messages.length === 0 && (
+          <div className="text-center text-gray-500 mt-8">
+            Start a conversation with AI
+          </div>
+        )}
+
+        {messages.map((message) => (
+          <div
+            key={message.id}
+            className={`flex gap-3 ${
+              message.role === 'user' ? 'justify-end' : 'justify-start'
+            }`}
+          >
+            {message.role === 'assistant' && (
+              <div className="w-8 h-8 rounded-full bg-blue-500 flex items-center justify-center">
+                <Bot className="w-5 h-5 text-white" />
+              </div>
+            )}
+
+            <div
+              className={`max-w-[70%] rounded-lg px-4 py-2 ${
+                message.role === 'user'
+                  ? 'bg-blue-500 text-white'
+                  : 'bg-gray-100 text-gray-900'
+              }`}
+            >
+              {message.content}
+            </div>
+
+            {message.role === 'user' && (
+              <div className="w-8 h-8 rounded-full bg-gray-300 flex items-center justify-center">
+                <User className="w-5 h-5 text-gray-600" />
+              </div>
+            )}
+          </div>
+        ))}
+
+        {isLoading && (
+          <div className="flex gap-3">
+            <div className="w-8 h-8 rounded-full bg-blue-500 flex items-center justify-center">
+              <Bot className="w-5 h-5 text-white" />
+            </div>
+            <div className="bg-gray-100 rounded-lg px-4 py-2">
+              <span className="animate-pulse">Thinking...</span>
+            </div>
+          </div>
+        )}
+      </div>
+
+      {/* Input */}
+      <form onSubmit={handleSubmit} className="border-t p-4">
+        <div className="flex gap-2">
+          <input
+            type="text"
+            value={input}
+            onChange={handleInputChange}
+            placeholder="Type your message..."
+            className="flex-1 border rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+          />
+          <button
+            type="submit"
+            disabled={isLoading || !input.trim()}
+            className="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            <Send className="w-5 h-5" />
+          </button>
+        </div>
+      </form>
+    </div>
+  );
+}
+```
+
+### The Magic of `useChat`
+
+The `useChat` hook provides everything you need:
+
+```typescript
+const {
+  messages, // Array of chat messages
+  input, // Current input value
+  handleInputChange, // Input change handler
+  handleSubmit, // Form submit handler
+  isLoading, // Loading state
+  error, // Error state
+  reload, // Regenerate last response
+  stop, // Stop current generation
+  setMessages, // Manually set messages
+  append, // Add a message programmatically
+} = useChat({
+  api: "/api/chat", // API endpoint (default)
+  initialMessages: [], // Starting messages
+  onFinish: (message) => {}, // Called when response completes
+  onError: (error) => {}, // Error handler
+});
+```
+
+### Using the New Transport System (Recommended)
+
+The latest AI SDK introduces a **transport-based architecture** that gives you more control over how messages are sent to your API. This is the recommended approach for production applications:
+
+```typescript
+"use client";
+
+import { useChat } from "@ai-sdk/react";
+import { DefaultChatTransport, type UIMessage } from "ai";
+
+// Define initial messages with the new UIMessage format
+const welcomeMessage: UIMessage = {
+  id: "welcome",
+  role: "assistant",
+  parts: [
+    {
+      type: "text",
+      text: "Hello! How can I help you today?",
+    },
+  ],
+};
+
+export function ChatComponent() {
+  const { messages, sendMessage, status, error } = useChat({
+    id: "my-chat", // Unique chat ID for persistence
+    messages: [welcomeMessage],
+    transport: new DefaultChatTransport({
+      api: "/api/chat",
+    }),
+    onError: (err) => {
+      // err.message contains the raw response body from the API
+      try {
+        const parsed = JSON.parse(err.message);
+        if (parsed.error === "rate_limit") {
+          // Handle rate limiting
+          console.log(parsed.message);
+        }
+      } catch {
+        // Not JSON, handle generic error
+        console.error("Chat error:", err);
+      }
+    },
+  });
+
+  const isLoading = status === "submitted";
+  const isStreaming = status === "streaming";
+
+  const handleSubmit = async (text: string) => {
+    if (!text.trim()) return;
+    await sendMessage({ text });
+  };
+
+  return (
+    <div>
+      {messages.map((message) => (
+        <div key={message.id}>
+          {/* Extract text from message parts */}
+          {message.parts
+            .filter((part) => part.type === "text")
+            .map((part, i) => (
+              <p key={i}>{part.text}</p>
+            ))}
+        </div>
+      ))}
+
+      {isLoading && <p>Thinking...</p>}
+      {isStreaming && <p>Streaming response...</p>}
+    </div>
+  );
+}
+```
+
+**Key differences with the transport approach:**
+
+| Feature | Old `useChat` | New Transport-based |
+|---------|---------------|---------------------|
+| Import | `ai/react` | `@ai-sdk/react` |
+| Message format | `content` string | `parts` array with typed content |
+| Sending messages | `append()` or `handleSubmit()` | `sendMessage({ text })` |
+| Loading state | `isLoading` boolean | `status` enum (`submitted`, `streaming`, `ready`) |
+| API config | `api` prop directly | `DefaultChatTransport` instance |
+
+**Why use the transport system?**
+
+1. **Better type safety** - `UIMessage` with `parts` array supports multi-modal content (text, images, tool calls)
+2. **Granular status** - `status` gives you `submitted`, `streaming`, and `ready` states
+3. **Custom transports** - You can create custom transport classes for WebSocket, custom protocols, etc.
+4. **Cleaner error handling** - Error objects contain the full API response for parsing
+
+### Real-World Example: Chat Modal with Transport
+
+Here's a production-ready chat modal implementation using the transport system with proper error handling, rate limiting feedback, and polished UX:
+
+```typescript
+"use client";
+
+import * as React from "react";
+import { useChat } from "@ai-sdk/react";
+import { DefaultChatTransport, type UIMessage } from "ai";
+
+const welcomeMessage: UIMessage = {
+  id: "welcome",
+  role: "assistant",
+  parts: [
+    {
+      type: "text",
+      text: "Hey there! I'm your AI assistant. How can I help you today?",
+    },
+  ],
+};
+
+// Helper to extract text content from message parts
+function getMessageText(message: UIMessage): string {
+  return message.parts
+    .filter((part): part is { type: "text"; text: string } => part.type === "text")
+    .map((part) => part.text)
+    .join("");
+}
+
+export function ChatModal() {
+  const inputRef = React.useRef<HTMLTextAreaElement>(null);
+  const [input, setInput] = React.useState("");
+  const [rateLimitError, setRateLimitError] = React.useState<string | null>(null);
+
+  const { messages, sendMessage, status, error } = useChat({
+    id: "portfolio-chat",
+    messages: [welcomeMessage],
+    transport: new DefaultChatTransport({
+      api: "/api/chat",
+    }),
+    onError: (err) => {
+      // Parse structured error responses from your API
+      try {
+        const parsed = JSON.parse(err.message);
+        if (parsed.error === "user_limit" || parsed.error === "rate_limit") {
+          setRateLimitError(parsed.message);
+          return;
+        }
+      } catch {
+        // Not JSON — fall through
+      }
+      setRateLimitError("Something went wrong. Please try again later.");
+    },
+  });
+
+  const isLoading = status === "submitted";
+  const isStreaming = status === "streaming";
+
+  const handleSubmit = React.useCallback(async () => {
+    if (!input.trim()) return;
+    await sendMessage({ text: input });
+    setInput("");
+  }, [input, sendMessage]);
+
+  return (
+    <div className="flex flex-col h-full">
+      {/* Messages */}
+      <div className="flex-1 overflow-y-auto p-4 space-y-4">
+        {messages.map((message) => {
+          const messageText = getMessageText(message);
+
+          // Show typing indicator for empty assistant messages
+          if (!messageText.trim() && message.role === "assistant") {
+            return (
+              <div key={message.id} className="flex gap-3">
+                <div className="bg-muted px-4 py-2 rounded-2xl">
+                  <span className="animate-pulse">Thinking...</span>
+                </div>
+              </div>
+            );
+          }
+
+          return (
+            <div
+              key={message.id}
+              className={`flex gap-3 ${
+                message.role === "user" ? "justify-end" : "justify-start"
+              }`}
+            >
+              <div
+                className={`max-w-[80%] px-4 py-2 rounded-2xl ${
+                  message.role === "user"
+                    ? "bg-primary text-primary-foreground"
+                    : "bg-muted"
+                }`}
+              >
+                {messageText}
+              </div>
+            </div>
+          );
+        })}
+
+        {/* Loading indicator */}
+        {isLoading && (
+          <div className="flex items-center justify-center">
+            <div className="bg-muted p-3 rounded-full animate-spin">⏳</div>
+          </div>
+        )}
+
+        {/* Error display */}
+        {(rateLimitError || error) && (
+          <div className="bg-amber-500/10 border border-amber-500/20 p-4 rounded-lg">
+            <p className="text-amber-600 font-medium">Limit Reached</p>
+            <p className="text-sm text-muted-foreground mt-1">
+              {rateLimitError || "Something went wrong. Please try again later."}
+            </p>
+          </div>
+        )}
+      </div>
+
+      {/* Input */}
+      <div className="p-4 border-t">
+        <div className="flex gap-2">
+          <textarea
+            ref={inputRef}
+            value={input}
+            onChange={(e) => setInput(e.target.value)}
+            placeholder="Type your message..."
+            className="flex-1 resize-none border rounded-lg px-4 py-2"
+            disabled={isLoading || isStreaming}
+            onKeyDown={(e) => {
+              if (e.key === "Enter" && !e.shiftKey) {
+                e.preventDefault();
+                handleSubmit();
+              }
+            }}
+          />
+          <button
+            onClick={handleSubmit}
+            disabled={isLoading || isStreaming || !input.trim()}
+            className="px-4 py-2 bg-primary text-white rounded-lg disabled:opacity-50"
+          >
+            Send
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+```
+
+This pattern handles:
+- **Structured error parsing** from your API (rate limits, validation errors)
+- **Message parts extraction** for multi-modal support
+- **Granular loading states** (submitted vs streaming)
+- **Typing indicators** when the assistant is generating
+- **Keyboard shortcuts** (Enter to send)
+
+## Switching Between Providers
+
+One of AI SDK's killer features is **provider abstraction**. Switch between models with a single line change:
+
+```typescript
+import { openai } from "@ai-sdk/openai";
+import { anthropic } from "@ai-sdk/anthropic";
+import { google } from "@ai-sdk/google";
+
+// OpenAI GPT-4
+const result1 = streamText({
+  model: openai("gpt-5.1-codex"),
+  messages,
+});
+
+// Anthropic Claude
+const result2 = streamText({
+  model: anthropic("claude-3-5-sonnet-20241022"),
+  messages,
+});
+
+// Google Gemini
+const result3 = streamText({
+  model: google("gemini-1.5-pro"),
+  messages,
+});
+```
+
+### Creating a Provider-Agnostic API
+
+Build an API that accepts the provider as a parameter:
+
+```typescript
+import { streamText, Message } from "ai";
+import { openai } from "@ai-sdk/openai";
+import { anthropic } from "@ai-sdk/anthropic";
+
+const providers = {
+  openai: (model: string) => openai(model),
+  anthropic: (model: string) => anthropic(model),
+};
+
+export async function POST(req: Request) {
+  const {
+    messages,
+    provider = "openai",
+    model = "gpt-5.1-codex",
+  } = await req.json();
+
+  const modelInstance = providers[provider as keyof typeof providers](model);
+
+  const result = streamText({
+    model: modelInstance,
+    messages,
+  });
+
+  return result.toDataStreamResponse();
+}
+```
+
+## Tool Calling: Give Your AI Superpowers
+
+Tools allow your AI to perform actions and access external data. This is where AI applications become truly powerful.
+
+### Defining Tools
+
+```typescript
+import { streamText, tool } from "ai";
+import { openai } from "@ai-sdk/openai";
+import { z } from "zod";
+
+const result = streamText({
+  model: openai("gpt-5.1-codex"),
+  messages,
+  tools: {
+    // Weather tool
+    getWeather: tool({
+      description: "Get the current weather for a location",
+      parameters: z.object({
+        location: z.string().describe("The city and country"),
+        unit: z.enum(["celsius", "fahrenheit"]).default("celsius"),
+      }),
+      execute: async ({ location, unit }) => {
+        // Call weather API
+        const weather = await fetchWeather(location, unit);
+        return weather;
+      },
+    }),
+
+    // Calculator tool
+    calculate: tool({
+      description: "Perform mathematical calculations",
+      parameters: z.object({
+        expression: z.string().describe("The math expression to evaluate"),
+      }),
+      execute: async ({ expression }) => {
+        // Safely evaluate the expression
+        const result = evaluateExpression(expression);
+        return { result };
+      },
+    }),
+
+    // Search tool
+    searchWeb: tool({
+      description: "Search the web for information",
+      parameters: z.object({
+        query: z.string().describe("The search query"),
+      }),
+      execute: async ({ query }) => {
+        const results = await searchAPI(query);
+        return results;
+      },
+    }),
+  },
+});
+```
+
+### Handling Tool Results in the UI
+
+Update your API route to stream tool calls:
+
+```typescript
+import { streamText, tool } from "ai";
+import { openai } from "@ai-sdk/openai";
+import { z } from "zod";
+
+export async function POST(req: Request) {
+  const { messages } = await req.json();
+
+  const result = streamText({
+    model: openai("gpt-5.1-codex"),
+    messages,
+    tools: {
+      getWeather: tool({
+        description: "Get weather for a location",
+        parameters: z.object({
+          location: z.string(),
+        }),
+        execute: async ({ location }) => {
+          // Simulate API call
+          await new Promise((resolve) => setTimeout(resolve, 1000));
+          return {
+            location,
+            temperature: 22,
+            condition: "Sunny",
+            humidity: 45,
+          };
+        },
+      }),
+    },
+    maxSteps: 5, // Allow multiple tool calls
+  });
+
+  return result.toDataStreamResponse();
+}
+```
+
+Display tool invocations in your UI:
+
+```typescript
+'use client';
+
+import { useChat } from 'ai/react';
+
+export default function ChatWithTools() {
+  const { messages, input, handleInputChange, handleSubmit } = useChat();
+
+  return (
+    <div>
+      {messages.map((message) => (
+        <div key={message.id}>
+          {/* Regular message content */}
+          {message.content && <p>{message.content}</p>}
+
+          {/* Tool invocations */}
+          {message.toolInvocations?.map((tool) => (
+            <div key={tool.toolCallId} className="bg-gray-100 p-3 rounded-lg my-2">
+              <div className="font-semibold text-sm text-gray-600">
+                Tool: {tool.toolName}
+              </div>
+
+              {tool.state === 'call' && (
+                <div className="text-sm">
+                  Calling with: {JSON.stringify(tool.args)}
+                </div>
+              )}
+
+              {tool.state === 'result' && (
+                <div className="text-sm">
+                  Result: {JSON.stringify(tool.result)}
+                </div>
+              )}
+            </div>
+          ))}
+        </div>
+      ))}
+
+      {/* Input form */}
+      <form onSubmit={handleSubmit}>
+        <input value={input} onChange={handleInputChange} />
+        <button type="submit">Send</button>
+      </form>
+    </div>
+  );
+}
+```
+
+## Structured Outputs: Type-Safe AI Responses
+
+Generate structured data with full TypeScript type safety using the `Output.object()` helper with `generateText`:
+
+```typescript
+import { generateText, Output } from "ai";
+import { openai } from "@ai-sdk/openai";
+import { z } from "zod";
+
+// Define your schema
+const recipeSchema = z.object({
+  name: z.string(),
+  description: z.string(),
+  prepTime: z.number().describe("Preparation time in minutes"),
+  cookTime: z.number().describe("Cooking time in minutes"),
+  servings: z.number(),
+  difficulty: z.enum(["easy", "medium", "hard"]),
+  ingredients: z.array(
+    z.object({
+      item: z.string(),
+      amount: z.string(),
+      unit: z.string().optional(),
+    }),
+  ),
+  instructions: z.array(z.string()),
+  nutritionInfo: z
+    .object({
+      calories: z.number(),
+      protein: z.number(),
+      carbs: z.number(),
+      fat: z.number(),
+    })
+    .optional(),
+});
+
+// Generate structured output using Output.object()
+const { output: recipe } = await generateText({
+  model: openai("gpt-5.1-codex"),
+  output: Output.object({
+    schema: recipeSchema,
+  }),
+  prompt: "Create a recipe for chocolate chip cookies",
+});
+
+// recipe is fully typed!
+console.log(recipe.name); // string
+console.log(recipe.ingredients); // { item: string, amount: string, unit?: string }[]
+console.log(recipe.difficulty); // 'easy' | 'medium' | 'hard'
+```
+
+### Streaming Structured Outputs
+
+For larger objects, use `streamText` with `Output.object()`:
+
+```typescript
+import { streamText, Output } from "ai";
+import { openai } from "@ai-sdk/openai";
+import { z } from "zod";
+
+const articleSchema = z.object({
+  title: z.string(),
+  sections: z.array(
+    z.object({
+      heading: z.string(),
+      content: z.string(),
+    }),
+  ),
+  summary: z.string(),
+  tags: z.array(z.string()),
+});
+
+const result = streamText({
+  model: openai("gpt-5.1-codex"),
+  output: Output.object({
+    schema: articleSchema,
+  }),
+  prompt: "Write an article about sustainable energy",
+});
+
+// Stream partial objects as they're generated
+for await (const partialOutput of result.partialOutputStream) {
+  console.log(partialOutput);
+  // { title: "Sust..." }
+  // { title: "Sustainable Energy...", sections: [...] }
+  // etc.
+}
+
+// Or get the final output
+const { output: article } = await result;
+```
+
+### Generating Arrays
+
+Use `Output.array()` when you need to generate a list of items:
+
+```typescript
+import { generateText, Output } from "ai";
+import { openai } from "@ai-sdk/openai";
+import { z } from "zod";
+
+const { output: users } = await generateText({
+  model: openai("gpt-5.1-codex"),
+  output: Output.array({
+    schema: z.object({
+      name: z.string(),
+      age: z.number().nullable(),
+      email: z.string().email(),
+      role: z.enum(["admin", "user", "guest"]),
+    }),
+  }),
+  prompt: "Generate 5 test users for a SaaS application",
+});
+
+// users is typed as an array
+users.forEach((user) => {
+  console.log(`${user.name} (${user.role}): ${user.email}`);
+});
+```
+
+### Generating Enums
+
+For simple classification tasks, use `Output.enum()`:
+
+```typescript
+import { generateText, Output } from "ai";
+import { openai } from "@ai-sdk/openai";
+
+const { output: sentiment } = await generateText({
+  model: openai("gpt-5.1-codex"),
+  output: Output.enum({
+    values: ["positive", "negative", "neutral"],
+  }),
+  prompt: "Classify the sentiment: 'This product exceeded my expectations!'",
+});
+
+console.log(sentiment); // "positive"
+```
+
+## Advanced Patterns
+
+### Multi-Modal: Images and Vision
+
+AI SDK supports multi-modal inputs out of the box:
+
+```typescript
+import { generateText } from "ai";
+import { openai } from "@ai-sdk/openai";
+
+const result = await generateText({
+  model: openai("gpt-4o"),
+  messages: [
+    {
+      role: "user",
+      content: [
+        { type: "text", text: "What is in this image?" },
+        {
+          type: "image",
+          image: new URL("https://example.com/image.jpg"),
+          // Or use base64: image: 'data:image/jpeg;base64,...'
+        },
+      ],
+    },
+  ],
+});
+```
+
+### Custom Providers and Models
+
+Create custom model configurations:
+
+```typescript
+import { createOpenAI } from "@ai-sdk/openai";
+
+// Custom OpenAI-compatible provider
+const customProvider = createOpenAI({
+  baseURL: "https://your-custom-endpoint.com/v1",
+  apiKey: process.env.CUSTOM_API_KEY,
+});
+
+const result = streamText({
+  model: customProvider("your-model"),
+  messages,
+});
+```
+
+### Rate Limiting and Retry Logic
+
+AI SDK handles retries automatically, but you can customize:
+
+```typescript
+import { streamText, RetryError } from "ai";
+import { openai } from "@ai-sdk/openai";
+
+const result = streamText({
+  model: openai("gpt-5.1-codex"),
+  messages,
+  maxRetries: 3, // Retry up to 3 times
+  abortSignal: AbortSignal.timeout(30000), // 30 second timeout
+});
+```
+
+### Middleware and Logging
+
+Add middleware for logging and monitoring:
+
+```typescript
+import { streamText, wrapLanguageModel, experimental_telemetry } from "ai";
+import { openai } from "@ai-sdk/openai";
+
+const wrappedModel = wrapLanguageModel({
+  model: openai("gpt-5.1-codex"),
+  middleware: {
+    transformParams: async (params) => {
+      console.log("Request:", params);
+      return params;
+    },
+    transformResponse: async (response) => {
+      console.log("Response:", response);
+      return response;
+    },
+  },
+});
+
+const result = streamText({
+  model: wrappedModel,
+  messages,
+  experimental_telemetry: experimental_telemetry({
+    isEnabled: true,
+    functionId: "chat-endpoint",
+    metadata: { userId: "user-123" },
+  }),
+});
+```
+
+## Building a Production-Ready AI Application
+
+Let's put it all together with a complete, production-ready implementation:
+
+### API Route with Error Handling
+
+```typescript
+// app/api/chat/route.ts
+import { streamText, tool, Message } from "ai";
+import { openai } from "@ai-sdk/openai";
+import { z } from "zod";
+
+export const maxDuration = 60;
+
+const systemPrompt = `You are a helpful AI assistant with access to tools.
+- Use the search tool to find current information
+- Use the calculator for mathematical operations
+- Be concise and helpful`;
+
+export async function POST(req: Request) {
+  try {
+    const { messages }: { messages: Message[] } = await req.json();
+
+    // Validate input
+    if (!messages || !Array.isArray(messages)) {
+      return Response.json(
+        { error: "Invalid messages format" },
+        { status: 400 },
+      );
+    }
+
+    const result = streamText({
+      model: openai("gpt-5.1-codex"),
+      system: systemPrompt,
+      messages,
+      maxTokens: 4096,
+      temperature: 0.7,
+      tools: {
+        search: tool({
+          description: "Search for information on the web",
+          parameters: z.object({
+            query: z.string().describe("Search query"),
+          }),
+          execute: async ({ query }) => {
+            // Implement your search logic
+            return { results: [`Result for: ${query}`] };
+          },
+        }),
+        calculate: tool({
+          description: "Perform calculations",
+          parameters: z.object({
+            expression: z.string(),
+          }),
+          execute: async ({ expression }) => {
+            // Safe math evaluation
+            try {
+              const result = Function(`"use strict"; return (${expression})`)();
+              return { result };
+            } catch {
+              return { error: "Invalid expression" };
+            }
+          },
+        }),
+      },
+      maxSteps: 10,
+      onFinish: async ({ text, usage }) => {
+        // Log usage for monitoring
+        console.log("Completion finished", {
+          tokens: usage,
+          responseLength: text.length,
+        });
+      },
+    });
+
+    return result.toDataStreamResponse();
+  } catch (error) {
+    console.error("Chat API error:", error);
+
+    if (error instanceof Error) {
+      return Response.json({ error: error.message }, { status: 500 });
+    }
+
+    return Response.json(
+      { error: "An unexpected error occurred" },
+      { status: 500 },
+    );
+  }
+}
+```
+
+### Enhanced Chat Component
+
+```typescript
+// app/page.tsx
+'use client';
+
+import { useChat } from 'ai/react';
+import { useRef, useEffect } from 'react';
+import { Send, RotateCcw, Square, AlertCircle } from 'lucide-react';
+
+export default function Chat() {
+  const messagesEndRef = useRef<HTMLDivElement>(null);
+
+  const {
+    messages,
+    input,
+    handleInputChange,
+    handleSubmit,
+    isLoading,
+    error,
+    reload,
+    stop,
+  } = useChat({
+    onError: (error) => {
+      console.error('Chat error:', error);
+    },
+  });
+
+  // Auto-scroll to bottom
+  useEffect(() => {
+    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+  }, [messages]);
+
+  return (
+    <div className="flex flex-col h-screen bg-gray-50">
+      <header className="bg-white border-b px-6 py-4">
+        <h1 className="text-xl font-semibold text-gray-800">AI Assistant</h1>
+        <p className="text-sm text-gray-500">Powered by AI SDK</p>
+      </header>
+
+      <main className="flex-1 overflow-y-auto p-6">
+        <div className="max-w-3xl mx-auto space-y-6">
+          {messages.map((message) => (
+            <MessageBubble key={message.id} message={message} />
+          ))}
+
+          {isLoading && (
+            <div className="flex items-center gap-2 text-gray-500">
+              <div className="animate-spin h-4 w-4 border-2 border-blue-500 border-t-transparent rounded-full" />
+              <span>AI is thinking...</span>
+            </div>
+          )}
+
+          {error && (
+            <div className="flex items-center gap-2 text-red-500 bg-red-50 p-4 rounded-lg">
+              <AlertCircle className="h-5 w-5" />
+              <span>Error: {error.message}</span>
+              <button
+                onClick={() => reload()}
+                className="ml-auto text-red-600 hover:text-red-800"
+              >
+                <RotateCcw className="h-4 w-4" />
+              </button>
+            </div>
+          )}
+
+          <div ref={messagesEndRef} />
+        </div>
+      </main>
+
+      <footer className="bg-white border-t p-4">
+        <form onSubmit={handleSubmit} className="max-w-3xl mx-auto">
+          <div className="flex gap-3">
+            <input
+              type="text"
+              value={input}
+              onChange={handleInputChange}
+              placeholder="Ask anything..."
+              className="flex-1 px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              disabled={isLoading}
+            />
+
+            {isLoading ? (
+              <button
+                type="button"
+                onClick={stop}
+                className="px-4 py-3 bg-red-500 text-white rounded-xl hover:bg-red-600 transition-colors"
+              >
+                <Square className="h-5 w-5" />
+              </button>
+            ) : (
+              <button
+                type="submit"
+                disabled={!input.trim()}
+                className="px-4 py-3 bg-blue-500 text-white rounded-xl hover:bg-blue-600 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+              >
+                <Send className="h-5 w-5" />
+              </button>
+            )}
+          </div>
+        </form>
+      </footer>
+    </div>
+  );
+}
+
+function MessageBubble({ message }: { message: any }) {
+  const isUser = message.role === 'user';
+
+  return (
+    <div className={`flex ${isUser ? 'justify-end' : 'justify-start'}`}>
+      <div
+        className={`max-w-[80%] rounded-2xl px-4 py-3 ${
+          isUser
+            ? 'bg-blue-500 text-white'
+            : 'bg-white border border-gray-200 text-gray-800'
+        }`}
+      >
+        {message.content}
+
+        {message.toolInvocations?.map((tool: any) => (
+          <div
+            key={tool.toolCallId}
+            className="mt-2 pt-2 border-t border-gray-200 text-sm"
+          >
+            <span className="font-medium">Tool: {tool.toolName}</span>
+            {tool.state === 'result' && (
+              <pre className="mt-1 text-xs bg-gray-100 p-2 rounded overflow-x-auto">
+                {JSON.stringify(tool.result, null, 2)}
+              </pre>
+            )}
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+```
+
+## Best Practices and Tips
+
+### 1. Use the Transport System for Production Apps
+
+The transport-based approach (`@ai-sdk/react` with `DefaultChatTransport`) is the recommended pattern for production applications:
+
+```typescript
+import { useChat } from "@ai-sdk/react";
+import { DefaultChatTransport, type UIMessage } from "ai";
+
+const { messages, sendMessage, status } = useChat({
+  id: "my-chat",
+  transport: new DefaultChatTransport({
+    api: "/api/chat",
+  }),
+});
+
+// Use status for granular loading states
+const isLoading = status === "submitted";
+const isStreaming = status === "streaming";
+```
+
+This gives you better type safety, granular status tracking, and easier error handling.
+
+### 2. Always Set Appropriate Timeouts
+
+```typescript
+export const maxDuration = 30; // Next.js route timeout
+
+const result = streamText({
+  model: openai("gpt-5.1-codex"),
+  messages,
+  abortSignal: AbortSignal.timeout(25000), // Slightly less than route timeout
+});
+```
+
+### 2. Use System Prompts Effectively
+
+```typescript
+const systemPrompt = `You are a coding assistant specialized in TypeScript and React.
+
+Guidelines:
+- Always provide code examples
+- Explain your reasoning
+- Use modern best practices
+- Keep responses concise
+
+Current date: ${new Date().toISOString().split("T")[0]}`;
+```
+
+### 3. Handle Streaming Errors Gracefully
+
+```typescript
+const { messages, error, reload } = useChat({
+  onError: (err) => {
+    // Log to error tracking service
+    captureException(err);
+  },
+});
+
+// In UI
+{error && (
+  <div>
+    <p>Something went wrong</p>
+    <button onClick={() => reload()}>Try again</button>
+  </div>
+)}
+```
+
+### 4. Optimize Token Usage
+
+```typescript
+const result = streamText({
+  model: openai("gpt-5.1-codex"),
+  messages: messages.slice(-10), // Only send recent context
+  maxTokens: 1024, // Limit response length
+});
+```
+
+### 5. Implement Proper Loading States
+
+```typescript
+const { isLoading, data } = useChat();
+
+// Show skeleton while loading
+{isLoading && !data && <MessageSkeleton />}
+
+// Show partial response while streaming
+{isLoading && data && <StreamingMessage content={data} />}
+```
+
+## Conclusion
+
+Vercel AI SDK transforms how we build AI applications. With its unified API, provider abstraction, and powerful features like tool calling and structured outputs, you can focus on building great user experiences instead of wrestling with LLM complexity.
+
+**Key takeaways:**
+
+- Use `streamText` and `useChat` for real-time chat experiences
+- **Use the transport system** (`@ai-sdk/react` + `DefaultChatTransport`) for production apps with better type safety and granular status tracking
+- Leverage tools to give your AI access to external capabilities
+- Use `Output.object()`, `Output.array()`, and `Output.enum()` for type-safe structured outputs
+- Switch providers easily without changing your application logic
+- Handle errors and edge cases gracefully with structured error parsing
+
+The AI SDK ecosystem continues to evolve rapidly, with new providers, features, and optimizations being added regularly. Stay updated by following the [official documentation](https://sdk.vercel.ai/docs) and the Vercel team's announcements.
+
+Now go build something amazing with AI!
+
+---
+
+_Have questions about AI SDK or want to share what you've built? Connect with me on Twitter or leave a comment below._

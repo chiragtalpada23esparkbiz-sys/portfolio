@@ -14,6 +14,7 @@ import remarkGfm from "remark-gfm";
 import { ReadingProgress } from "./reading-progress";
 import { TableOfContents } from "./table-of-contents";
 import { ShareCard } from "./share-card";
+import { CodeBlock } from "./code-block";
 import type { BlogPost } from "@/types";
 
 interface PageProps {
@@ -122,10 +123,7 @@ const mdxComponents = {
     />
   ),
   pre: (props: React.HTMLAttributes<HTMLPreElement>) => (
-    <pre
-      className="bg-zinc-100 dark:bg-zinc-900 text-zinc-800 dark:text-zinc-100 p-3 sm:p-4 rounded-xl overflow-x-auto mb-6 text-xs sm:text-sm border border-zinc-200 dark:border-zinc-800 max-w-full"
-      {...props}
-    />
+    <CodeBlock>{props.children}</CodeBlock>
   ),
   hr: () => <hr className="my-8 border-muted" />,
   img: (props: React.ImgHTMLAttributes<HTMLImageElement>) => (
@@ -332,12 +330,12 @@ export default async function BlogPostPage({ params }: PageProps) {
           {/* Cover Image */}
           {post.image && (
             <BlurFade delay={0.2}>
-              <div className="relative h-64 md:h-96 rounded-2xl overflow-hidden max-w-4xl mx-auto mb-10">
+              <div className="relative aspect-video rounded-2xl overflow-hidden max-w-4xl mx-auto mb-10">
                 <Image
                   src={post.image}
                   alt={post.title}
                   fill
-                  className="object-cover object-top"
+                  className="object-contain"
                   sizes="(max-width: 768px) 100vw, 896px"
                   priority
                   itemProp="image"
