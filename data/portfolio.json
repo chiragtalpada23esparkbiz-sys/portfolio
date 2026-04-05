@@ -304,10 +304,10 @@
     {
       "id": "revtik",
       "slug": "revtik",
-      "title": "Revtik",
+      "title": "Revitk",
       "subtitle": "AI-Powered Sales Enablement & GTM Intelligence Platform",
-      "description": "Multi-tenant B2B SaaS AI platform enabling sales consultancies to operationalize proprietary sales methodologies at scale with dual-mode AI architecture.",
-      "long_description": "Revtik is a multi-tenant B2B SaaS AI platform that enables sales consultancies and enterprise teams to operationalize proprietary sales methodologies at scale. The platform allows organizations to load customer-specific GTM (Go-To-Market) frameworks, knowledge bases, and sales methodologies into AI—delivering both structured sales deliverables and free-form contextual chat through a dual-mode AI architecture.\n\nThe key innovation is a dual-mode AI system:\n- **Generator Mode** for ontology-driven, structured outputs (discovery scripts, business cases, VSLs, email sequences)\n- **Chat Mode** for conversational exploration with full customer and GTM context loaded\n\nThis enables sales teams to generate precisely formatted outputs or freely explore ideas without losing organizational context.",
+      "description": "Multi-tenant B2B SaaS AI platform enabling sales consultancies to operationalize proprietary sales methodologies at scale with dual-mode AI architecture and AI-powered sales coaching.",
+      "long_description": "Revitk is a multi-tenant B2B SaaS AI platform that enables sales consultancies and enterprise teams to operationalize proprietary sales methodologies at scale. The platform allows organizations to load customer-specific GTM (Go-To-Market) frameworks, knowledge bases, and sales methodologies into AI—delivering both structured sales deliverables and free-form contextual chat through a dual-mode AI architecture.\n\nThe key innovation is a dual-mode AI system:\n- **Generator Mode** for ontology-driven, structured outputs (discovery scripts, business cases, VSLs, email sequences)\n- **Chat Mode** for conversational exploration with full customer and GTM context loaded\n- **Sales Coach Mode** for AI-powered call transcript analysis, scoring reps against sales methodologies, and tracking performance over time\n\nThis enables sales teams to generate precisely formatted outputs, freely explore ideas without losing organizational context, and continuously improve through data-driven coaching insights.",
       "category": "ai",
       "role": "Full Stack Developer",
       "duration": "2025 - Present",
@@ -321,7 +321,7 @@
         {
           "src": "/projects/revtik/revtik-chat.webp",
           "alt": "Revtik AI Chat Interface",
-          "caption": "Dual-mode AI chat with GTM context injection"
+          "caption": "Dual-mode AI chat with GTM context injection and skill selection"
         },
         {
           "src": "/projects/revtik/revtik-chat-md-preview.webp",
@@ -337,34 +337,58 @@
           "src": "/projects/revtik/revtik-GTM-frameworks.webp",
           "alt": "Revtik GTM Frameworks",
           "caption": "GTM framework management with RDF/TTL ontology"
+        },
+        {
+          "src": "/projects/revtik/revtik-performance.webp",
+          "alt": "Revtik Performance Dashboard",
+          "caption": "Team and rep performance tracking with competency scores"
+        },
+        {
+          "src": "/projects/revtik/revtik-analytics.webp",
+          "alt": "Revtik Analytics",
+          "caption": "Organization analytics with token usage and skills breakdown"
+        },
+        {
+          "src": "/projects/revtik/revtik-admin-clients.webp",
+          "alt": "Revtik Admin Panel",
+          "caption": "Super-admin client organization management"
         }
       ],
       "technologies": [
         "Next.js 16",
+        "React 19",
         "TypeScript",
-        "Tailwind CSS",
+        "Tailwind CSS 4",
         "tRPC",
         "PostgreSQL",
         "Hasura GraphQL",
         "Redis",
         "BullMQ",
         "Anthropic Claude",
+        "Claude Agent SDK",
         "Vercel AI SDK",
         "MinIO S3",
         "Puppeteer",
-        "React 19"
+        "better-auth",
+        "SSE Streaming",
+        "RDF/TTL Ontologies"
       ],
       "responsibilities": [
         "Architected a dual-mode AI system supporting both structured generators and contextual chat via a unified skill engine",
         "Designed a dynamic context injection system loading customer-specific GTM frameworks (personas, pain points, competitors) into AI workflows",
-        "Built a skill execution engine enabling structured deliverable generation such as discovery scripts, business cases, and email sequences",
-        "Developed multi-tenant architecture with strict organization-level data isolation",
-        "Implemented role-based access control (RBAC) with Super Admin, Org Owner, Org Admin, and Member roles",
-        "Built customer onboarding flow supporting GTM framework uploads (RDF/TTL format) with automatic markdown previews",
+        "Built a skill execution engine with real-time SSE streaming and Redis-based status updates",
+        "Developed the Sales Coach skill for AI-powered call transcript analysis, scoring reps against sales methodologies with automatic competency extraction",
+        "Implemented a Performance Dashboard tracking team and individual rep scores across four competencies with rolling averages and trend indicators",
+        "Built coachability tracking system that identifies coaching focus areas and tracks whether reps attempt improvements",
+        "Developed multi-tenant architecture with strict organization-level data isolation and platform-level admin (Thanos Mode) capabilities",
+        "Implemented role-based access control (RBAC) with Super Admin, Org Owner, Org Admin, and Member roles across platform and organization levels",
+        "Built Admin Client Organizations panel for super-admins to view all client data, chat history, analytics, and performance metrics",
         "Designed GTM framework storage using RDF/TTL ontology format with structured fields",
         "Implemented three-tier caching (Redis → PostgreSQL → MinIO) for fast AI context retrieval",
         "Developed real-time AI streaming chat with resumable streams for network resilience",
-        "Built AI-powered document generators producing PDF, DOCX, Excel, PPTX, and Markdown deliverables"
+        "Built AI-powered document generators producing PDF, DOCX, Excel, PPTX, and Markdown deliverables",
+        "Implemented team management with email invitations, role updates, and member lifecycle management",
+        "Built organization analytics dashboard tracking token usage, model breakdown, and skills usage statistics"
       ],
       "achievements": [
         "Enabled non-technical skill iteration by separating ontology ownership from output refinement",
@@ -372,9 +396,17 @@
         "Achieved 99.9% streaming reliability with resumable stream architecture",
         "Reduced manual sales deliverable creation time by approximately 80%",
         "Implemented dual-mode AI architecture allowing seamless switching between structured generators and free-form chat",
-        "Implemented web search, web fetch, and document generation tools",
-        "Multi-Format Document Generation & Preview: Enabled generation of PDF, DOCX, Excel, PPTX, and Markdown deliverables with real-time previews, streamlining sales collateral creation",
-        "Built an intelligent chat system that automatically injects organization-specific GTM (Go-To-Market) data into AI context, enabling users to query customer personas, pain points, and sales strategies without manual context switching."
+        "Built Sales Coach skill that automatically classifies call types (discovery, demo, proposal, appointment setting, one-call close) and scores against appropriate frameworks",
+        "Developed competency scoring system tracking four key areas: Process Control, Discovery Depth, Objection Handling, and Outcome Positioning",
+        "Implemented discovery sub-skills assessment (current state, desired state, gap analysis, root cause, decision process, objections handling)",
+        "Built coachability tracking that identifies the lowest-scoring area for each rep and monitors improvement attempts across calls",
+        "Created Thanos Mode allowing platform admins to access all client GTM frameworks simultaneously for cross-organization insights",
+        "Implemented web search, web fetch, and document generation tools with automatic tool selection",
+        "Built real-time skill execution with SSE streaming of tool lifecycle events and progress tracking",
+        "Developed read-only chat view for admin oversight of client conversations",
+        "Multi-Format Document Generation & Preview: Enabled generation of PDF, DOCX, Excel, PPTX, and Markdown deliverables with real-time previews",
+        "Built intelligent chat system that automatically injects organization-specific GTM data into AI context",
+        "Implemented Most Improved rep tracking and team-level coaching focus identification"
       ],
       "featured": true,
       "order": 1
