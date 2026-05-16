@@ -20,7 +20,7 @@
     "detailed_bio": [
       "I'm a Full-Stack JavaScript Developer with 3+ years of professional experience, currently working at eSparkBiz, where I help build modern web applications used in real-world production environments.",
       "Full-Stack Expertise: I specialize in building end-to-end web and SaaS products. On the frontend, I work extensively with React and Next.js, crafting clean, responsive, and user-friendly interfaces using Tailwind CSS and shadcn/ui. On the backend, I design and develop reliable, scalable systems using Node.js, along with PostgreSQL, MySQL, and Hasura for API and data orchestration.",
-      "AI-Driven Solutions: Beyond traditional full-stack development, I've been actively working with AI-powered applications. I've built AI agents and RAG-based chatbots using LangChain, LangGraph, vector databases, AI SDKs, and prompt engineering—integrating them into real products that deliver intelligent, context-aware experiences.",
+      "Agentic AI Solutions: Beyond traditional full-stack development, I've been actively building Agentic AI applications. I develop AI agents and RAG-based chatbots using LangChain, LangGraph, Claude Agent SDK, vector databases, and prompt engineering—integrating them into real products that deliver intelligent, context-aware experiences.",
       "Automation & Workflows: I've developed automation workflows using tools like Windmill and Hyperbrowser to streamline processes and generate intelligent reports, helping teams work smarter and faster.",
       "End-to-End Ownership: I've implemented authentication systems, integrated Stripe payments, designed database schemas, and contributed to architectural decisions—taking ownership of features from idea to production.",
       "At my core, I enjoy solving real-world problems, learning new technologies, and building scalable, maintainable software that delivers actual value - not just code."
@@ -37,10 +37,12 @@
     "roles": [
       "Full-Stack SaaS Apps",
       "AI-Powered Solutions",
+      "Agentic AI Solutions",
+      "AI Agents & RAG Apps",
       "Automation-Focused Systems",
       "Modern Web Apps"
     ],
-    "description": "JavaScript-enthusiastic full-stack developer with 3+ years of experience building scalable web applications and AI-powered products. I specialize in React and Next.js on the frontend, build reliable backend systems with Node.js, and integrate AI agents, RAG-based chatbots, and automation workflows to deliver production-ready solutions on modern cloud architectures. I also leverage tools like Cursor, ChatGPT, and Claude Code to boost development productivity."
+    "description": "JavaScript-enthusiastic full-stack developer with 3+ years of experience building scalable web applications and Agentic AI solutions. I specialize in React and Next.js on the frontend, build reliable backend systems with Node.js, and develop AI agents, RAG-based chatbots, and automation workflows using LangGraph, LangChain, and Claude Agent SDK to deliver production-ready solutions on modern cloud architectures. I also leverage tools like Cursor, ChatGPT, and Claude Code to boost development productivity."
   },
 
   "experience": [
@@ -193,8 +195,8 @@
       "description": "Building complete web applications with React, Next.js, Node.js, and modern JavaScript/TypeScript ecosystems."
     },
     {
-      "title": "AI & Automation",
-      "description": "Creating AI agents, RAG chatbots, and intelligent automation workflows using LangChain, LangGraph, AI SDKs, and prompt engineering."
+      "title": "Agentic AI & Automation",
+      "description": "Building AI agents, agentic workflows, and RAG chatbots using LangChain, LangGraph, Claude Agent SDK, and prompt engineering for intelligent automation."
     },
     {
       "title": "Database & APIs",
@@ -305,9 +307,9 @@
       "id": "revtik",
       "slug": "revtik",
       "title": "Revitk",
-      "subtitle": "AI-Powered Sales Enablement & GTM Intelligence Platform",
-      "description": "Multi-tenant B2B SaaS AI platform enabling sales consultancies to operationalize proprietary sales methodologies at scale with dual-mode AI architecture and AI-powered sales coaching.",
-      "long_description": "Revitk is a multi-tenant B2B SaaS AI platform that enables sales consultancies and enterprise teams to operationalize proprietary sales methodologies at scale. The platform allows organizations to load customer-specific GTM (Go-To-Market) frameworks, knowledge bases, and sales methodologies into AI—delivering both structured sales deliverables and free-form contextual chat through a dual-mode AI architecture.\n\nThe key innovation is a dual-mode AI system:\n- **Generator Mode** for ontology-driven, structured outputs (discovery scripts, business cases, VSLs, email sequences)\n- **Chat Mode** for conversational exploration with full customer and GTM context loaded\n- **Sales Coach Mode** for AI-powered call transcript analysis, scoring reps against sales methodologies, and tracking performance over time\n\nThis enables sales teams to generate precisely formatted outputs, freely explore ideas without losing organizational context, and continuously improve through data-driven coaching insights.",
+      "subtitle": "AI-Powered Sales Intelligence & Coaching Platform",
+      "description": "Multi-tenant B2B SaaS platform with dual-mode AI (autonomous agent skills + streaming chat) enabling sales teams to analyze calls, track rep performance, and generate sales deliverables with cross-session coaching memory.",
+      "long_description": "Revitk is a multi-tenant B2B SaaS AI platform that combines sales call coaching, performance analytics, and intelligent content generation. The platform enables organizations to load customer-specific GTM (Go-To-Market) frameworks and sales methodologies into AI—delivering autonomous skill execution, streaming chat, and data-driven coaching insights. The platform features a sophisticated dual-mode AI architecture: Autonomous Agent Skills powered by Claude Agent SDK for complex multi-step tasks (call analysis, deliverable generation, GTM extraction) - Streaming Chat Mode for conversational exploration with full customer and GTM context - Sales Coach System with automatic call classification, competency scoring, and cross-session coaching memory, Key differentiators include third-party integrations (Fathom, Zapier) for automatic transcript ingestion, a focus thread system that tracks coaching recommendations across calls, and background job processing for async operations like memory extraction and rep synopsis generation.",
       "category": "ai",
       "role": "Full Stack Developer",
       "duration": "2025 - Present",
@@ -374,39 +376,40 @@
         "RDF/TTL Ontologies"
       ],
       "responsibilities": [
-        "Architected a dual-mode AI system supporting both structured generators and contextual chat via a unified skill engine",
-        "Designed a dynamic context injection system loading customer-specific GTM frameworks (personas, pain points, competitors) into AI workflows",
-        "Built a skill execution engine with real-time SSE streaming and Redis-based status updates",
-        "Developed the Sales Coach skill for AI-powered call transcript analysis, scoring reps against sales methodologies with automatic competency extraction",
-        "Implemented a Performance Dashboard tracking team and individual rep scores across four competencies with rolling averages and trend indicators",
-        "Built coachability tracking system that identifies coaching focus areas and tracks whether reps attempt improvements",
-        "Developed multi-tenant architecture with strict organization-level data isolation and platform-level admin (Thanos Mode) capabilities",
-        "Implemented role-based access control (RBAC) with Super Admin, Org Owner, Org Admin, and Member roles across platform and organization levels",
-        "Built Admin Client Organizations panel for super-admins to view all client data, chat history, analytics, and performance metrics",
-        "Designed GTM framework storage using RDF/TTL ontology format with structured fields",
-        "Implemented three-tier caching (Redis → PostgreSQL → MinIO) for fast AI context retrieval",
-        "Developed real-time AI streaming chat with resumable streams for network resilience",
-        "Built AI-powered document generators producing PDF, DOCX, Excel, PPTX, and Markdown deliverables",
-        "Implemented team management with email invitations, role updates, and member lifecycle management",
-        "Built organization analytics dashboard tracking token usage, model breakdown, and skills usage statistics"
+        "Architected a dual-mode AI system with autonomous agent skills (Claude Agent SDK) and streaming chat via unified skill execution engine",
+        "Designed dynamic GTM context injection system loading customer-specific frameworks into AI workflows with ~35% token reduction via Anthropic prompt caching",
+        "Built autonomous skill execution engine with real-time SSE streaming, tool lifecycle events, and Redis-based status updates",
+        "Developed Sales Coach skill with automatic call type classification (5 frameworks: I.C.L.O.S.E.D., Discovery, Demo, Proposal, One-Call Close) and competency scoring",
+        "Implemented cross-session coaching memory system with role-scoped access (owner sees team, member sees personal) and Redis caching with automatic invalidation",
+        "Built third-party integrations: Fathom OAuth with webhook-based transcript ingestion, Zapier webhook support with HMAC signature verification",
+        "Developed background job processing with BullMQ workers for memory extraction, transcript ingestion, rep synopsis generation, and email delivery",
+        "Implemented Performance Dashboard with rolling (last 5 calls) and all-time competency scores, trend detection, and coaching focus recommendations",
+        "Built focus thread system tracking 'one thing to fix' recommendations across calls with progress check verdicts (yes/partial/no)",
+        "Developed rep matching system that automatically links transcript rep names to organization team members",
+        "Implemented multi-tenant architecture with organization-level data isolation and platform-level admin (Thanos Mode) capabilities",
+        "Built role-based access control with platform roles (Admin) and org roles (Owner, Admin, Member) with granular permissions",
+        "Developed Admin panel with client organization management, read-only chat history view, cross-org analytics, and MinIO storage browser",
+        "Built AI-powered document generators producing PDF, DOCX, Excel, PPTX, and text deliverables with version tracking",
+        "Implemented resumable SSE streaming with reconnection support for network resilience",
+        "Designed global and org-level kill switches for automatic transcript ingestion with discarded call logging"
       ],
       "achievements": [
-        "Enabled non-technical skill iteration by separating ontology ownership from output refinement",
-        "Reduced GTM context load time by approximately 40% using Redis caching with intelligent invalidation",
-        "Achieved 99.9% streaming reliability with resumable stream architecture",
-        "Reduced manual sales deliverable creation time by approximately 80%",
-        "Implemented dual-mode AI architecture allowing seamless switching between structured generators and free-form chat",
-        "Built Sales Coach skill that automatically classifies call types (discovery, demo, proposal, appointment setting, one-call close) and scores against appropriate frameworks",
-        "Developed competency scoring system tracking four key areas: Process Control, Discovery Depth, Objection Handling, and Outcome Positioning",
-        "Implemented discovery sub-skills assessment (current state, desired state, gap analysis, root cause, decision process, objections handling)",
-        "Built coachability tracking that identifies the lowest-scoring area for each rep and monitors improvement attempts across calls",
-        "Created Thanos Mode allowing platform admins to access all client GTM frameworks simultaneously for cross-organization insights",
-        "Implemented web search, web fetch, and document generation tools with automatic tool selection",
+        "Reduced sales deliverable creation time by ~80% through autonomous AI skill execution",
+        "Achieved ~35% token cost reduction via Anthropic prompt caching on system prompts and GTM context",
+        "Improved AI context load time by ~40% using Redis caching with intelligent invalidation",
+        "Achieved 99.9% streaming reliability with resumable stream architecture and reconnection support",
+        "Built Sales Coach analyzing 5 call types with automatic classification based on structural signals (not user input)",
+        "Implemented competency scoring across 4 dimensions: Process Control, Discovery Depth, Objection Handling, Outcome Positioning",
+        "Developed discovery sub-skills assessment (6 areas) with RAG-style rating (yes/partial/no)",
+        "Built coachability tracking identifying lowest-scoring areas per rep and monitoring improvement attempts across calls",
+        "Implemented focus thread providing AI with historical coaching context for continuity across sessions",
+        "Created automatic transcript ingestion pipeline via Fathom/Zapier webhooks with deduplication and async processing",
+        "Built cross-session coaching memory persisting key insights with role-scoped visibility",
+        "Developed 'Most Improved' rep detection and team-level coaching focus identification",
+        "Implemented Thanos Mode allowing platform admin to access all client GTM frameworks simultaneously",
         "Built real-time skill execution with SSE streaming of tool lifecycle events and progress tracking",
-        "Developed read-only chat view for admin oversight of client conversations",
-        "Multi-Format Document Generation & Preview: Enabled generation of PDF, DOCX, Excel, PPTX, and Markdown deliverables with real-time previews",
-        "Built intelligent chat system that automatically injects organization-specific GTM data into AI context",
-        "Implemented Most Improved rep tracking and team-level coaching focus identification"
+        "Created escalation detection system flagging recurring coaching issues for human review",
+        "Implemented transcript content hashing for deduplication across ingestion sources"
       ],
       "featured": true,
       "order": 1

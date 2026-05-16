@@ -71,8 +71,9 @@ export function Hero() {
                 </span>
                 {/* Hidden text for SEO - all roles visible to search engines */}
                 <span className="sr-only">
-                  Full-Stack SaaS Apps, AI-Powered Solutions, Automation-Focused
-                  Systems, and Modern Web Apps
+                  Full-Stack SaaS Apps, AI-Powered Solutions, Agentic AI
+                  Solutions, AI Agents & RAG Apps, Automation-Focused Systems,
+                  and Modern Web Apps
                 </span>
               </div>
             </BlurFade>
