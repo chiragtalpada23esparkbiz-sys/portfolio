@@ -42,7 +42,7 @@ export const viewport: Viewport = {
 export const metadata: Metadata = {
   metadataBase: new URL(baseUrl || "https://www.chiragtalpada.in"),
   verification: {
-    google: "9AObw_9gkBMwcuya1azPGP17GgzXVefDgWsFPEgO3FI",
+    google: "czhaMTIdgGTJfBAQ5f2f7h3HKEMFRK6SfPdplN19mZc",
   },
   title: {
     default: "Chirag Talpada | Full Stack Developer",
