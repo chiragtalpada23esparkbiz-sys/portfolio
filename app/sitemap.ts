@@ -3,7 +3,7 @@ import { getAllPosts } from "@/lib/mdx";
 import { getAllProjectSlugs } from "@/data/projects";
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const baseUrl = process.env.BASE_URL || "https://chirag-talpada.vercel.app";
+  const baseUrl = process.env.BASE_URL || "https://www.chiragtalpada.in";
   const posts = await getAllPosts();
   const projectSlugs = getAllProjectSlugs();
 

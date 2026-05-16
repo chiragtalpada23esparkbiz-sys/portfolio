@@ -40,7 +40,7 @@ export const viewport: Viewport = {
 };
 
 export const metadata: Metadata = {
-  metadataBase: new URL(baseUrl || "https://chirag-talpada.vercel.app"),
+  metadataBase: new URL(baseUrl || "https://www.chiragtalpada.in"),
   verification: {
     google: "9AObw_9gkBMwcuya1azPGP17GgzXVefDgWsFPEgO3FI",
   },
@@ -80,7 +80,7 @@ export const metadata: Metadata = {
     telephone: false,
   },
   alternates: {
-    canonical: baseUrl || "https://chirag-talpada.vercel.app",
+    canonical: baseUrl || "https://www.chiragtalpada.in",
   },
   openGraph: {
     type: "website",
