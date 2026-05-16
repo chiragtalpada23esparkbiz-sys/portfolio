@@ -316,14 +316,14 @@
       "thumbnail": "/projects/revtik/revtik-landing.webp",
       "images": [
         {
-          "src": "/projects/revtik/revtik-landing.webp",
-          "alt": "Revtik Landing Page",
-          "caption": "AI-powered sales coaching platform for B2B founders"
-        },
-        {
           "src": "/projects/revtik/revtik-dashboard.webp",
           "alt": "Revtik Dashboard",
           "caption": "Organization dashboard with AI chat, team management, and analytics"
+        },
+        {
+          "src": "/projects/revtik/revtik-landing.webp",
+          "alt": "Revtik Landing Page",
+          "caption": "AI-powered sales coaching platform for B2B founders"
         },
         {
           "src": "/projects/revtik/revtik-gtm-frameworks.webp",
