@@ -1,8 +1,8 @@
 {
   "personal": {
     "name": "Chirag Talpada",
-    "title": "Full Stack Developer",
-    "tagline": "JavaScript-enthusiastic full-stack developer",
+    "title": "AI-Enabled Full Stack Developer",
+    "tagline": "AI-enabled full-stack developer",
     "years_of_experience": 3,
     "current_company": "eSparkBiz",
     "location": "Gujarat, India",
@@ -16,7 +16,7 @@
   },
 
   "about": {
-    "short_bio": "Full Stack Developer with 3+ years of experience specializing in React, Next.js, Node.js, and AI-powered applications.",
+    "short_bio": "AI-focused Full Stack Developer with 3+ years of experience specializing in AI-powered applications, React, Next.js, and Node.js.",
     "detailed_bio": [
       "I'm a Full-Stack JavaScript Developer with 3+ years of professional experience, currently working at eSparkBiz, where I help build modern web applications used in real-world production environments.",
       "Full-Stack Expertise: I specialize in building end-to-end web and SaaS products. On the frontend, I work extensively with React and Next.js, crafting clean, responsive, and user-friendly interfaces using Tailwind CSS and shadcn/ui. On the backend, I design and develop reliable, scalable systems using Node.js, along with PostgreSQL, MySQL, and Hasura for API and data orchestration.",
@@ -42,7 +42,7 @@
       "Automation-Focused Systems",
       "Modern Web Apps"
     ],
-    "description": "JavaScript-enthusiastic full-stack developer with 3+ years of experience building scalable web applications and Agentic AI solutions. I specialize in React and Next.js on the frontend, build reliable backend systems with Node.js, and develop AI agents, RAG-based chatbots, and automation workflows using LangGraph, LangChain, and Claude Agent SDK to deliver production-ready solutions on modern cloud architectures. I also leverage tools like Cursor, ChatGPT, and Claude Code to boost development productivity."
+    "description": "AI-focused full-stack developer with 3+ years of experience building scalable web applications and Agentic AI solutions. I specialize in React and Next.js on the frontend, build reliable backend systems with Node.js, and develop AI agents, RAG-based chatbots, and automation workflows using LangGraph, LangChain, and Claude Agent SDK to deliver production-ready solutions on modern cloud architectures. I also leverage tools like Cursor, ChatGPT, and Claude Code to boost development productivity."
   },
 
   "experience": [

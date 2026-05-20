@@ -53,6 +53,161 @@ function getMessageText(message: UIMessage): string {
     .join("");
 }
 
+interface ChatMessagesProps {
+  messages: UIMessage[];
+  isLoading: boolean;
+  rateLimitError: string | null;
+  error: Error | undefined;
+  onSuggestionClick: (q: string) => void;
+}
+
+const ChatMessages = React.memo(function ChatMessages({
+  messages,
+  isLoading,
+  rateLimitError,
+  error,
+  onSuggestionClick,
+}: ChatMessagesProps) {
+  return (
+    <Conversation className="flex-1 overflow-hidden">
+      <ConversationContent className="p-4 gap-4">
+        {messages.map((message) => {
+          const messageText = getMessageText(message);
+          if (!messageText.trim()) {
+            if (message.role === "assistant") {
+              return (
+                <div key={message.id} className="flex gap-3">
+                  <div className="relative shrink-0 w-8 h-8 rounded-full overflow-hidden ">
+                    <Image
+                      src="/assistent_bot.webp"
+                      alt="AI Assistant"
+                      fill
+                      className="object-cover"
+                      sizes="32px"
+                    />
+                  </div>
+                  <div className="bg-muted px-4 py-2.5 rounded-2xl rounded-bl-md">
+                    <span className="text-sm text-muted-foreground animate-pulse">
+                      Thinking...
+                    </span>
+                  </div>
+                </div>
+              );
+            }
+            return null;
+          }
+
+          return (
+            <Message key={message.id} from={message.role}>
+              <div
+                className={cn(
+                  "flex gap-3",
+                  message.role === "user" ? "flex-row-reverse" : "flex-row",
+                )}
+              >
+                {message.role === "user" ? (
+                  <div className="shrink-0 w-8 h-8 rounded-full flex items-center justify-center bg-primary text-primary-foreground">
+                    <User className="h-4 w-4" />
+                  </div>
+                ) : (
+                  <div className="relative shrink-0 w-8 h-8 rounded-full overflow-hidden ">
+                    <Image
+                      src="/assistent_bot.webp"
+                      alt="AI Assistant"
+                      fill
+                      className="object-cover"
+                      sizes="32px"
+                    />
+                  </div>
+                )}
+                <MessageContent
+                  className={cn(
+                    "max-w-[80%] px-4 py-2.5 rounded-2xl text-sm ",
+                    message.role === "user"
+                      ? "bg-primary text-primary-foreground rounded-br-md"
+                      : "bg-muted rounded-bl-md",
+                  )}
+                >
+                  <Markdown content={messageText} />
+                </MessageContent>
+              </div>
+            </Message>
+          );
+        })}
+
+        {messages.length === 1 && (
+          <div className="pt-2">
+            <p className="text-xs text-muted-foreground mb-2 flex items-center gap-1">
+              <Sparkles className="h-3 w-3" />
+              Suggested questions
+            </p>
+            <div className="flex flex-wrap gap-2">
+              {suggestedQuestions.map((question) => (
+                <button
+                  key={question}
+                  onClick={() => onSuggestionClick(question)}
+                  className="text-xs px-3 py-1.5 rounded-full border bg-background hover:bg-muted transition-colors text-left"
+                >
+                  {question}
+                </button>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {isLoading && (
+          <div className="flex items-center justify-center">
+            <div className="bg-muted p-3 rounded-full">
+              <Loader2 className="h-4 w-4 animate-spin" />
+            </div>
+          </div>
+        )}
+
+        {(rateLimitError || error) && (
+          <div className="flex gap-3">
+            <div className="relative shrink-0 w-8 h-8 rounded-full overflow-hidden">
+              <Image
+                src="/assistent_bot.webp"
+                alt="AI Assistant"
+                fill
+                className="object-cover"
+                sizes="32px"
+              />
+            </div>
+            <div className="max-w-[80%] px-4 py-3 rounded-2xl rounded-bl-md bg-amber-500/10 border border-amber-500/20">
+              <div className="flex items-center gap-2 text-amber-600 dark:text-amber-400 mb-2">
+                <AlertTriangle className="h-4 w-4" />
+                <span className="font-medium text-sm">Limit Reached</span>
+              </div>
+              <p className="text-sm text-muted-foreground mb-3">
+                {rateLimitError || "Something went wrong. Please try again later."}
+              </p>
+              <div className="text-sm space-y-1">
+                <p className="font-medium text-foreground">Reach Chirag directly:</p>
+                <a
+                  href={`mailto:${portfolioData.personal.email}`}
+                  className="block text-primary hover:underline"
+                >
+                  📧 {portfolioData.personal.email}
+                </a>
+                <a
+                  href={portfolioData.personal.linkedin}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="block text-primary hover:underline"
+                >
+                  💼 LinkedIn Profile
+                </a>
+              </div>
+            </div>
+          </div>
+        )}
+      </ConversationContent>
+      <ConversationScrollButton className="bg-background border" />
+    </Conversation>
+  );
+});
+
 export function ChatModal() {
   const { isOpen, closeChat } = useChat();
   const inputRef = React.useRef<HTMLTextAreaElement>(null);
@@ -98,6 +253,13 @@ export function ChatModal() {
     }
   }, [isOpen]);
 
+  // Refocus input after response finishes (textarea was disabled during streaming)
+  React.useEffect(() => {
+    if (status === "ready") {
+      inputRef.current?.focus();
+    }
+  }, [status]);
+
   // Handle escape key
   React.useEffect(() => {
     const handleEscape = (e: KeyboardEvent) => {
@@ -121,11 +283,9 @@ export function ChatModal() {
     [sendMessage],
   );
 
-  const handleSuggestionClick = (question: string) => {
-    sendMessage({
-      text: question,
-    });
-  };
+  const handleSuggestionClick = React.useCallback((question: string) => {
+    sendMessage({ text: question });
+  }, [sendMessage]);
 
   if (!isOpen) return null;
 
@@ -179,150 +339,19 @@ export function ChatModal() {
         </header>
 
         {/* Messages */}
-        <Conversation className="flex-1 overflow-hidden">
-          <ConversationContent className="p-4 gap-4">
-            {messages.map((message) => {
-              const messageText = getMessageText(message);
-              if (!messageText.trim()) {
-                if (message.role === "assistant") {
-                  return (
-                    <div key={message.id} className="flex gap-3">
-                      <div className="relative shrink-0 w-8 h-8 rounded-full overflow-hidden ">
-                        <Image
-                          src="/assistent_bot.webp"
-                          alt="AI Assistant"
-                          fill
-                          className="object-cover"
-                          sizes="32px"
-                        />
-                      </div>
-                      <div className="bg-muted px-4 py-2.5 rounded-2xl rounded-bl-md">
-                        <span className="text-sm text-muted-foreground animate-pulse">
-                          Thinking...
-                        </span>
-                      </div>
-                    </div>
-                  );
-                }
-                return null;
-              }
-
-              return (
-                <Message key={message.id} from={message.role}>
-                  <div
-                    className={cn(
-                      "flex gap-3",
-                      message.role === "user" ? "flex-row-reverse" : "flex-row",
-                    )}
-                  >
-                    {/* Avatar */}
-                    {message.role === "user" ? (
-                      <div className="shrink-0 w-8 h-8 rounded-full flex items-center justify-center bg-primary text-primary-foreground">
-                        <User className="h-4 w-4" />
-                      </div>
-                    ) : (
-                      <div className="relative shrink-0 w-8 h-8 rounded-full overflow-hidden ">
-                        <Image
-                          src="/assistent_bot.webp"
-                          alt="AI Assistant"
-                          fill
-                          className="object-cover"
-                          sizes="32px"
-                        />
-                      </div>
-                    )}
-
-                    {/* Message content */}
-                    <MessageContent
-                      className={cn(
-                        "max-w-[80%] px-4 py-2.5 rounded-2xl text-sm ",
-                        message.role === "user"
-                          ? "bg-primary text-primary-foreground rounded-br-md"
-                          : "bg-muted rounded-bl-md",
-                      )}
-                    >
-                      <Markdown content={messageText} />
-                    </MessageContent>
-                  </div>
-                </Message>
-              );
-            })}
-
-            {/* Suggested questions - only show if no user messages yet */}
-            {messages.length === 1 && (
-              <div className="pt-2">
-                <p className="text-xs text-muted-foreground mb-2 flex items-center gap-1">
-                  <Sparkles className="h-3 w-3" />
-                  Suggested questions
-                </p>
-                <div className="flex flex-wrap gap-2">
-                  {suggestedQuestions.map((question) => (
-                    <button
-                      key={question}
-                      onClick={() => handleSuggestionClick(question)}
-                      className="text-xs px-3 py-1.5 rounded-full border bg-background hover:bg-muted transition-colors text-left"
-                    >
-                      {question}
-                    </button>
-                  ))}
-                </div>
-              </div>
-            )}
-            {/* Loading indicator */}
-            {isLoading && (
-              <div className="flex items-center justify-center">
-                <div className="bg-muted p-3 rounded-full">
-                  <Loader2 className="h-4 w-4 animate-spin" />
-                </div>
-              </div>
-            )}
-
-            {/* Rate limit error message */}
-            {(rateLimitError || error) && (
-              <div className="flex gap-3">
-                <div className="relative shrink-0 w-8 h-8 rounded-full overflow-hidden">
-                  <Image
-                    src="/assistent_bot.webp"
-                    alt="AI Assistant"
-                    fill
-                    className="object-cover"
-                    sizes="32px"
-                  />
-                </div>
-                <div className="max-w-[80%] px-4 py-3 rounded-2xl rounded-bl-md bg-amber-500/10 border border-amber-500/20">
-                  <div className="flex items-center gap-2 text-amber-600 dark:text-amber-400 mb-2">
-                    <AlertTriangle className="h-4 w-4" />
-                    <span className="font-medium text-sm">Limit Reached</span>
-                  </div>
-                  <p className="text-sm text-muted-foreground mb-3">
-                    {rateLimitError || "Something went wrong. Please try again later."}
-                  </p>
-                  <div className="text-sm space-y-1">
-                    <p className="font-medium text-foreground">Reach Chirag directly:</p>
-                    <a
-                      href={`mailto:${portfolioData.personal.email}`}
-                      className="block text-primary hover:underline"
-                    >
-                      📧 {portfolioData.personal.email}
-                    </a>
-                    <a
-                      href={portfolioData.personal.linkedin}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="block text-primary hover:underline"
-                    >
-                      💼 LinkedIn Profile
-                    </a>
-                  </div>
-                </div>
-              </div>
-            )}
-          </ConversationContent>
-          <ConversationScrollButton className="bg-background border" />
-        </Conversation>
+        <ChatMessages
+          messages={messages}
+          isLoading={isLoading}
+          rateLimitError={rateLimitError}
+          error={error}
+          onSuggestionClick={handleSuggestionClick}
+        />
 
         {/* Input */}
-        <div className="p-4 border-t bg-background/95 backdrop-blur-sm">
+        <div
+          className="p-4 border-t bg-background/95 backdrop-blur-sm"
+          onClick={() => inputRef.current?.focus()}
+        >
           <PromptInput
             onSubmit={handleSubmit}
             className="rounded-2xl focus-visible:outline-none"
