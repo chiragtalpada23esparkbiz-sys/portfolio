@@ -7,7 +7,6 @@ import { DefaultChatTransport, type UIMessage } from "ai";
 import { useChat } from "./chat-context";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
-import { track } from "@vercel/analytics/react";
 import { X, User, Send, Loader2, Sparkles, AlertTriangle } from "lucide-react";
 import {
   Conversation,
@@ -247,10 +246,9 @@ export function ChatModal() {
     }
   }, [isOpen]);
 
-  // Focus input when modal opens + track open event
+  // Focus input when modal opens
   React.useEffect(() => {
     if (isOpen) {
-      track("chat_opened", { source: "chat_button" });
       setTimeout(() => inputRef.current?.focus(), 100);
     }
   }, [isOpen]);
@@ -276,7 +274,7 @@ export function ChatModal() {
   const handleSubmit = React.useCallback(
     async (message: PromptInputMessage) => {
       if (!message.text?.trim()) return;
-      track("chatbot_question", { question: message.text.slice(0, 200), type: "typed" });
+
       await sendMessage({
         text: message.text,
       });
@@ -286,7 +284,6 @@ export function ChatModal() {
   );
 
   const handleSuggestionClick = React.useCallback((question: string) => {
-    track("chatbot_question", { question, type: "suggestion" });
     sendMessage({ text: question });
   }, [sendMessage]);
 

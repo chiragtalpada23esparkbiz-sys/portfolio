@@ -15,7 +15,6 @@ import { Button } from "@/components/ui/button";
 import { InteractiveGrid } from "@/components/ui/interactive-grid";
 import { BlurFade } from "@/components/ui/blur-fade";
 import portfolioData from "@/data/portfolio.json";
-import { track } from "@vercel/analytics/react";
 
 const roles = portfolioData.hero.roles;
 const personal = portfolioData.personal;
@@ -103,7 +102,6 @@ export function Hero() {
                     target="_blank"
                     rel="noopener noreferrer"
                     suppressHydrationWarning
-                    onClick={() => track("hero_gmail_clicked")}
                   >
                     Gmail
                   </a>
@@ -119,7 +117,6 @@ export function Hero() {
                     target="_blank"
                     rel="noopener noreferrer"
                     suppressHydrationWarning
-                    onClick={() => track("hero_linkedin_clicked")}
                   >
                     LinkedIn
                   </a>
@@ -130,7 +127,7 @@ export function Hero() {
                   className="sm:text-base"
                   asChild
                 >
-                  <a href={personal.cv} download suppressHydrationWarning onClick={() => track("resume_downloaded")}>
+                  <a href={personal.cv} download suppressHydrationWarning>
                     <Download className="h-4 w-4 mr-2" aria-hidden="true" />
                     Download Resume
                   </a>
@@ -189,7 +186,7 @@ export function Hero() {
                 {/* Profile Image Container with Chat Overlay */}
                 <button
                   suppressHydrationWarning
-                  onClick={() => { openChat(); track("chat_opened", { source: "hero_profile_image" }); }}
+                  onClick={openChat}
                   className="group/chat relative w-70 h-87.5 sm:w-[320px] sm:h-100 md:w-90 md:h-112.5 lg:w-95 lg:h-118.75 xl:w-105 xl:h-131.25 md-short:w-70 md-short:h-87.5 lg-short:w-[320px] lg-short:h-100 lg:max-h-[calc(100vh-8rem)] rounded-2xl shadow-2xl aspect-4/5 overflow-hidden cursor-pointer focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2"
                   aria-label="Chat with my AI Assistant"
                 >
