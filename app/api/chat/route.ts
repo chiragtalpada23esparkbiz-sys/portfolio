@@ -1,5 +1,6 @@
 import { anthropic } from "@ai-sdk/anthropic";
 import { streamText, type UIMessage } from "ai";
+import { track } from "@vercel/analytics/server";
 import portfolioData from "@/data/portfolio.json";
 
 export const maxDuration = 30;
@@ -267,6 +268,16 @@ export async function POST(req: Request) {
     }
 
     const modelMessages = convertMessages(messages);
+
+    // Log the latest user question server-side (reliable, not blocked by ad blockers)
+    const latestQuestion = modelMessages.filter((m) => m.role === "user").at(-1);
+    if (latestQuestion) {
+      track(
+        "chatbot_question_received",
+        { question: (latestQuestion.content as string).slice(0, 500) },
+        { request: req },
+      ).catch(() => {});
+    }
 
     const result = streamText({
       model: anthropic(MODEL),

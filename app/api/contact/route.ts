@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { z } from "zod";
 import { Resend } from "resend";
+import { track } from "@vercel/analytics/server";
 
 const resend = new Resend(process.env.RESEND_API_KEY);
 
@@ -145,6 +146,12 @@ export async function POST(request: Request) {
         { status: 500 }
       );
     }
+
+    track(
+      "contact_form_submitted",
+      { subject: validatedData.subject },
+      { request },
+    ).catch(() => {});
 
     return NextResponse.json(
       {

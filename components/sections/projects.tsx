@@ -1,3 +1,5 @@
+"use client";
+
 import Image from "next/image";
 import Link from "next/link";
 import { Section } from "@/components/ui/section";
@@ -7,6 +9,7 @@ import { ArrowRight, ExternalLink } from "lucide-react";
 import { getFeaturedProjects } from "@/data/projects";
 import type { Project } from "@/types";
 import { BlurFade } from "../ui/blur-fade";
+import { track } from "@vercel/analytics/react";
 
 const categoryLabels: Record<Project["category"], string> = {
   saas: "SaaS",
@@ -69,6 +72,7 @@ function ProjectCard({ project }: { project: Project }) {
       <Link
         href={`/projects/${project.slug}`}
         className="block overflow-hidden"
+        onClick={() => track("project_clicked", { project: project.title, action: "thumbnail" })}
       >
         <div className="relative h-70 md:h-80 overflow-hidden">
           <Image
@@ -96,7 +100,7 @@ function ProjectCard({ project }: { project: Project }) {
         </div>
 
         {/* Title */}
-        <Link href={`/projects/${project.slug}`}>
+        <Link href={`/projects/${project.slug}`} onClick={() => track("project_clicked", { project: project.title, action: "title" })}>
           <h3 className="font-bold text-xl mb-2 group-hover:text-primary transition-colors">
             {project.title}
           </h3>
@@ -139,7 +143,7 @@ function ProjectCard({ project }: { project: Project }) {
         {/* Actions */}
         <div className="flex items-center gap-3">
           <Button size="sm" variant="default" className="bg-black text-white hover:bg-zinc-800 dark:bg-white dark:text-black dark:hover:bg-zinc-200" asChild>
-            <Link href={`/projects/${project.slug}`}>
+            <Link href={`/projects/${project.slug}`} onClick={() => track("project_clicked", { project: project.title, action: "view_details" })}>
               View Details
               <ArrowRight className="ml-2 h-4 w-4" />
             </Link>
@@ -150,6 +154,7 @@ function ProjectCard({ project }: { project: Project }) {
                 href={project.liveUrl}
                 target="_blank"
                 rel="noopener noreferrer"
+                onClick={() => track("project_live_site_clicked", { project: project.title })}
               >
                 Live Site
                 <ExternalLink className="ml-2 h-3.5 w-3.5" />

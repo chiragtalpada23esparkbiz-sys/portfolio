@@ -1,0 +1,10 @@
+{
+  "redirects": [
+    {
+      "source": "/(.*)",
+      "has": [{ "type": "host", "value": "chiragtalpada.in" }],
+      "destination": "https://www.chiragtalpada.in/$1",
+      "permanent": true
+    }
+  ]
+}
