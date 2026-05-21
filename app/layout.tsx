@@ -12,9 +12,11 @@ import {
 } from "@/components/seo/json-ld";
 import { ChatProvider } from "@/components/chat/chat-context";
 import { LazyChatModal } from "@/components/chat/lazy-chat-modal";
+import { PostHogProvider } from "@/components/providers/posthog-provider";
 import "./globals.css";
 import { Toaster } from "@/components/ui/sonner";
 import { Analytics } from "@vercel/analytics/next";
+import { Suspense } from "react";
 
 const baseUrl = process.env.BASE_URL || "";
 
@@ -175,20 +177,24 @@ export default function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} font-sans antialiased`}
         suppressHydrationWarning
       >
-        <ThemeProvider
-          attribute="class"
-          defaultTheme="system"
-          enableSystem
-          disableTransitionOnChange
-        >
-          <ChatProvider>
-            <main className="min-h-screen">{children}</main>
-            <Footer />
-            <BottomNav />
-            <Toaster />
-            <LazyChatModal />
-          </ChatProvider>
-        </ThemeProvider>
+        <Suspense>
+          <PostHogProvider>
+            <ThemeProvider
+              attribute="class"
+              defaultTheme="system"
+              enableSystem
+              disableTransitionOnChange
+            >
+              <ChatProvider>
+                <main className="min-h-screen">{children}</main>
+                <Footer />
+                <BottomNav />
+                <Toaster />
+                <LazyChatModal />
+              </ChatProvider>
+            </ThemeProvider>
+          </PostHogProvider>
+        </Suspense>
         <Analytics />
       </body>
     </html>

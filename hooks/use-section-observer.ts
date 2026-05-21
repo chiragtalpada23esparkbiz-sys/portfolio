@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import posthog from "posthog-js";
 
 const sectionMessages: Record<string, string> = {
   hero: "Hey! I'm Chirag's AI assistant. Let me show you around!",
@@ -29,6 +30,7 @@ export function useSectionObserver() {
             const id = entry.target.id;
             setActiveSection(id);
             setMessage(sectionMessages[id] || sectionMessages.hero);
+            posthog.capture("section_viewed", { section: id });
           }
         });
       },
