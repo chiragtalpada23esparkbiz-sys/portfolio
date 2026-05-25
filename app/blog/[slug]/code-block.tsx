@@ -42,7 +42,7 @@ export function CodeBlock({ children, className }: CodeBlockProps) {
         ref={preRef}
         className={
           className ||
-          "bg-zinc-100 dark:bg-zinc-900 text-zinc-800 dark:text-zinc-100 p-3 sm:p-4 rounded-xl overflow-x-auto mb-6 text-xs sm:text-sm border border-zinc-200 dark:border-zinc-800 max-w-full"
+          "bg-zinc-100 dark:bg-zinc-900 text-zinc-800 dark:text-zinc-100 p-3 sm:p-4 rounded-xl overflow-x-auto mb-6 text-xs sm:text-sm border border-zinc-200 dark:border-zinc-800 max-w-full whitespace-pre wrap-normal"
         }
       >
         {children}

@@ -294,7 +294,7 @@ export default async function BlogPostPage({ params }: PageProps) {
               </p>
 
               {/* Meta */}
-              <div className="flex flex-wrap items-center justify-center gap-4 text-sm text-muted-foreground">
+              <div className="flex flex-col sm:flex-row sm:flex-wrap items-center justify-center gap-2 sm:gap-4 text-sm text-muted-foreground">
                 <div className="flex items-center gap-2">
                   <div className="w-8 h-8 rounded-full overflow-hidden">
                     <Image
@@ -307,21 +307,23 @@ export default async function BlogPostPage({ params }: PageProps) {
                   </div>
                   <span itemProp="author">{post.author.name}</span>
                 </div>
-                <span className="text-muted-foreground/50">|</span>
-                <div className="flex items-center gap-2">
-                  <Calendar className="h-4 w-4" aria-hidden="true" />
-                  <time dateTime={post.date} itemProp="datePublished">
-                    {new Date(post.date).toLocaleDateString("en-US", {
-                      month: "long",
-                      day: "numeric",
-                      year: "numeric",
-                    })}
-                  </time>
-                </div>
-                <span className="text-muted-foreground/50">|</span>
-                <div className="flex items-center gap-2">
-                  <Clock className="h-4 w-4" aria-hidden="true" />
-                  <span>{post.readingTime}</span>
+                <div className="flex items-center gap-4">
+                  <span className="hidden sm:inline text-muted-foreground/50">|</span>
+                  <div className="flex items-center gap-2">
+                    <Calendar className="h-4 w-4" aria-hidden="true" />
+                    <time dateTime={post.date} itemProp="datePublished">
+                      {new Date(post.date).toLocaleDateString("en-US", {
+                        month: "long",
+                        day: "numeric",
+                        year: "numeric",
+                      })}
+                    </time>
+                  </div>
+                  <span className="text-muted-foreground/50">|</span>
+                  <div className="flex items-center gap-2">
+                    <Clock className="h-4 w-4" aria-hidden="true" />
+                    <span>{post.readingTime}</span>
+                  </div>
                 </div>
               </div>
             </header>
@@ -352,7 +354,7 @@ export default async function BlogPostPage({ params }: PageProps) {
               {/* Content */}
               <BlurFade delay={0.15} inView>
                 <div
-                  className="prose prose-sm sm:prose-lg dark:prose-invert max-w-none w-full overflow-hidden wrap-break-word"
+                  className="prose prose-sm sm:prose-lg dark:prose-invert max-w-none w-full min-w-0 wrap-break-word"
                   itemProp="articleBody"
                 >
                   <MDXRemote
