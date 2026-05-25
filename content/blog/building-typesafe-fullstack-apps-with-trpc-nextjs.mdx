@@ -11,9 +11,9 @@ author:
 
 # Building Type-Safe Full-Stack Apps with tRPC and Next.js
 
-If you've ever shipped a bug because your frontend expected `user.firstName` but your API returned `user.first_name`, you know the pain. If you've spent hours debugging why a mutation isn't working only to realize you're passing `userId` instead of `id`, you've felt it too. These bugs are preventable — and tRPC eliminates them entirely.
+If you've ever shipped a bug because your frontend expected `user.firstName` but your API returned `user.first_name`, you know the pain. If you've spent hours debugging why a mutation isn't working only to realize you're passing `userId` instead of `id`, you've felt it too. These bugs are preventable - and tRPC eliminates them entirely.
 
-I've used tRPC in production for healthcare platforms, AI-powered SaaS products, and enterprise applications. Once you experience true end-to-end type safety — where changing an API response type instantly shows errors in every component that uses it — you won't want to go back to REST or even GraphQL.
+I've used tRPC in production for healthcare platforms, AI-powered SaaS products, and enterprise applications. Once you experience true end-to-end type safety - where changing an API response type instantly shows errors in every component that uses it - you won't want to go back to REST or even GraphQL.
 
 This guide covers everything you need to build production-ready applications with tRPC and Next.js, from initial setup to advanced patterns I've learned shipping real products.
 
@@ -33,7 +33,7 @@ app.get("/api/users/:id", async (req, res) => {
 // Frontend: You guess what it returns
 const response = await fetch(`/api/users/${id}`);
 const user = await response.json();
-// user is `any` — no autocomplete, no type checking
+// user is `any` - no autocomplete, no type checking
 console.log(user.firstName); // Hope this field exists!
 ```
 
@@ -41,7 +41,7 @@ You can add types manually, but they drift. The backend changes, the frontend ty
 
 ### The tRPC Solution
 
-tRPC shares types directly between your backend and frontend — no code generation, no API schemas, no drift:
+tRPC shares types directly between your backend and frontend - no code generation, no API schemas, no drift:
 
 ```typescript
 // Backend: Define a procedure with full types
@@ -455,7 +455,7 @@ export type AppRouter = typeof appRouter;
 export const createCaller = createCallerFactory(appRouter);
 ```
 
-The `AppRouter` type is what makes the magic happen — it's exported and used by the frontend to get full type inference.
+The `AppRouter` type is what makes the magic happen - it's exported and used by the frontend to get full type inference.
 
 ### Step 6: Create the API Route Handler
 
@@ -730,7 +730,7 @@ export function UserProfile({ userId }: { userId: string }) {
 }
 ```
 
-Notice that `user.createdAt` is a `Date` object, not a string — `superjson` handles the serialization automatically.
+Notice that `user.createdAt` is a `Date` object, not a string - `superjson` handles the serialization automatically.
 
 ### Queries in Server Components
 
@@ -1138,7 +1138,7 @@ export function Dashboard() {
 }
 ```
 
-With `unstable_httpBatchStreamLink`, responses are also streamed — the client receives data as soon as each procedure completes, rather than waiting for all to finish.
+With `unstable_httpBatchStreamLink`, responses are also streamed - the client receives data as soon as each procedure completes, rather than waiting for all to finish.
 
 ## Testing tRPC Procedures
 
@@ -1261,7 +1261,7 @@ The setup takes about 30 minutes. After that, you get:
 
 I've used this setup in production for healthcare platforms handling sensitive patient data, AI applications with complex data flows, and multi-tenant SaaS products. It scales well, catches bugs early, and makes refactoring fearless.
 
-Start with the basic setup in this guide, then add middleware, subscriptions, and advanced patterns as your application grows. The type safety compounds — every procedure you add makes your entire codebase more reliable.
+Start with the basic setup in this guide, then add middleware, subscriptions, and advanced patterns as your application grows. The type safety compounds - every procedure you add makes your entire codebase more reliable.
 
 ---
 

@@ -1,0 +1,708 @@
+---
+title: "Building a Multi-Agent AI System with Vercel AI SDK"
+excerpt: "Go beyond single-model calls. Learn how to design and build multi-agent AI systems using Vercel AI SDK - with orchestrators, specialist agents, parallel execution, and real TypeScript code."
+date: "2026-05-25"
+tags: ["AI", "AI SDK", "Multi-Agent", "TypeScript", "Next.js"]
+image: "/blog/multi-agent-ai-sdk.webp"
+featured: false
+author:
+  name: "Chirag Talpada"
+---
+
+# Building a Multi-Agent AI System with Vercel AI SDK
+
+A single LLM call gets you surprisingly far. But when your task requires research, planning, writing, and fact-checking - each with different context and tools - one agent starts to break down. It either runs too long, loses focus, or tries to be everything at once. That's the problem multi-agent systems solve.
+
+The idea is straightforward: instead of one agent doing everything, you build a network of specialized agents and an orchestrator that routes work between them. Each agent has a focused role, its own tools, and a tight system prompt. The orchestrator delegates - it doesn't do the work itself.
+
+Vercel AI SDK makes this pattern surprisingly clean to implement. This post walks through the architecture, the core patterns, and a real working example.
+
+## Why Multi-Agent Systems?
+
+Single-agent systems hit a wall in three specific scenarios:
+
+**Complex, multi-step tasks.** Ask one agent to "research a topic, evaluate sources, write a report, and check it for accuracy." You'll get mediocre results across the board. Better to have a researcher, an evaluator, a writer, and a fact-checker - each excellent at one thing.
+
+**Parallel workloads.** If part of the task can run concurrently - say, researching three different topics at the same time - a single agent is forced to do them sequentially. Multiple agents can run in parallel.
+
+**Context window pressure.** An agent working through a long agentic loop accumulates context fast. Specialized agents start fresh with just the context they need, which improves both quality and cost.
+
+## The Core Pattern in AI SDK
+
+In AI SDK, an agent is just a `generateText` or `streamText` call with a focused system prompt, a set of tools, and `maxSteps` enabled. There's nothing exotic about the building blocks.
+
+A multi-agent system emerges when those calls compose - when one agent's output becomes another agent's input, or when tools are themselves agents.
+
+Here's the minimal shape:
+
+```typescript
+import { generateText, tool } from "ai";
+import { openai } from "@ai-sdk/openai";
+import { z } from "zod";
+
+// A specialist agent wrapped as a tool
+const researchTool = tool({
+  description: "Research a topic and return a structured summary",
+  parameters: z.object({
+    topic: z.string(),
+    depth: z.enum(["brief", "detailed"]),
+  }),
+  execute: async ({ topic, depth }) => {
+    const { text } = await generateText({
+      model: openai("gpt-4o"),
+      system: `You are a research specialist. Return factual, well-sourced summaries.
+Depth: ${depth}. Be concise. Do not editorialize.`,
+      prompt: `Research this topic: ${topic}`,
+      maxTokens: depth === "detailed" ? 2000 : 500,
+    });
+    return { summary: text, topic };
+  },
+});
+
+// The orchestrator delegates to the specialist
+const { text } = await generateText({
+  model: openai("gpt-4o"),
+  system:
+    "You are a writing orchestrator. Use the research tool before writing.",
+  prompt: "Write a 3-paragraph explainer on Retrieval-Augmented Generation.",
+  tools: { research: researchTool },
+  maxSteps: 5,
+});
+```
+
+The orchestrator decides when to call the research agent, passes back the result, and uses it to write. The specialist stays focused on research. Each does one job well.
+
+## Setting Up the Project
+
+```bash
+npx create-next-app@latest multi-agent-app
+cd multi-agent-app
+npm install ai @ai-sdk/openai zod
+```
+
+```env
+OPENAI_API_KEY=sk-...
+```
+
+## Building the Architecture
+
+Let's build a real example: a **content pipeline** with three specialized agents and one orchestrator.
+
+```
+User prompt
+    │
+    ▼
+Orchestrator Agent
+    ├── Research Agent (finds information)
+    ├── Writer Agent (drafts content)
+    └── Editor Agent (reviews and refines)
+```
+
+### Step 1: Define the Specialist Agents as Tools
+
+```typescript
+// lib/agents/research-agent.ts
+import { generateText } from "ai";
+import { openai } from "@ai-sdk/openai";
+import { tool } from "ai";
+import { z } from "zod";
+
+export const researchAgent = tool({
+  description: `Research a topic thoroughly. Returns key facts, context,
+  and relevant details. Use this before writing any content.`,
+  parameters: z.object({
+    topic: z.string().describe("The topic or question to research"),
+    focus: z
+      .string()
+      .optional()
+      .describe("Specific angle or aspect to focus on"),
+  }),
+  execute: async ({ topic, focus }) => {
+    const { text, usage } = await generateText({
+      model: openai("gpt-4o"),
+      system: `You are a research specialist. Your job is to gather accurate,
+relevant facts on any topic. Structure your response as:
+1. Core concept (2-3 sentences)
+2. Key facts (bullet points)
+3. Important context
+4. Common misconceptions to avoid
+
+Be factual. Don't write prose - write notes for a writer to use.`,
+      prompt: focus
+        ? `Research "${topic}" with a focus on: ${focus}`
+        : `Research "${topic}"`,
+      maxTokens: 1500,
+    });
+
+    return {
+      topic,
+      research: text,
+      tokenUsage: usage.totalTokens,
+    };
+  },
+});
+```
+
+```typescript
+// lib/agents/writer-agent.ts
+import { generateText } from "ai";
+import { openai } from "@ai-sdk/openai";
+import { tool } from "ai";
+import { z } from "zod";
+
+export const writerAgent = tool({
+  description: `Draft content based on research and a brief. Use this after
+  the research agent has returned its output.`,
+  parameters: z.object({
+    brief: z.string().describe("What to write and for whom"),
+    research: z.string().describe("Research notes to base the content on"),
+    format: z.enum(["article", "summary", "bullet-points", "explanation"]),
+    targetLength: z.enum(["short", "medium", "long"]),
+  }),
+  execute: async ({ brief, research, format, targetLength }) => {
+    const lengthGuide = {
+      short: "150-250 words",
+      medium: "400-600 words",
+      long: "800-1200 words",
+    };
+
+    const { text } = await generateText({
+      model: openai("gpt-4o"),
+      system: `You are an expert technical writer. You write clear, engaging
+content for developers. You never hallucinate - if the research doesn't
+cover something, you say so rather than inventing details.`,
+      prompt: `Write a ${format} about: ${brief}
+
+Research to draw from:
+${research}
+
+Target length: ${lengthGuide[targetLength]}
+Format: ${format}`,
+      maxTokens: 1800,
+    });
+
+    return { draft: text, format, wordCount: text.split(" ").length };
+  },
+});
+```
+
+```typescript
+// lib/agents/editor-agent.ts
+import { generateText } from "ai";
+import { openai } from "@ai-sdk/openai";
+import { tool } from "ai";
+import { z } from "zod";
+
+export const editorAgent = tool({
+  description: `Review and refine a draft. Fixes clarity, flow, and accuracy.
+  Returns an improved version with a brief note on changes made.`,
+  parameters: z.object({
+    draft: z.string().describe("The content to review and improve"),
+    criteria: z
+      .array(z.string())
+      .describe("Specific things to check or improve"),
+  }),
+  execute: async ({ draft, criteria }) => {
+    const { text } = await generateText({
+      model: openai("gpt-4o"),
+      system: `You are a senior editor. You improve content for:
+- Clarity: is every sentence easy to understand?
+- Accuracy: are all claims well-grounded?
+- Flow: does it read naturally?
+- Concision: cut anything redundant
+
+Return the improved content, then a short "Editorial notes:" section
+summarizing what you changed and why.`,
+      prompt: `Edit this content. Focus on: ${criteria.join(", ")}
+
+---
+${draft}
+---`,
+      maxTokens: 2000,
+    });
+
+    return { edited: text };
+  },
+});
+```
+
+### Step 2: Build the Orchestrator
+
+The orchestrator's only job is to decide which agents to call, in what order, and with what inputs. It doesn't write content itself.
+
+```typescript
+// lib/agents/orchestrator.ts
+import { generateText } from "ai";
+import { openai } from "@ai-sdk/openai";
+import { researchAgent } from "./research-agent";
+import { writerAgent } from "./writer-agent";
+import { editorAgent } from "./editor-agent";
+
+export async function runContentPipeline(userRequest: string) {
+  const { text, steps } = await generateText({
+    model: openai("gpt-4o"),
+    system: `You are a content pipeline orchestrator. When given a content request:
+1. ALWAYS call the research agent first with the relevant topic
+2. Then call the writer agent with the research results and a clear brief
+3. Finally call the editor agent to refine the draft
+4. Return the final edited content as your response
+
+Do not skip steps. Do not write content yourself - delegate everything.`,
+    prompt: userRequest,
+    tools: {
+      research: researchAgent,
+      write: writerAgent,
+      edit: editorAgent,
+    },
+    maxSteps: 8,
+  });
+
+  // steps contains the full trace: tool calls, results, and reasoning
+  const toolCallLog = steps.flatMap(
+    (step) =>
+      step.toolCalls?.map((call) => ({
+        tool: call.toolName,
+        input: call.args,
+      })) ?? [],
+  );
+
+  return {
+    result: text,
+    pipeline: toolCallLog,
+    totalSteps: steps.length,
+  };
+}
+```
+
+### Step 3: Wire Up the API Route
+
+```typescript
+// app/api/pipeline/route.ts
+import { streamText } from "ai";
+import { openai } from "@ai-sdk/openai";
+import { researchAgent } from "@/lib/agents/research-agent";
+import { writerAgent } from "@/lib/agents/writer-agent";
+import { editorAgent } from "@/lib/agents/editor-agent";
+
+export const maxDuration = 120;
+
+export async function POST(req: Request) {
+  const { prompt } = await req.json();
+
+  const result = streamText({
+    model: openai("gpt-4o"),
+    system: `You are a content pipeline orchestrator. Coordinate the research,
+writing, and editing agents to fulfill the request. Always research first,
+then write, then edit. Do not write content yourself.`,
+    prompt,
+    tools: {
+      research: researchAgent,
+      write: writerAgent,
+      edit: editorAgent,
+    },
+    maxSteps: 8,
+    onChunk: ({ chunk }) => {
+      if (chunk.type === "tool-call") {
+        console.log(`[Orchestrator] Calling: ${chunk.toolName}`);
+      }
+    },
+    onFinish: ({ usage, steps }) => {
+      console.log(
+        `Pipeline complete. Steps: ${steps.length}, Tokens: ${usage.totalTokens}`,
+      );
+    },
+  });
+
+  return result.toDataStreamResponse();
+}
+```
+
+## Parallel Agent Execution
+
+Not all agent workflows are sequential. When tasks are independent, run them in parallel and merge the results:
+
+```typescript
+// lib/parallel-research.ts
+import { generateText } from "ai";
+import { openai } from "@ai-sdk/openai";
+
+interface ResearchResult {
+  topic: string;
+  summary: string;
+  keyPoints: string[];
+}
+
+async function researchTopic(topic: string): Promise<ResearchResult> {
+  const { text } = await generateText({
+    model: openai("gpt-4o-mini"), // cheaper model for parallel calls
+    system:
+      "Research specialist. Return a JSON object with summary and keyPoints array.",
+    prompt: `Research this topic concisely: ${topic}`,
+    maxTokens: 600,
+  });
+
+  try {
+    return { topic, ...JSON.parse(text) };
+  } catch {
+    return { topic, summary: text, keyPoints: [] };
+  }
+}
+
+export async function parallelResearch(topics: string[]) {
+  // All topics researched simultaneously
+  const results = await Promise.all(topics.map(researchTopic));
+
+  // Synthesizer agent merges the parallel outputs
+  const { text: synthesis } = await generateText({
+    model: openai("gpt-4o"),
+    system:
+      "You synthesize research from multiple sources into a coherent overview.",
+    prompt: `Synthesize these research results into a unified report:
+
+${results.map((r) => `## ${r.topic}\n${r.summary}`).join("\n\n")}`,
+  });
+
+  return { research: results, synthesis };
+}
+
+// Usage: research 3 topics simultaneously instead of sequentially
+const { synthesis } = await parallelResearch([
+  "vector databases",
+  "embedding models",
+  "semantic search",
+]);
+```
+
+The speedup here is proportional to the number of topics. Three topics in parallel takes roughly the same time as one sequential call, not three.
+
+## Agent Handoffs
+
+For systems where control genuinely transfers from one agent to another - like a customer support router - AI SDK supports explicit handoffs. One agent's job is purely to classify and delegate:
+
+```typescript
+// lib/support-router.ts
+import { generateText, tool } from "ai";
+import { openai } from "@ai-sdk/openai";
+import { z } from "zod";
+
+const billingAgent = tool({
+  description: "Handle billing, payment, and subscription questions",
+  parameters: z.object({ issue: z.string() }),
+  execute: async ({ issue }) => {
+    const { text } = await generateText({
+      model: openai("gpt-4o"),
+      system: `You are a billing support specialist. You know everything about
+our pricing plans, invoice history, refund policy, and payment methods.
+Always be empathetic and solution-oriented.`,
+      prompt: issue,
+      maxTokens: 500,
+    });
+    return { agent: "billing", response: text };
+  },
+});
+
+const technicalAgent = tool({
+  description: "Handle technical issues, bugs, API questions, and integrations",
+  parameters: z.object({ issue: z.string() }),
+  execute: async ({ issue }) => {
+    const { text } = await generateText({
+      model: openai("gpt-4o"),
+      system: `You are a technical support engineer. You troubleshoot API errors,
+integration issues, and help developers debug. Be precise and practical.`,
+      prompt: issue,
+      maxTokens: 800,
+    });
+    return { agent: "technical", response: text };
+  },
+});
+
+const generalAgent = tool({
+  description:
+    "Handle general questions, feature requests, and account management",
+  parameters: z.object({ issue: z.string() }),
+  execute: async ({ issue }) => {
+    const { text } = await generateText({
+      model: openai("gpt-4o"),
+      system: "Helpful customer success agent. Friendly and thorough.",
+      prompt: issue,
+      maxTokens: 500,
+    });
+    return { agent: "general", response: text };
+  },
+});
+
+export async function routeSupport(userMessage: string) {
+  const { text } = await generateText({
+    model: openai("gpt-4o-mini"), // cheap router model
+    system: `You are a support router. Read the customer's message, determine
+which specialist can best help them, and call exactly one tool to handle it.
+Do not answer the question yourself - delegate to the right agent.`,
+    prompt: userMessage,
+    tools: {
+      billingSupport: billingAgent,
+      technicalSupport: technicalAgent,
+      generalSupport: generalAgent,
+    },
+    maxSteps: 2, // router + one specialist call
+  });
+
+  return text;
+}
+```
+
+The router uses a cheaper model (`gpt-4o-mini`) - it only needs to classify, not reason. The specialist models do the heavy lifting.
+
+## Tracking Agent State Across Steps
+
+When an agent runs multiple steps, you often need to inspect the full trace - what tools were called, what they returned, and how the model reasoned. AI SDK exposes this through the `steps` array:
+
+```typescript
+import { generateText } from "ai";
+import { openai } from "@ai-sdk/openai";
+
+const { text, steps, usage } = await generateText({
+  model: openai("gpt-4o"),
+  prompt: "Research and summarize the history of TypeScript",
+  tools: { research: researchAgent },
+  maxSteps: 5,
+});
+
+// Full execution trace
+for (const step of steps) {
+  console.log(`Step ${step.stepType}`);
+
+  if (step.toolCalls?.length) {
+    for (const call of step.toolCalls) {
+      console.log(`  → Called: ${call.toolName}`);
+      console.log(`  → Args:`, call.args);
+    }
+  }
+
+  if (step.toolResults?.length) {
+    for (const result of step.toolResults) {
+      console.log(`  ← Result from: ${result.toolName}`);
+    }
+  }
+
+  if (step.text) {
+    console.log(`  Final response: ${step.text.slice(0, 100)}...`);
+  }
+}
+
+console.log(`Total tokens: ${usage.totalTokens}`);
+```
+
+This trace is invaluable for debugging why an agent made a particular decision, and it's the foundation for any observability system you build on top.
+
+## Streaming a Multi-Agent Pipeline
+
+For long-running pipelines, stream intermediate progress to the client so users aren't staring at a blank screen:
+
+```typescript
+// app/api/pipeline/route.ts
+import { streamText } from "ai";
+import { openai } from "@ai-sdk/openai";
+
+export async function POST(req: Request) {
+  const { prompt } = await req.json();
+
+  const result = streamText({
+    model: openai("gpt-4o"),
+    prompt,
+    tools: {
+      research: researchAgent,
+      write: writerAgent,
+      edit: editorAgent,
+    },
+    maxSteps: 8,
+  });
+
+  // toDataStreamResponse streams tool calls and text deltas together
+  return result.toDataStreamResponse({
+    sendUsage: true, // include token counts in the stream
+  });
+}
+```
+
+```typescript
+// app/pipeline/page.tsx
+"use client";
+
+import { useChat } from "@ai-sdk/react";
+import { DefaultChatTransport } from "ai";
+
+export default function PipelinePage() {
+  const { messages, sendMessage, status } = useChat({
+    transport: new DefaultChatTransport({ api: "/api/pipeline" }),
+  });
+
+  const isRunning = status === "submitted" || status === "streaming";
+
+  return (
+    <div className="max-w-3xl mx-auto p-6">
+      {messages.map((msg) => (
+        <div key={msg.id} className="mb-4">
+          {msg.parts.map((part, i) => {
+            if (part.type === "text") {
+              return <p key={i}>{part.text}</p>;
+            }
+            // Show tool invocations as progress indicators
+            if (part.type === "tool-invocation") {
+              const { toolName, state } = part.toolInvocation;
+              return (
+                <div key={i} className="text-sm text-muted-foreground my-2 flex items-center gap-2">
+                  <span className={state === "result" ? "text-green-500" : "animate-pulse"}>
+                    {state === "result" ? "✓" : "⏳"}
+                  </span>
+                  {toolName === "research" && "Researching topic..."}
+                  {toolName === "write" && "Drafting content..."}
+                  {toolName === "edit" && "Reviewing and editing..."}
+                </div>
+              );
+            }
+            return null;
+          })}
+        </div>
+      ))}
+
+      <form
+        onSubmit={(e) => {
+          e.preventDefault();
+          const input = (e.currentTarget.elements[0] as HTMLInputElement).value;
+          sendMessage({ text: input });
+          e.currentTarget.reset();
+        }}
+        className="flex gap-2"
+      >
+        <input
+          type="text"
+          placeholder="e.g. Write an article about server-side rendering"
+          className="flex-1 border rounded-lg px-4 py-2"
+          disabled={isRunning}
+        />
+        <button
+          type="submit"
+          disabled={isRunning}
+          className="px-4 py-2 bg-primary text-white rounded-lg disabled:opacity-50"
+        >
+          {isRunning ? "Running..." : "Run"}
+        </button>
+      </form>
+    </div>
+  );
+}
+```
+
+## Error Handling in Agent Chains
+
+When agent B depends on agent A's output, a failure in A needs to be caught before it cascades. Wrap each agent's `execute` function with a try-catch and return a structured error the orchestrator can reason about:
+
+```typescript
+export const researchAgent = tool({
+  description: "Research a topic",
+  parameters: z.object({ topic: z.string() }),
+  execute: async ({ topic }) => {
+    try {
+      const { text } = await generateText({
+        model: openai("gpt-4o"),
+        system: "Research specialist.",
+        prompt: `Research: ${topic}`,
+        maxTokens: 1500,
+        abortSignal: AbortSignal.timeout(30_000),
+      });
+
+      return { success: true, topic, research: text };
+    } catch (error) {
+      // Return a structured error instead of throwing
+      // The orchestrator will see this and can decide whether to retry
+      return {
+        success: false,
+        topic,
+        error: error instanceof Error ? error.message : "Research failed",
+        research: null,
+      };
+    }
+  },
+});
+```
+
+This matters because `maxSteps` will stop the loop if a tool throws, but it continues if a tool returns an error value. Give the orchestrator the chance to handle it gracefully.
+
+## Production Considerations
+
+A few things that matter once you move beyond prototypes:
+
+**Model selection per agent.** Not every agent needs `gpt-4o`. A router or classifier can use `gpt-4o-mini` at a tenth of the cost. Reserve expensive models for agents that actually need reasoning depth.
+
+```typescript
+const classifierAgent = tool({
+  parameters: z.object({ text: z.string() }),
+  execute: async ({ text }) => {
+    const { text: result } = await generateText({
+      model: openai("gpt-4o-mini"), // cheap for classification
+      prompt: text,
+    });
+    return result;
+  },
+  description: "Classify input text",
+});
+```
+
+**Token budgets per agent.** Set `maxTokens` on each agent call. An agent with no cap will use as many tokens as it wants. In a pipeline of four agents, that compounds quickly.
+
+**Timeout per agent.** Use `AbortSignal.timeout()` on each `generateText` call inside a tool's `execute`. Without this, a hung LLM call will hang your entire pipeline.
+
+**Cap `maxSteps` conservatively.** Start with the minimum steps you need (usually 2× the number of agents), then raise it only if the orchestrator is getting cut off prematurely. A high `maxSteps` with a confused orchestrator burns tokens fast.
+
+**Log the step trace.** Always log `steps` from the orchestrator's `generateText` call in production. When something goes wrong (and it will), you need to know which agent was called, with what input, and what it returned.
+
+```typescript
+const { text, steps } = await generateText({ ... });
+
+// Persist trace for debugging
+await db.agentRuns.create({
+  data: {
+    prompt: userRequest,
+    result: text,
+    trace: JSON.stringify(steps.map((s) => ({
+      type: s.stepType,
+      toolCalls: s.toolCalls?.map((c) => ({ name: c.toolName, args: c.args })),
+    }))),
+    tokenUsage: steps.reduce((sum, s) => sum + (s.usage?.totalTokens ?? 0), 0),
+  },
+});
+```
+
+## When Not to Use Multi-Agent
+
+Multi-agent systems add latency - each agent is a separate LLM call. For tasks a single agent can do well in under 10 seconds, the overhead isn't worth it.
+
+Use multi-agent when:
+
+- The task has genuinely separable stages (research → write → edit)
+- Parallel execution would meaningfully cut latency
+- Different stages need different tools or specialized context
+- A single agent reliably loses focus or quality across the full task
+
+Use a single agent when:
+
+- The task is focused and short
+- You're building an MVP and want to iterate fast
+- Latency matters more than quality at the margins
+
+## Wrapping Up
+
+The mental model is simple: **agents are `generateText` calls wrapped in tools, and multi-agent systems are orchestrators that delegate to them**.
+
+What you get from this pattern:
+
+- Specialist agents that stay focused and produce better outputs
+- Parallel execution for independent tasks
+- Clear routing for different request types
+- A full step trace for debugging and observability
+
+Start with two agents before you add a third. The orchestration overhead compounds with each hop, so earn each agent you add. Once the pattern clicks, it scales cleanly - the same building blocks that work for a three-agent content pipeline work for a twenty-agent research system.
+
+---
+
+_Building something with multi-agent AI? I'd love to see it - find me on [Twitter](https://x.com/chiragmctrl) or open a GitHub discussion._

@@ -1,6 +1,6 @@
 ---
 title: "Prompt Engineering for Developers: Write Prompts That Actually Work in Production"
-excerpt: "A senior developer's guide to prompt engineering — from foundational techniques like few-shot and chain-of-thought to advanced patterns like RAG, tool use, and guardrails. Real examples, real code, zero fluff."
+excerpt: "A senior developer's guide to prompt engineering - from foundational techniques like few-shot and chain-of-thought to advanced patterns like RAG, tool use, and guardrails. Real examples, real code, zero fluff."
 date: "2026-01-15"
 featured: false
 tags: ["AI", "Prompt Engineering", "LLM", "TypeScript"]
@@ -13,13 +13,13 @@ author:
 
 Most prompt engineering guides read like they were written for people who've never shipped software. They show you how to ask ChatGPT for a poem, then call it a day. This isn't that guide.
 
-I've spent the last two years integrating LLMs into production applications — chatbots, content pipelines, code review tools, and AI-powered search. The difference between a demo and a production system almost always comes down to how you write your prompts.
+I've spent the last two years integrating LLMs into production applications - chatbots, content pipelines, code review tools, and AI-powered search. The difference between a demo and a production system almost always comes down to how you write your prompts.
 
 This guide covers what actually works when you're building real software with LLMs.
 
 ## Why Developers Need to Learn Prompt Engineering
 
-If you're building AI features, the prompt is your interface to the model. It's the equivalent of writing SQL for a database or crafting API requests for a third-party service. A bad prompt doesn't just give a bad answer — it gives a confidently wrong answer that your users will trust.
+If you're building AI features, the prompt is your interface to the model. It's the equivalent of writing SQL for a database or crafting API requests for a third-party service. A bad prompt doesn't just give a bad answer - it gives a confidently wrong answer that your users will trust.
 
 **The stakes in production are different:**
 
@@ -28,29 +28,29 @@ If you're building AI features, the prompt is your interface to the model. It's 
 - A summarizer that invents facts creates legal liability
 - A code generator with no guardrails can introduce security vulnerabilities
 
-Prompt engineering isn't about clever tricks — it's about building reliable, testable, and maintainable interfaces to language models.
+Prompt engineering isn't about clever tricks - it's about building reliable, testable, and maintainable interfaces to language models.
 
 ## The Anatomy of an Effective Prompt
 
-Every production prompt is built from six core parts. Skip any of them and the model will fill in the gaps with assumptions — and assumptions break production systems.
+Every production prompt is built from six core parts. Skip any of them and the model will fill in the gaps with assumptions - and assumptions break production systems.
 
-| # | Part | Purpose |
-|---|------|---------|
-| 1 | **Role** | Who the AI should act as |
-| 2 | **Task** | What you want the AI to do |
-| 3 | **Context** | Background information |
-| 4 | **Constraints** | Boundaries for output |
-| 5 | **Output Format** | Structure of the response |
-| 6 | **Examples** | Few-shot demonstrations |
+| #   | Part              | Purpose                    |
+| --- | ----------------- | -------------------------- |
+| 1   | **Role**          | Who the AI should act as   |
+| 2   | **Task**          | What you want the AI to do |
+| 3   | **Context**       | Background information     |
+| 4   | **Constraints**   | Boundaries for output      |
+| 5   | **Output Format** | Structure of the response  |
+| 6   | **Examples**      | Few-shot demonstrations    |
 
 Let's break down each part with real examples.
 
-### Role — Who the AI Should Act As
+### Role - Who the AI Should Act As
 
 The role defines the model's expertise, tone, and perspective. A well-defined role dramatically changes output quality because it activates relevant "knowledge patterns" in the model.
 
 ```typescript
-// Bad: no role — model defaults to generic assistant
+// Bad: no role - model defaults to generic assistant
 const bad = `Review this code.`;
 
 // Good: specific role with domain expertise
@@ -66,9 +66,9 @@ with 10 years of experience in payment systems and PCI compliance.`;
 - Include experience level (senior, staff, principal)
 - Mention relevant standards if applicable (OWASP, HIPAA, GDPR)
 
-### Task — What You Want the AI to Do
+### Task - What You Want the AI to Do
 
-The task is the core instruction. It should be unambiguous — if two developers read your task and imagine different outputs, it's not specific enough.
+The task is the core instruction. It should be unambiguous - if two developers read your task and imagine different outputs, it's not specific enough.
 
 ```typescript
 // Bad: vague task
@@ -86,11 +86,11 @@ const good = `Analyze the error log below and identify:
 
 - Use numbered steps for multi-part tasks
 - Define what "done" looks like
-- Use action verbs: "Extract," "Classify," "Generate," "Compare" — not "Look at" or "Think about"
+- Use action verbs: "Extract," "Classify," "Generate," "Compare" - not "Look at" or "Think about"
 
-### Context — Background Information
+### Context - Background Information
 
-Context is the information the model needs to do its job correctly. Without it, the model fills gaps with assumptions from its training data — which may be outdated or wrong.
+Context is the information the model needs to do its job correctly. Without it, the model fills gaps with assumptions from its training data - which may be outdated or wrong.
 
 ```typescript
 const prompt = `You are a senior code reviewer.
@@ -114,9 +114,9 @@ ${codeDiff}`;
 - User information ("the user is on a free plan")
 - Recent changes ("we just migrated from v2 to v3 of this API")
 
-### Constraints — Boundaries for Output
+### Constraints - Boundaries for Output
 
-Constraints tell the model what NOT to do. This is critical because LLMs are eager to be helpful — they'll invent information, add unsolicited suggestions, and go off-topic unless you explicitly prevent it.
+Constraints tell the model what NOT to do. This is critical because LLMs are eager to be helpful - they'll invent information, add unsolicited suggestions, and go off-topic unless you explicitly prevent it.
 
 ```typescript
 const constraints = `CONSTRAINTS:
@@ -136,7 +136,7 @@ const constraints = `CONSTRAINTS:
 - "Stay within the scope of [domain]. Refuse off-topic requests."
 - "Do not make up URLs, API endpoints, or CLI flags"
 
-### Output Format — Structure of the Response
+### Output Format - Structure of the Response
 
 This is one of the most powerful parts. Specifying the exact output format makes responses parseable, consistent, and reliable:
 
@@ -161,19 +161,19 @@ Review: "${customerReview}"`;
 
 **Format options by use case:**
 
-| Use Case | Format | Why |
-|----------|--------|-----|
-| API responses | JSON with schema | Parseable, type-safe |
-| User-facing text | Markdown with headings | Readable, structured |
-| Classification | Single word/enum | Simple to parse |
-| Analysis | XML-style tags | Easy to extract sections |
-| Code generation | Fenced code blocks | Copy-paste ready |
+| Use Case         | Format                 | Why                      |
+| ---------------- | ---------------------- | ------------------------ |
+| API responses    | JSON with schema       | Parseable, type-safe     |
+| User-facing text | Markdown with headings | Readable, structured     |
+| Classification   | Single word/enum       | Simple to parse          |
+| Analysis         | XML-style tags         | Easy to extract sections |
+| Code generation  | Fenced code blocks     | Copy-paste ready         |
 
 **Pro tip:** For critical production systems, use Zod schemas with `withStructuredOutput()` instead of asking for JSON in the prompt. The model is constrained at the API level, not just the prompt level.
 
-### Examples — Few-Shot Demonstrations
+### Examples - Few-Shot Demonstrations
 
-Examples are the most underutilized part of prompt engineering. They show the model exactly what you want — format, tone, level of detail, and edge case handling:
+Examples are the most underutilized part of prompt engineering. They show the model exactly what you want - format, tone, level of detail, and edge case handling:
 
 ```typescript
 const prompt = `Classify the support ticket into exactly one category.
@@ -329,18 +329,18 @@ Category:`;
 - Zero-shot for straightforward tasks (summarize, translate, classify obvious cases)
 - Few-shot when the model gets it wrong zero-shot, when edge cases matter, or when your categories are domain-specific
 
-**Pro tip:** The examples in few-shot prompts aren't just for the model — they're documentation for your team. When another developer reads your prompt six months later, the examples explain your intent better than comments ever could.
+**Pro tip:** The examples in few-shot prompts aren't just for the model - they're documentation for your team. When another developer reads your prompt six months later, the examples explain your intent better than comments ever could.
 
 ## Technique 2: Chain-of-Thought (CoT) Prompting
 
 Chain-of-thought forces the model to show its reasoning before giving an answer. This dramatically improves accuracy on tasks that require logic, math, or multi-step analysis:
 
 ```typescript
-// Without CoT — model often gets this wrong
+// Without CoT - model often gets this wrong
 const badPrompt = `A user signed up on Jan 15, their trial is 14 days,
 and today is Jan 30. Is their trial expired? Answer yes or no.`;
 
-// With CoT — model reasons step by step
+// With CoT - model reasons step by step
 const goodPrompt = `A user signed up on Jan 15, their trial is 14 days,
 and today is Jan 30. Think step by step:
 
@@ -432,9 +432,9 @@ console.log(result);
 
 **Why Zod schemas beat JSON examples in prompts:**
 
-- Type-safe at compile time — your IDE catches schema mismatches
+- Type-safe at compile time - your IDE catches schema mismatches
 - `.describe()` annotations guide the model on what each field means
-- Validation is automatic — malformed responses throw, not silently corrupt data
+- Validation is automatic - malformed responses throw, not silently corrupt data
 - Schema changes propagate through your codebase via TypeScript
 
 ## Technique 4: System Prompts and Role Engineering
@@ -561,9 +561,9 @@ async function analyzeFeatureRequest(userRequest: string) {
 **Why chaining beats single prompts:**
 
 - Each step is testable independently
-- Failures are isolated — step 2 failing doesn't lose step 1's work
+- Failures are isolated - step 2 failing doesn't lose step 1's work
 - You can use different models for different steps (cheap model for extraction, powerful model for generation)
-- Easier to debug — you can inspect intermediate outputs
+- Easier to debug - you can inspect intermediate outputs
 
 ## Technique 6: RAG (Retrieval-Augmented Generation)
 
@@ -580,7 +580,8 @@ const embeddings = new OpenAIEmbeddings();
 
 const docs = [
   new Document({
-    pageContent: "Refund requests must be submitted within 30 days of purchase...",
+    pageContent:
+      "Refund requests must be submitted within 30 days of purchase...",
     metadata: { source: "refund-policy.md" },
   }),
   new Document({
@@ -620,14 +621,14 @@ USER QUESTION: ${question}`,
 
 **RAG best practices from production:**
 
-- **Chunk size matters** — 200-500 tokens per chunk works best for most use cases. Too small loses context, too large dilutes relevance.
-- **Always cite sources** — include the document source in the prompt so the model can reference it, and so you can verify answers.
-- **Use hybrid search** — combine vector similarity with keyword search (BM25). Vector search handles semantic meaning, keyword search catches exact matches.
-- **Set a relevance threshold** — don't inject documents with low similarity scores. Irrelevant context confuses the model more than no context.
+- **Chunk size matters** - 200-500 tokens per chunk works best for most use cases. Too small loses context, too large dilutes relevance.
+- **Always cite sources** - include the document source in the prompt so the model can reference it, and so you can verify answers.
+- **Use hybrid search** - combine vector similarity with keyword search (BM25). Vector search handles semantic meaning, keyword search catches exact matches.
+- **Set a relevance threshold** - don't inject documents with low similarity scores. Irrelevant context confuses the model more than no context.
 
 ## Technique 7: Tool Use and Function Calling
 
-Tool use lets the model decide when to call external functions — APIs, databases, calculations — instead of guessing:
+Tool use lets the model decide when to call external functions - APIs, databases, calculations - instead of guessing:
 
 ```typescript
 import { ChatOpenAI } from "@langchain/openai";
@@ -782,12 +783,12 @@ async function safeRespond(userMessage: string): Promise<string> {
 
 These parameters control the randomness and creativity of the model's output:
 
-| Parameter | Value | Use Case |
-|-----------|-------|----------|
-| `temperature: 0` | Deterministic | Data extraction, classification, code review |
-| `temperature: 0.3` | Slightly creative | Summarization, Q&A, support responses |
-| `temperature: 0.7` | Balanced | Content generation, brainstorming |
-| `temperature: 1.0` | High creativity | Creative writing, diverse suggestions |
+| Parameter          | Value             | Use Case                                     |
+| ------------------ | ----------------- | -------------------------------------------- |
+| `temperature: 0`   | Deterministic     | Data extraction, classification, code review |
+| `temperature: 0.3` | Slightly creative | Summarization, Q&A, support responses        |
+| `temperature: 0.7` | Balanced          | Content generation, brainstorming            |
+| `temperature: 1.0` | High creativity   | Creative writing, diverse suggestions        |
 
 ```typescript
 // Extraction: deterministic, no creativity needed
@@ -802,8 +803,8 @@ const classifier = new ChatOpenAI({ modelName: "gpt-4o-mini", temperature: 0 });
 
 **Model selection strategy:**
 
-- **GPT-4o / Claude Sonnet** — complex reasoning, code generation, nuanced analysis
-- **GPT-4o-mini / Claude Haiku** — classification, extraction, validation, high-volume tasks
+- **GPT-4o / Claude Sonnet** - complex reasoning, code generation, nuanced analysis
+- **GPT-4o-mini / Claude Haiku** - classification, extraction, validation, high-volume tasks
 - Use cheap models for preprocessing and expensive models for the core task
 
 ## Technique 10: Testing and Iterating on Prompts
@@ -841,16 +842,16 @@ describe("ticket classifier", () => {
 2. Run against 20-30 test cases
 3. Find failure patterns
 4. Add few-shot examples or constraints to fix them
-5. Re-run tests — make sure fixes don't break passing cases
+5. Re-run tests - make sure fixes don't break passing cases
 6. Ship it, monitor in production, iterate
 
 **What to track in production:**
 
-- **Accuracy** — are outputs correct? (sample and review)
-- **Latency** — how long do responses take?
-- **Token usage** — are you burning money on verbose prompts?
-- **Failure rate** — how often does parsing/validation fail?
-- **User feedback** — thumbs up/down on responses
+- **Accuracy** - are outputs correct? (sample and review)
+- **Latency** - how long do responses take?
+- **Token usage** - are you burning money on verbose prompts?
+- **Failure rate** - how often does parsing/validation fail?
+- **User feedback** - thumbs up/down on responses
 
 ## Common Mistakes (and How to Fix Them)
 
@@ -871,13 +872,12 @@ Keep it under 150 words. Use bullet points."
 ```typescript
 // Bad: model decides the format (different every time)
 "Extract the user's name, email, and company from this text."
-
 // Good: explicit format = parseable output
 `Extract user details from the text below.
 Respond with ONLY a JSON object in this exact format:
 {"name": string | null, "email": string | null, "company": string | null}
 
-If a field is not mentioned, use null. Do not add extra fields.`
+If a field is not mentioned, use null. Do not add extra fields.`;
 ```
 
 ### Mistake 3: Relying on the Model's Knowledge
@@ -885,7 +885,6 @@ If a field is not mentioned, use null. Do not add extra fields.`
 ```typescript
 // Bad: model might have outdated or wrong information
 "What are the current pricing plans for our product?"
-
 // Good: provide the source of truth
 `Based on the pricing information below, answer the user's question.
 
@@ -894,7 +893,7 @@ CURRENT PRICING (as of Jan 2026):
 - Pro: $79/mo (25 users, 100GB storage)
 - Enterprise: Custom pricing
 
-User question: ${userQuestion}`
+User question: ${userQuestion}`;
 ```
 
 ### Mistake 4: Ignoring Token Limits
@@ -928,7 +927,7 @@ const prompt = `Analyze the following excerpts:\n\n${relevantSections.join("\n\n
 
 - Temperature set appropriately for the task
 - Cheap models used for preprocessing, expensive models for core logic
-- Prompts are concise — every token costs money and latency
+- Prompts are concise - every token costs money and latency
 - Caching enabled for repeated identical queries
 
 ### Testing
@@ -940,14 +939,14 @@ const prompt = `Analyze the following excerpts:\n\n${relevantSections.join("\n\n
 
 ## Wrapping Up
 
-Prompt engineering is software engineering. The same principles apply — clear interfaces, separation of concerns, defensive coding, testing, and iteration.
+Prompt engineering is software engineering. The same principles apply - clear interfaces, separation of concerns, defensive coding, testing, and iteration.
 
 The techniques that matter most in production:
 
-1. **Structured output with schemas** — makes LLM responses parseable and type-safe
-2. **Prompt chaining** — breaks complex tasks into testable, debuggable steps
-3. **RAG** — grounds the model in your actual data instead of its training data
-4. **Guardrails** — because users will try to break your system on day one
-5. **Testing** — if you can't test it, you can't trust it
+1. **Structured output with schemas** - makes LLM responses parseable and type-safe
+2. **Prompt chaining** - breaks complex tasks into testable, debuggable steps
+3. **RAG** - grounds the model in your actual data instead of its training data
+4. **Guardrails** - because users will try to break your system on day one
+5. **Testing** - if you can't test it, you can't trust it
 
-Start with a clear system prompt, add constraints, test against real data, and iterate. The best prompts aren't clever — they're clear, specific, and boring. That's exactly what production systems need.
+Start with a clear system prompt, add constraints, test against real data, and iterate. The best prompts aren't clever - they're clear, specific, and boring. That's exactly what production systems need.

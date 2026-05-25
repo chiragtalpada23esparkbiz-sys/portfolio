@@ -10,29 +10,29 @@ author:
 
 # Getting Started with LangChain and LangGraph in TypeScript
 
-If you're building AI-powered features in a Node.js or Next.js project, LangChain.js and LangGraph are the two libraries you need to know. LangChain gives you the building blocks — model calls, prompt templates, tools, and memory. LangGraph takes it further by letting you orchestrate multi-step AI workflows as stateful graphs.
+If you're building AI-powered features in a Node.js or Next.js project, LangChain.js and LangGraph are the two libraries you need to know. LangChain gives you the building blocks - model calls, prompt templates, tools, and memory. LangGraph takes it further by letting you orchestrate multi-step AI workflows as stateful graphs.
 
-I've used both in production to build everything from portfolio chatbots to automated content pipelines. This post covers what I've learned — with TypeScript examples you can drop into your own projects.
+I've used both in production to build everything from portfolio chatbots to automated content pipelines. This post covers what I've learned - with TypeScript examples you can drop into your own projects.
 
 ## What is LangChain.js?
 
 LangChain.js is the JavaScript/TypeScript port of the LangChain framework. It provides a composable set of abstractions for working with LLMs:
 
-- **Models** — Unified interface across OpenAI, Anthropic, Google, and open-source models
-- **Prompt Templates** — Reusable, parameterized prompts with type safety
-- **Output Parsers** — Structured extraction from LLM responses (JSON, lists, custom schemas)
-- **Tools** — Let the LLM call functions, APIs, or databases
-- **Memory** — Persist conversation history across interactions
-- **Chains** — Compose multiple steps into a single callable pipeline
+- **Models** - Unified interface across OpenAI, Anthropic, Google, and open-source models
+- **Prompt Templates** - Reusable, parameterized prompts with type safety
+- **Output Parsers** - Structured extraction from LLM responses (JSON, lists, custom schemas)
+- **Tools** - Let the LLM call functions, APIs, or databases
+- **Memory** - Persist conversation history across interactions
+- **Chains** - Compose multiple steps into a single callable pipeline
 
 ## What is LangGraph?
 
 LangGraph is a library built on top of LangChain for creating **stateful, multi-actor AI workflows** as directed graphs. While chains are linear (step A then step B), LangGraph lets you build workflows with:
 
-- **Conditional branching** — Route to different nodes based on LLM decisions
-- **Cycles and loops** — Let agents retry, reflect, or iterate
-- **Shared state** — Pass a typed state object through every node
-- **Human-in-the-loop** — Pause execution for user approval before continuing
+- **Conditional branching** - Route to different nodes based on LLM decisions
+- **Cycles and loops** - Let agents retry, reflect, or iterate
+- **Shared state** - Pass a typed state object through every node
+- **Human-in-the-loop** - Pause execution for user approval before continuing
 
 Think of it this way: LangChain is for building individual AI capabilities. LangGraph is for wiring those capabilities into an intelligent workflow.
 
@@ -63,7 +63,7 @@ const model = new ChatOpenAI({
 });
 
 const prompt = ChatPromptTemplate.fromTemplate(
-  "Explain {topic} in 2-3 sentences for a developer audience."
+  "Explain {topic} in 2-3 sentences for a developer audience.",
 );
 
 const chain = prompt.pipe(model).pipe(new StringOutputParser());
@@ -74,7 +74,7 @@ console.log(result);
 //  client and server, enabling real-time data exchange..."
 ```
 
-The `.pipe()` syntax is LangChain's composable API — each step feeds its output into the next. The `StringOutputParser` extracts the raw text from the model's response object.
+The `.pipe()` syntax is LangChain's composable API - each step feeds its output into the next. The `StringOutputParser` extracts the raw text from the model's response object.
 
 ## Structured Output with Zod
 
@@ -98,17 +98,17 @@ const techReviewSchema = z.object({
 const structuredModel = model.withStructuredOutput(techReviewSchema);
 
 const prompt = ChatPromptTemplate.fromTemplate(
-  "Give a brief technical review of {technology}."
+  "Give a brief technical review of {technology}.",
 );
 
 const chain = prompt.pipe(structuredModel);
 
 const review = await chain.invoke({ technology: "Next.js App Router" });
 console.log(review.category); // "frontend"
-console.log(review.pros);     // ["Server components", "Streaming", ...]
+console.log(review.pros); // ["Server components", "Streaming", ...]
 ```
 
-The response is fully typed — your IDE gives you autocomplete on `review.category`, `review.pros`, etc.
+The response is fully typed - your IDE gives you autocomplete on `review.category`, `review.pros`, etc.
 
 ## Adding Tools: Let the LLM Take Actions
 
@@ -125,8 +125,8 @@ const weatherTool = tool(
   async ({ city }: { city: string }) => {
     // In production, call a real weather API here
     const data: Record<string, string> = {
-      "London": "15°C, cloudy",
-      "Tokyo": "28°C, sunny",
+      London: "15°C, cloudy",
+      Tokyo: "28°C, sunny",
       "New York": "22°C, partly cloudy",
     };
     return data[city] ?? `Weather data not available for ${city}`;
@@ -137,7 +137,7 @@ const weatherTool = tool(
     schema: z.object({
       city: z.string().describe("The city name"),
     }),
-  }
+  },
 );
 
 const model = new ChatOpenAI({ modelName: "gpt-4o" });
@@ -161,7 +161,10 @@ For chatbot-style applications, you need the model to remember previous messages
 
 ```typescript
 import { ChatOpenAI } from "@langchain/openai";
-import { ChatPromptTemplate, MessagesPlaceholder } from "@langchain/core/prompts";
+import {
+  ChatPromptTemplate,
+  MessagesPlaceholder,
+} from "@langchain/core/prompts";
 import { InMemoryChatMessageHistory } from "@langchain/core/chat_history";
 import { RunnableWithMessageHistory } from "@langchain/core/runnables";
 
@@ -193,20 +196,20 @@ const withHistory = new RunnableWithMessageHistory({
 // First message
 await withHistory.invoke(
   { input: "My name is Chirag. I work with Next.js." },
-  { configurable: { sessionId: "user-123" } }
+  { configurable: { sessionId: "user-123" } },
 );
 
-// Follow-up — the model remembers context
+// Follow-up - the model remembers context
 const response = await withHistory.invoke(
   { input: "What framework did I mention?" },
-  { configurable: { sessionId: "user-123" } }
+  { configurable: { sessionId: "user-123" } },
 );
 // "You mentioned Next.js."
 ```
 
 ## LangGraph: Building a Multi-Step AI Workflow
 
-This is where it gets interesting. Let's build a blog post generator that plans an outline, writes the content, and then reviews it — with the ability to loop back and revise.
+This is where it gets interesting. Let's build a blog post generator that plans an outline, writes the content, and then reviews it - with the ability to loop back and revise.
 
 ### Defining the State
 
@@ -241,7 +244,7 @@ const searchTool = new TavilySearchResults({ maxResults: 3 });
 async function planOutline(state: typeof BlogState.State) {
   const response = await model.invoke(
     `Create a structured outline for a technical blog post about: ${state.topic}.
-     Include 4-5 sections with brief descriptions.`
+     Include 4-5 sections with brief descriptions.`,
   );
   return { outline: response.content as string };
 }
@@ -251,7 +254,7 @@ async function researchWithTools(state: typeof BlogState.State) {
   const response = await model.invoke(
     `Summarize these research findings for a blog post about "${state.topic}":
      ${JSON.stringify(results)}
-     Extract key facts, stats, and examples we can reference.`
+     Extract key facts, stats, and examples we can reference.`,
   );
   return { research: response.content as string };
 }
@@ -260,7 +263,7 @@ async function writeDraft(state: typeof BlogState.State) {
   const response = await model.invoke(
     `Write a blog post following this outline:\n${state.outline}\n
      Incorporate these research notes:\n${state.research}\n
-     Keep it technical, concise, and developer-focused.`
+     Keep it technical, concise, and developer-focused.`,
   );
   return { draft: response.content as string };
 }
@@ -270,7 +273,7 @@ async function reviewDraft(state: typeof BlogState.State) {
     `Review this blog post draft for clarity, accuracy, and engagement.
      Respond with a JSON object: { "quality": "good" | "needs_revision" | "error", "feedback": "..." }
 
-     Draft:\n${state.draft}`
+     Draft:\n${state.draft}`,
   );
   return { review: response.content as string };
 }
@@ -284,7 +287,7 @@ async function humanApprovalNode(state: typeof BlogState.State) {
 async function reviseDraft(state: typeof BlogState.State) {
   const response = await model.invoke(
     `Revise this blog draft based on feedback:\n${state.review}\n
-     Current draft:\n${state.draft}`
+     Current draft:\n${state.draft}`,
   );
   return {
     draft: response.content as string,
@@ -332,7 +335,7 @@ const workflow = new StateGraph<typeof BlogState.State>(BlogState)
   .addNode("research", researchWithTools)
   .addNode("write", writeDraft)
   .addNode("self_review", reviewDraft)
-  .addNode("human_review", humanApprovalNode)   // interrupt → UI → resume
+  .addNode("human_review", humanApprovalNode) // interrupt → UI → resume
   .addNode("revise", reviseDraft)
   .addNode("publish", publishBlog)
   .addNode("error_handler", handleFailure)
@@ -343,14 +346,14 @@ const workflow = new StateGraph<typeof BlogState.State>(BlogState)
   .addEdge("research", "write")
   .addEdge("write", "self_review")
 
-  // Quality gate — AI decides if draft is good enough
+  // Quality gate - AI decides if draft is good enough
   .addConditionalEdges("self_review", qualityGate, {
     revise: "revise",
     human_review: "human_review",
     error: "error_handler",
   })
 
-  // Human in the loop — user approves or requests changes
+  // Human in the loop - user approves or requests changes
   .addConditionalEdges("human_review", humanDecision, {
     publish: "publish",
     revise: "revise",
@@ -376,16 +379,18 @@ This graph has several patterns that chains cannot express: a **quality gate** w
 
 ### Visualizing the Flow
 
-![LangGraph blog workflow — plan, research, write, self review, human review, revise, publish, and error handler nodes with conditional edges](/blog/lang.webp)
+![LangGraph blog workflow - plan, research, write, self review, human review, revise, publish, and error handler nodes with conditional edges](/blog/lang.webp)
 
 ## LangGraph vs Plain Chains: When to Use Which
 
 **Use LangChain chains when:**
+
 - You have a linear pipeline (prompt → model → parse → done)
 - The flow is predictable with no branching
 - You're building a single-turn interaction
 
 **Use LangGraph when:**
+
 - The workflow has conditional logic ("if X, do Y, else do Z")
 - Agents need to loop, retry, or self-correct
 - Multiple agents collaborate on a task
@@ -434,13 +439,13 @@ const model = new ChatOpenAI({
 
 Now that you have the fundamentals, here are some project ideas to sharpen your skills:
 
-- **AI code reviewer** — A LangGraph workflow that reads a PR diff, analyzes it, and generates review comments
-- **Multi-agent research assistant** — One agent searches the web, another summarizes findings, a third fact-checks
-- **Automated support bot** — Classify tickets, route to the right tool, generate responses, escalate when uncertain
-- **Content pipeline** — Plan, write, review, and publish blog posts with human approval gates
+- **AI code reviewer** - A LangGraph workflow that reads a PR diff, analyzes it, and generates review comments
+- **Multi-agent research assistant** - One agent searches the web, another summarizes findings, a third fact-checks
+- **Automated support bot** - Classify tickets, route to the right tool, generate responses, escalate when uncertain
+- **Content pipeline** - Plan, write, review, and publish blog posts with human approval gates
 
 ## Wrapping Up
 
-LangChain.js gives you the primitives — models, prompts, tools, memory. LangGraph gives you the architecture — graphs, state, branching, loops. Together, they let you build AI features that go far beyond simple chat completions.
+LangChain.js gives you the primitives - models, prompts, tools, memory. LangGraph gives you the architecture - graphs, state, branching, loops. Together, they let you build AI features that go far beyond simple chat completions.
 
 Start with a basic chain. Add a tool. Then build your first graph. Each step builds on the last, and before you know it, you're shipping production AI workflows in TypeScript.

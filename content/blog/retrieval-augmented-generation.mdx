@@ -1,6 +1,6 @@
 ---
 title: "Retrieval-Augmented Generation (RAG): The Developer's Guide to Building Context-Aware AI Apps"
-excerpt: "A practical, production-focused guide to RAG — from chunking strategies and embeddings to vector stores and retrieval. Real TypeScript code, real patterns, zero hand-waving."
+excerpt: "A practical, production-focused guide to RAG - from chunking strategies and embeddings to vector stores and retrieval. Real TypeScript code, real patterns, zero hand-waving."
 date: "2026-02-15"
 featured: true
 tags: ["AI", "RAG", "LLM", "TypeScript"]
@@ -11,15 +11,15 @@ author:
 
 # Retrieval-Augmented Generation (RAG): The Developer's Guide to Building Context-Aware AI Apps
 
-Every developer building with LLMs hits the same wall: the model doesn't know about your data. It doesn't know your product docs, your company policies, your customer records, or anything that happened after its training cutoff. You can fine-tune, but that's expensive, slow, and hard to keep current. RAG is the practical alternative — and once you understand the pattern, you'll use it everywhere.
+Every developer building with LLMs hits the same wall: the model doesn't know about your data. It doesn't know your product docs, your company policies, your customer records, or anything that happened after its training cutoff. You can fine-tune, but that's expensive, slow, and hard to keep current. RAG is the practical alternative - and once you understand the pattern, you'll use it everywhere.
 
-I've built RAG pipelines for customer support bots, internal knowledge bases, and AI-powered search features. This guide covers everything I've learned — the architecture, the gotchas, and the TypeScript code to make it work in production.
+I've built RAG pipelines for customer support bots, internal knowledge bases, and AI-powered search features. This guide covers everything I've learned - the architecture, the gotchas, and the TypeScript code to make it work in production.
 
 ## Why RAG Matters
 
 LLMs have three fundamental problems that RAG solves:
 
-**1. Hallucination.** Ask GPT-4 about your company's refund policy and it'll confidently make one up. It doesn't know — but it doesn't know that it doesn't know. RAG grounds the model in your actual data, so it answers from facts instead of imagination.
+**1. Hallucination.** Ask GPT-4 about your company's refund policy and it'll confidently make one up. It doesn't know - but it doesn't know that it doesn't know. RAG grounds the model in your actual data, so it answers from facts instead of imagination.
 
 **2. Knowledge cutoff.** Models are frozen in time. They don't know about the API change you shipped last week, the blog post you published yesterday, or the pricing update that went live this morning. RAG lets you feed the model current information at query time.
 
@@ -27,19 +27,19 @@ LLMs have three fundamental problems that RAG solves:
 
 The result: instead of hoping the model knows the answer, you give it the answer and ask it to explain. That's the core insight behind RAG.
 
-## How RAG Works — The Big Picture
+## How RAG Works - The Big Picture
 
 RAG is a three-phase pattern:
 
-1. **Ingest** — Load your documents, split them into chunks, convert chunks into embeddings, and store them in a vector database.
-2. **Retrieve** — When a user asks a question, convert the question into an embedding, search the vector database for similar chunks, and pull back the most relevant ones.
-3. **Generate** — Pass the retrieved chunks as context to the LLM along with the user's question, and let the model generate an answer grounded in your data.
+1. **Ingest** - Load your documents, split them into chunks, convert chunks into embeddings, and store them in a vector database.
+2. **Retrieve** - When a user asks a question, convert the question into an embedding, search the vector database for similar chunks, and pull back the most relevant ones.
+3. **Generate** - Pass the retrieved chunks as context to the LLM along with the user's question, and let the model generate an answer grounded in your data.
 
-That's it. The rest of this post is about doing each step well — because the difference between a demo and a production system is in the details.
+That's it. The rest of this post is about doing each step well - because the difference between a demo and a production system is in the details.
 
 ## Step 1: Source Your Data
 
-Before you can chunk anything, you need to load it. RAG pipelines ingest data from all kinds of sources — Markdown files, PDFs, databases, APIs, HTML pages, Notion exports, Slack messages. LangChain provides document loaders for most of them:
+Before you can chunk anything, you need to load it. RAG pipelines ingest data from all kinds of sources - Markdown files, PDFs, databases, APIs, HTML pages, Notion exports, Slack messages. LangChain provides document loaders for most of them:
 
 ```typescript
 import { DirectoryLoader } from "langchain/document_loaders/fs/directory";
@@ -58,17 +58,17 @@ const rawDocs = await loader.load();
 console.log(`Loaded ${rawDocs.length} documents`);
 ```
 
-Each document comes back as a `Document` object with `pageContent` (the text) and `metadata` (source file, page number, etc.). The metadata is important — you'll use it later for filtering and citation.
+Each document comes back as a `Document` object with `pageContent` (the text) and `metadata` (source file, page number, etc.). The metadata is important - you'll use it later for filtering and citation.
 
 **Tips from production:**
 
 - Always store the source in metadata. When the LLM answers a question, you want to tell the user where the answer came from.
 - Normalize your data before chunking. Strip HTML tags, fix encoding issues, remove boilerplate headers and footers. Garbage in, garbage out.
-- For APIs and databases, write a simple script that pulls data and converts it to `Document` objects. Don't over-engineer the loader — a `fetch` call and some string formatting is usually enough.
+- For APIs and databases, write a simple script that pulls data and converts it to `Document` objects. Don't over-engineer the loader - a `fetch` call and some string formatting is usually enough.
 
 ## Step 2: Chunk the Data
 
-Raw documents are too long for embedding models and too long for LLM context windows. You need to split them into chunks — small enough to be specific, large enough to be meaningful.
+Raw documents are too long for embedding models and too long for LLM context windows. You need to split them into chunks - small enough to be specific, large enough to be meaningful.
 
 Chunking is the most underrated part of RAG. Bad chunks = bad retrieval = bad answers. No amount of prompt engineering fixes irrelevant context.
 
@@ -119,7 +119,7 @@ const markdownSplitter = new MarkdownTextSplitter({
 const mdChunks = await markdownSplitter.splitDocuments(rawDocs);
 ```
 
-**Overlapping chunks** are critical regardless of which strategy you use. Without overlap, you'll lose information at chunk boundaries. A question about "refund policy for enterprise customers" might match a chunk about refunds and a chunk about enterprise plans — but neither chunk contains the full answer. Overlap increases the chance that related information stays together.
+**Overlapping chunks** are critical regardless of which strategy you use. Without overlap, you'll lose information at chunk boundaries. A question about "refund policy for enterprise customers" might match a chunk about refunds and a chunk about enterprise plans - but neither chunk contains the full answer. Overlap increases the chance that related information stays together.
 
 **How to choose chunk size:**
 
@@ -129,7 +129,7 @@ const mdChunks = await markdownSplitter.splitDocuments(rawDocs);
 | 500-1000 chars  | General docs, articles    | Good balance for most use cases          |
 | 1000-2000 chars | Technical docs, tutorials | More context, but less precise retrieval |
 
-Start with 500-1000 characters and 20% overlap. Adjust based on retrieval quality — if answers are too vague, try smaller chunks. If they lack context, try larger ones.
+Start with 500-1000 characters and 20% overlap. Adjust based on retrieval quality - if answers are too vague, try smaller chunks. If they lack context, try larger ones.
 
 ### Table / Database Chunking Strategies
 
@@ -201,7 +201,7 @@ In practice, you'll often combine both: pre-index rows as text for simple lookup
 
 ## Step 3: Create Embeddings
 
-Embeddings are the bridge between text and math. An embedding model converts a chunk of text into a vector — a list of numbers (typically 1536 dimensions for OpenAI's model) that captures the semantic meaning of the text. Similar texts produce similar vectors, which is how we find relevant chunks later.
+Embeddings are the bridge between text and math. An embedding model converts a chunk of text into a vector - a list of numbers (typically 1536 dimensions for OpenAI's model) that captures the semantic meaning of the text. Similar texts produce similar vectors, which is how we find relevant chunks later.
 
 ```typescript
 import { OpenAIEmbeddings } from "@langchain/openai";
@@ -226,13 +226,13 @@ const vectors = await embeddings.embedDocuments([
 **Key things to understand about embeddings:**
 
 - The same model must be used for both indexing (chunks) and querying (user questions). Mixing models produces incompatible vectors.
-- Embedding models are different from chat models. They don't generate text — they map text to a point in high-dimensional space.
+- Embedding models are different from chat models. They don't generate text - they map text to a point in high-dimensional space.
 - Shorter texts embed faster and cost less. This is another reason to chunk your data rather than embedding entire documents.
 - `text-embedding-3-small` is the sweet spot for most applications. It's fast, cheap ($0.02 per million tokens), and produces good results. Use `text-embedding-3-large` only if you need maximum accuracy and can afford the latency.
 
 ## Step 4: Store in a Vector Database
 
-Once you have embeddings, you need somewhere to store and search them. A vector database is optimized for similarity search — given a query vector, find the N most similar vectors in the database.
+Once you have embeddings, you need somewhere to store and search them. A vector database is optimized for similarity search - given a query vector, find the N most similar vectors in the database.
 
 For development and small datasets, an in-memory store works fine:
 
@@ -276,7 +276,7 @@ const existingStore = await PineconeStore.fromExistingIndex(embeddings, {
 });
 ```
 
-**Adding documents incrementally** is how most production systems work. You don't re-index everything on every update — you add new documents as they arrive:
+**Adding documents incrementally** is how most production systems work. You don't re-index everything on every update - you add new documents as they arrive:
 
 ```typescript
 // Add new documents to an existing store
@@ -390,7 +390,7 @@ async function answerWithThreshold(question: string): Promise<string> {
 
 ## Putting It All Together
 
-Here's a complete RAG pipeline you can adapt for your own projects — from loading documents to answering questions:
+Here's a complete RAG pipeline you can adapt for your own projects - from loading documents to answering questions:
 
 ```typescript
 import { ChatOpenAI, OpenAIEmbeddings } from "@langchain/openai";
@@ -473,7 +473,7 @@ This is a working RAG pipeline in ~60 lines. Swap `MemoryVectorStore` for Pineco
 ### Data
 
 - Documents loaded with metadata (source, date, category)
-- Text normalized — no HTML artifacts, encoding issues, or boilerplate
+- Text normalized - no HTML artifacts, encoding issues, or boilerplate
 - Incremental indexing set up for new/updated documents
 - Stale documents have a deletion or refresh strategy
 
@@ -487,7 +487,7 @@ This is a working RAG pipeline in ~60 lines. Swap `MemoryVectorStore` for Pineco
 ### Retrieval
 
 - Same embedding model used for indexing and querying
-- Top-K tuned — start with 3-5, increase if answers lack context
+- Top-K tuned - start with 3-5, increase if answers lack context
 - Metadata filters narrow search scope where possible
 - Relevance threshold set to avoid injecting low-quality context
 
@@ -497,19 +497,19 @@ This is a working RAG pipeline in ~60 lines. Swap `MemoryVectorStore` for Pineco
 - Source attribution included in every answer
 - Fallback response when no relevant documents are found
 - Logging and monitoring on retrieval quality (what questions return no results?)
-- Embedding costs tracked — batch operations where possible
+- Embedding costs tracked - batch operations where possible
 - Chunk size and overlap re-evaluated as content library grows
 
 ## Wrapping Up
 
 RAG is the most practical pattern for building AI apps that know about your data. Here's the summary:
 
-1. **Load your data** — from files, databases, APIs, wherever it lives
-2. **Chunk it** — split into pieces that are small enough to be specific, large enough to be meaningful
-3. **Embed it** — convert text chunks into vectors that capture semantic meaning
-4. **Store it** — put vectors in a database optimized for similarity search
-5. **Retrieve and generate** — find the relevant chunks, pass them to the LLM, get a grounded answer
+1. **Load your data** - from files, databases, APIs, wherever it lives
+2. **Chunk it** - split into pieces that are small enough to be specific, large enough to be meaningful
+3. **Embed it** - convert text chunks into vectors that capture semantic meaning
+4. **Store it** - put vectors in a database optimized for similarity search
+5. **Retrieve and generate** - find the relevant chunks, pass them to the LLM, get a grounded answer
 
-The pattern is simple. The craft is in the details — choosing the right chunk size, setting relevance thresholds, filtering by metadata, and handling edge cases where no good context exists.
+The pattern is simple. The craft is in the details - choosing the right chunk size, setting relevance thresholds, filtering by metadata, and handling edge cases where no good context exists.
 
-Start with the complete pipeline in this post, get it working with your own data, and iterate from there. The best RAG system is the one that answers your users' questions correctly — and you won't know what "correctly" looks like until you test it with real questions.
+Start with the complete pipeline in this post, get it working with your own data, and iterate from there. The best RAG system is the one that answers your users' questions correctly - and you won't know what "correctly" looks like until you test it with real questions.

@@ -1,6 +1,6 @@
 ---
 title: "Optimizing React.js Performance: Proven Techniques to Build Blazing-Fast Apps"
-excerpt: "A practical guide to React performance optimization — from eliminating unnecessary re-renders and code splitting to memoization, virtualization, and profiling. Real patterns you can apply today."
+excerpt: "A practical guide to React performance optimization - from eliminating unnecessary re-renders and code splitting to memoization, virtualization, and profiling. Real patterns you can apply today."
 date: "2026-01-20"
 tags: ["React", "Performance", "TypeScript", "Web Development"]
 image: "/blog/react_optimized-cover.webp"
@@ -10,17 +10,17 @@ author:
 
 # Optimizing React.js Performance: Proven Techniques to Build Blazing-Fast Apps
 
-React is fast by default — until it isn't. As your component tree grows, small inefficiencies compound into sluggish UIs, janky interactions, and frustrated users. I've spent years optimizing React apps in production, and the difference between a good app and a great one almost always comes down to understanding how React renders and knowing where to intervene.
+React is fast by default - until it isn't. As your component tree grows, small inefficiencies compound into sluggish UIs, janky interactions, and frustrated users. I've spent years optimizing React apps in production, and the difference between a good app and a great one almost always comes down to understanding how React renders and knowing where to intervene.
 
 This guide covers the techniques that actually matter, with TypeScript examples you can apply immediately.
 
 ## Why React Performance Matters
 
-Performance isn't just about speed — it directly impacts business metrics:
+Performance isn't just about speed - it directly impacts business metrics:
 
 - **53% of mobile users** abandon sites that take longer than 3 seconds to load
 - A **100ms delay** in response time can reduce conversion rates by 7%
-- Google uses **Core Web Vitals** (LCP, INP, CLS) as ranking signals — slow apps rank lower
+- Google uses **Core Web Vitals** (LCP, INP, CLS) as ranking signals - slow apps rank lower
 
 React's virtual DOM is efficient, but it can't save you from bad patterns. The key is understanding when React re-renders and making sure it only re-renders what's necessary.
 
@@ -83,7 +83,7 @@ const ProductCard = React.memo(function ProductCard({
 **When NOT to use it:**
 
 - Components that almost always receive new props
-- Very simple/cheap components — the comparison overhead isn't worth it
+- Very simple/cheap components - the comparison overhead isn't worth it
 
 ## Technique 2: Stabilize References with useMemo and useCallback
 
@@ -160,7 +160,7 @@ function SearchInput() {
 }
 ```
 
-This pattern is free — no extra API, no memoization overhead. Just better architecture.
+This pattern is free - no extra API, no memoization overhead. Just better architecture.
 
 ## Technique 4: Code Splitting with React.lazy
 
@@ -384,7 +384,7 @@ function OptimizedImage({
 
 ## Technique 9: Use the React Profiler to Find Bottlenecks
 
-Stop guessing — measure. React DevTools Profiler shows you exactly which components re-render and why:
+Stop guessing - measure. React DevTools Profiler shows you exactly which components re-render and why:
 
 **Step 1:** Open React DevTools → Profiler tab → click Record
 
@@ -419,7 +419,7 @@ function App() {
 **What to look for:**
 
 - Components that re-render when they shouldn't (grey in profiler = "did not render" is what you want)
-- Components with high "actual duration" — these are your optimization targets
+- Components with high "actual duration" - these are your optimization targets
 - Cascading re-renders from a single state change
 
 ## Technique 10: Web Workers for Heavy Computation
@@ -475,10 +475,10 @@ function useDataProcessor() {
 
 ## Technique 11: Concurrent Features (React 18+)
 
-React 18 introduced concurrent rendering — the ability to prepare multiple versions of the UI at the same time. The key concept is **urgent vs non-urgent updates**:
+React 18 introduced concurrent rendering - the ability to prepare multiple versions of the UI at the same time. The key concept is **urgent vs non-urgent updates**:
 
-- **Urgent updates** — typing, clicking, pressing — need immediate response
-- **Non-urgent updates** — search results, filtering a list, rendering a new page — can be deferred
+- **Urgent updates** - typing, clicking, pressing - need immediate response
+- **Non-urgent updates** - search results, filtering a list, rendering a new page - can be deferred
 
 ### useTransition
 
@@ -523,7 +523,7 @@ The input stays snappy because React prioritizes the urgent `setQuery` update. T
 
 ### useDeferredValue
 
-`useDeferredValue` is a simpler alternative when you don't control the state update — it gives you a "stale" version of a value that lags behind:
+`useDeferredValue` is a simpler alternative when you don't control the state update - it gives you a "stale" version of a value that lags behind:
 
 ```typescript
 import { useDeferredValue, useMemo } from "react";
@@ -550,20 +550,22 @@ function SearchResults({ query }: { query: string }) {
 
 ### Automatic Batching
 
-Before React 18, state updates inside `setTimeout`, `fetch`, or event listeners were **not** batched — each triggered a separate re-render. React 18 batches all updates automatically:
+Before React 18, state updates inside `setTimeout`, `fetch`, or event listeners were **not** batched - each triggered a separate re-render. React 18 batches all updates automatically:
 
 ```typescript
 // React 17: 3 separate re-renders
 // React 18: 1 single re-render (automatic batching)
-fetch("/api/data").then((res) => res.json()).then((data) => {
-  setLoading(false);
-  setResults(data.items);
-  setCount(data.total);
-  // React 18 batches all three into one render
-});
+fetch("/api/data")
+  .then((res) => res.json())
+  .then((data) => {
+    setLoading(false);
+    setResults(data.items);
+    setCount(data.total);
+    // React 18 batches all three into one render
+  });
 ```
 
-This is a free performance win — no code changes needed. Just upgrade to React 18+.
+This is a free performance win - no code changes needed. Just upgrade to React 18+.
 
 ## Technique 12: Optimizing Forms in React
 
@@ -614,7 +616,7 @@ function FastForm() {
 
 ### React Hook Form: Best of Both Worlds
 
-React Hook Form uses uncontrolled inputs under the hood with **field-level rendering** — only the field that changed re-renders, not the entire form:
+React Hook Form uses uncontrolled inputs under the hood with **field-level rendering** - only the field that changed re-renders, not the entire form:
 
 ```typescript
 import { useForm } from "react-hook-form";
@@ -670,7 +672,7 @@ function ContactForm() {
 
 **Why React Hook Form is fast:**
 
-- Uses `ref`-based tracking — no state updates during typing
+- Uses `ref`-based tracking - no state updates during typing
 - Validation runs per-field, not per-form
 - The form component itself doesn't re-render when individual fields change
 - On a form with 20+ fields, this can mean **90% fewer re-renders** compared to controlled inputs
@@ -689,7 +691,7 @@ npm install --save-dev source-map-explorer
 ```
 
 ```typescript
-// next.config.ts — for Next.js projects
+// next.config.ts - for Next.js projects
 import withBundleAnalyzer from "@next/bundle-analyzer";
 
 const config = withBundleAnalyzer({
@@ -708,7 +710,7 @@ ANALYZE=true npm run build
 
 ### Tree Shaking: Import Only What You Need
 
-Tree shaking eliminates unused code — but only if you import correctly:
+Tree shaking eliminates unused code - but only if you import correctly:
 
 ```typescript
 // Bad: imports the ENTIRE lodash library (~70KB gzipped)
@@ -740,13 +742,13 @@ import { format, parseISO } from "date-fns"; // ~5KB per function (tree-shakeabl
 
 ### ESM vs CJS: Why It Matters
 
-- **ESM (ES Modules):** `import/export` — supports tree shaking, static analysis
-- **CJS (CommonJS):** `require/module.exports` — does NOT support tree shaking
+- **ESM (ES Modules):** `import/export` - supports tree shaking, static analysis
+- **CJS (CommonJS):** `require/module.exports` - does NOT support tree shaking
 
 When choosing libraries, check if they ship ESM builds. Look for `"module"` or `"exports"` in their `package.json`. If a library only ships CJS, the bundler can't eliminate unused code.
 
 ```json
-// Good — library supports ESM
+// Good - library supports ESM
 {
   "main": "./dist/index.cjs",
   "module": "./dist/index.mjs",
@@ -824,7 +826,7 @@ app.use(
         res.setHeader("Cache-Control", "public, max-age=31536000, immutable");
       }
     },
-  })
+  }),
 );
 ```
 
@@ -852,9 +854,9 @@ export default defineConfig({
 
 Put your static assets on a CDN so users download them from the nearest edge server instead of your origin:
 
-- **Vercel / Netlify** — automatic CDN for all static assets
-- **Cloudflare** — free tier with global CDN
-- **AWS CloudFront** — pair with S3 for full control
+- **Vercel / Netlify** - automatic CDN for all static assets
+- **Cloudflare** - free tier with global CDN
+- **AWS CloudFront** - pair with S3 for full control
 
 Set immutable cache headers for hashed assets so the browser never re-downloads unchanged files:
 
@@ -868,7 +870,7 @@ These patterns separate senior engineers from everyone else. They combine multip
 
 ### Windowing + Suspense: Lazy-Load List Items on Scroll
 
-Combine virtualization with `Suspense` to lazy-load data as the user scrolls — no upfront data fetching for off-screen items:
+Combine virtualization with `Suspense` to lazy-load data as the user scrolls - no upfront data fetching for off-screen items:
 
 ```typescript
 import { Suspense, lazy, useRef } from "react";
@@ -918,7 +920,7 @@ Only the visible items trigger their `Suspense` boundary. Off-screen items are n
 React Server Components (RSC) run on the server and send zero JavaScript to the client. Use them for the right things:
 
 ```typescript
-// server-component.tsx — runs on server, 0KB client JS
+// server-component.tsx - runs on server, 0KB client JS
 // Ideal for: data fetching, heavy computation, static content
 async function ProductPage({ params }: { params: { id: string } }) {
   const product = await db.products.findUnique({ where: { id: params.id } });
@@ -935,7 +937,7 @@ async function ProductPage({ params }: { params: { id: string } }) {
   );
 }
 
-// client-component.tsx — ships JS to client
+// client-component.tsx - ships JS to client
 // Ideal for: interactivity, event handlers, browser APIs
 "use client";
 
@@ -947,7 +949,7 @@ function AddToCartButton({ productId, price }: { productId: string; price: numbe
       addToCart(productId);
       setAdded(true);
     }}>
-      {added ? "Added!" : `Add to Cart — $${price}`}
+      {added ? "Added!" : `Add to Cart - $${price}`}
     </button>
   );
 }
@@ -955,7 +957,7 @@ function AddToCartButton({ productId, price }: { productId: string; price: numbe
 
 **The mental model:**
 
-- Default to Server Components — they're free (no client JS)
+- Default to Server Components - they're free (no client JS)
 - Add `"use client"` only when you need `useState`, `useEffect`, event handlers, or browser APIs
 - Push `"use client"` boundaries as deep as possible into the component tree
 
@@ -964,7 +966,7 @@ function AddToCartButton({ productId, price }: { productId: string; price: numbe
 Traditional SSR waits for all data before sending anything to the client. Streaming SSR sends the shell immediately and streams in content as it becomes ready:
 
 ```typescript
-// layout.tsx — sent to client immediately
+// layout.tsx - sent to client immediately
 export default function Layout({ children }: { children: React.ReactNode }) {
   return (
     <html>
@@ -979,23 +981,23 @@ export default function Layout({ children }: { children: React.ReactNode }) {
   );
 }
 
-// page.tsx — streamed in when data is ready
+// page.tsx - streamed in when data is ready
 async function DashboardPage() {
   return (
     <div>
       <h1>Dashboard</h1>
 
-      {/* Fast data — streams in quickly */}
+      {/* Fast data - streams in quickly */}
       <Suspense fallback={<StatsSkeleton />}>
         <StatsPanel />
       </Suspense>
 
-      {/* Slow data — streams in later without blocking the rest */}
+      {/* Slow data - streams in later without blocking the rest */}
       <Suspense fallback={<ChartSkeleton />}>
         <AnalyticsChart />
       </Suspense>
 
-      {/* Very slow data — page is already interactive before this loads */}
+      {/* Very slow data - page is already interactive before this loads */}
       <Suspense fallback={<TableSkeleton />}>
         <RecentOrders />
       </Suspense>
@@ -1006,10 +1008,10 @@ async function DashboardPage() {
 
 **Why streaming matters:**
 
-- **Time to First Byte (TTFB)** drops dramatically — the shell arrives in milliseconds
+- **Time to First Byte (TTFB)** drops dramatically - the shell arrives in milliseconds
 - Users see a loading skeleton instantly instead of a blank page
 - Fast sections become interactive while slow sections are still loading
-- Each `Suspense` boundary is an independent streaming chunk — slow APIs don't block fast ones
+- Each `Suspense` boundary is an independent streaming chunk - slow APIs don't block fast ones
 
 ### Edge Rendering
 
@@ -1087,17 +1089,17 @@ Before shipping, run through this checklist:
 
 ## Wrapping Up
 
-React performance optimization isn't about applying every technique everywhere — it's about knowing which technique to use when. Start by profiling your app to find the actual bottlenecks, then apply the right fix.
+React performance optimization isn't about applying every technique everywhere - it's about knowing which technique to use when. Start by profiling your app to find the actual bottlenecks, then apply the right fix.
 
 The techniques that give you the most impact with the least effort:
 
-1. **Move state down** — free, no API needed, fixes most re-render issues
-2. **Code split routes** — one-time setup, massive bundle size reduction
-3. **Virtualize long lists** — turns unusable UIs into smooth ones
-4. **useTransition** — keeps the UI responsive during heavy updates for free
-5. **React Hook Form** — eliminates form re-render problems at the library level
-6. **Server Components** — zero client JS for non-interactive content
+1. **Move state down** - free, no API needed, fixes most re-render issues
+2. **Code split routes** - one-time setup, massive bundle size reduction
+3. **Virtualize long lists** - turns unusable UIs into smooth ones
+4. **useTransition** - keeps the UI responsive during heavy updates for free
+5. **React Hook Form** - eliminates form re-render problems at the library level
+6. **Server Components** - zero client JS for non-interactive content
 
-For senior-level impact, combine techniques: virtualization with Suspense for infinite lists, streaming SSR with edge rendering for instant page loads, and Server Components to minimize your client bundle. The best React apps aren't just fast — they feel instant.
+For senior-level impact, combine techniques: virtualization with Suspense for infinite lists, streaming SSR with edge rendering for instant page loads, and Server Components to minimize your client bundle. The best React apps aren't just fast - they feel instant.
 
 Measure before and after every change. If you can't measure the improvement, it probably wasn't worth the added complexity.

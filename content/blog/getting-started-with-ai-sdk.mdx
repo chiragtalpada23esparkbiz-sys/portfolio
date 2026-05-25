@@ -93,13 +93,13 @@ ANTHROPIC_API_KEY=sk-ant-...
 
 Here's the structure we'll build:
 
-| Path | Description |
-|------|-------------|
-| `app/api/chat/route.ts` | API endpoint for chat |
-| `app/page.tsx` | Chat UI component |
-| `app/layout.tsx` | Root layout |
-| `components/chat-message.tsx` | Message component |
-| `lib/ai-config.ts` | AI configuration |
+| Path                          | Description           |
+| ----------------------------- | --------------------- |
+| `app/api/chat/route.ts`       | API endpoint for chat |
+| `app/page.tsx`                | Chat UI component     |
+| `app/layout.tsx`              | Root layout           |
+| `components/chat-message.tsx` | Message component     |
+| `lib/ai-config.ts`            | AI configuration      |
 
 ## Core Concepts: Understanding AI SDK Architecture
 
@@ -357,13 +357,13 @@ export function ChatComponent() {
 
 **Key differences with the transport approach:**
 
-| Feature | Old `useChat` | New Transport-based |
-|---------|---------------|---------------------|
-| Import | `ai/react` | `@ai-sdk/react` |
-| Message format | `content` string | `parts` array with typed content |
-| Sending messages | `append()` or `handleSubmit()` | `sendMessage({ text })` |
-| Loading state | `isLoading` boolean | `status` enum (`submitted`, `streaming`, `ready`) |
-| API config | `api` prop directly | `DefaultChatTransport` instance |
+| Feature          | Old `useChat`                  | New Transport-based                               |
+| ---------------- | ------------------------------ | ------------------------------------------------- |
+| Import           | `ai/react`                     | `@ai-sdk/react`                                   |
+| Message format   | `content` string               | `parts` array with typed content                  |
+| Sending messages | `append()` or `handleSubmit()` | `sendMessage({ text })`                           |
+| Loading state    | `isLoading` boolean            | `status` enum (`submitted`, `streaming`, `ready`) |
+| API config       | `api` prop directly            | `DefaultChatTransport` instance                   |
 
 **Why use the transport system?**
 
@@ -422,7 +422,7 @@ export function ChatModal() {
           return;
         }
       } catch {
-        // Not JSON — fall through
+        // Not JSON - fall through
       }
       setRateLimitError("Something went wrong. Please try again later.");
     },
@@ -525,6 +525,7 @@ export function ChatModal() {
 ```
 
 This pattern handles:
+
 - **Structured error parsing** from your API (rate limits, validation errors)
 - **Message parts extraction** for multi-modal support
 - **Granular loading states** (submitted vs streaming)
