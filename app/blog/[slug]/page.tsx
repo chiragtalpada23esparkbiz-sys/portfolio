@@ -66,7 +66,7 @@ export async function generateMetadata({
 const mdxComponents = {
   h1: (props: React.HTMLAttributes<HTMLHeadingElement>) => (
     <h1
-      className="text-2xl sm:text-3xl font-bold mt-8 sm:mt-10 mb-4 scroll-mt-24 wrap-break-word"
+      className="text-2xl sm:text-3xl font-bold  mb-4 scroll-mt-24 wrap-break-word"
       {...props}
     />
   ),
@@ -248,7 +248,7 @@ export default async function BlogPostPage({ params }: PageProps) {
         itemType="https://schema.org/BlogPosting"
       >
         {/* Hero Section */}
-        <Section className="pt-8 pb-8 md:pt-12 md:pb-12">
+        <Section className="pt-8 pb-4 md:pt-12 md:pb-8">
           {/* Back Link */}
           <BlurFade delay={0}>
             <Link
@@ -308,7 +308,9 @@ export default async function BlogPostPage({ params }: PageProps) {
                   <span itemProp="author">{post.author.name}</span>
                 </div>
                 <div className="flex items-center gap-4">
-                  <span className="hidden sm:inline text-muted-foreground/50">|</span>
+                  <span className="hidden sm:inline text-muted-foreground/50">
+                    |
+                  </span>
                   <div className="flex items-center gap-2">
                     <Calendar className="h-4 w-4" aria-hidden="true" />
                     <time dateTime={post.date} itemProp="datePublished">
@@ -332,7 +334,7 @@ export default async function BlogPostPage({ params }: PageProps) {
           {/* Cover Image */}
           {post.image && (
             <BlurFade delay={0.2}>
-              <div className="relative aspect-video rounded-2xl overflow-hidden max-w-4xl mx-auto mb-10">
+              <div className="relative aspect-video rounded-2xl overflow-hidden max-w-4xl mx-auto mb-0">
                 <Image
                   src={post.image}
                   alt={post.title}
@@ -348,11 +350,15 @@ export default async function BlogPostPage({ params }: PageProps) {
         </Section>
 
         {/* Main Content with TOC */}
-        <Section className="py-8 md:py-12">
+        <Section className="py-4 md:py-8">
           <div className="max-w-6xl mx-auto w-full">
-            <div className="grid lg:grid-cols-[1fr_280px] gap-6 lg:gap-12">
+            <div className="grid grid-cols-12 gap-6 lg:gap-12">
               {/* Content */}
-              <BlurFade delay={0.15} inView>
+              <BlurFade
+                delay={0.15}
+                inView
+                className="col-span-12 xl:col-span-8"
+              >
                 <div
                   className="prose prose-sm sm:prose-lg dark:prose-invert max-w-none w-full min-w-0 wrap-break-word"
                   itemProp="articleBody"
@@ -372,7 +378,7 @@ export default async function BlogPostPage({ params }: PageProps) {
 
               {/* Sidebar with TOC */}
               {headings.length > 0 && (
-                <aside className="hidden lg:block sticky top-24 h-fit">
+                <aside className="hidden lg:block sticky top-24 h-fit col-span-12 xl:col-span-4">
                   <TableOfContents headings={headings} />
                 </aside>
               )}
