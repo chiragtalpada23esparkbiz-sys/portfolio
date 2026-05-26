@@ -31,7 +31,7 @@ export async function generateMetadata({
 }: PageProps): Promise<Metadata> {
   const { slug } = await params;
   const post = await getPostBySlug(slug);
-  const baseUrl = process.env.BASE_URL || "";
+  const baseUrl = process.env.BASE_URL || "https://www.chiragtalpada.in";
 
   if (!post) {
     return { title: "Post Not Found" };
@@ -193,7 +193,7 @@ export default async function BlogPostPage({ params }: PageProps) {
   const otherPosts = await getOtherPosts(slug);
 
   // JSON-LD structured data for SEO
-  const baseUrl = process.env.BASE_URL || "";
+  const baseUrl = process.env.BASE_URL || "https://www.chiragtalpada.in";
   const postUrl = `${baseUrl}/blog/${slug}`;
 
   // Convert date to full ISO 8601 format for Google structured data
