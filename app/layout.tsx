@@ -18,7 +18,7 @@ import { Toaster } from "@/components/ui/sonner";
 import { Analytics } from "@vercel/analytics/next";
 import { Suspense } from "react";
 
-const baseUrl = process.env.BASE_URL || "";
+const baseUrl = "https://www.chiragtalpada.in";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -42,7 +42,7 @@ export const viewport: Viewport = {
 };
 
 export const metadata: Metadata = {
-  metadataBase: new URL(baseUrl || "https://www.chiragtalpada.in"),
+  metadataBase: new URL("https://www.chiragtalpada.in"),
   verification: {
     google: "czhaMTIdgGTJfBAQ5f2f7h3HKEMFRK6SfPdplN19mZc",
   },

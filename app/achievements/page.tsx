@@ -3,7 +3,7 @@ import type { Metadata } from "next";
 import { AchievementsPageContent } from "./achievements-content";
 import { AchievementsJsonLd } from "@/components/seo/json-ld";
 
-const baseUrl = process.env.BASE_URL || "";
+const baseUrl = "https://www.chiragtalpada.in";
 
 export const metadata: Metadata = {
   title: "Achievements & Recognition | Chirag Talpada",

@@ -42,7 +42,7 @@ export async function generateMetadata({
     return { title: "Project Not Found" };
   }
 
-  const baseUrl = process.env.BASE_URL || "";
+  const baseUrl = "https://www.chiragtalpada.in";
 
   return {
     title: `${project.title} - ${project.subtitle}`,
@@ -362,7 +362,6 @@ export default async function ProjectPage({ params }: PageProps) {
             </div>
           </Section>
         )}
-
       </article>
     </>
   );

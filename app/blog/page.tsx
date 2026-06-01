@@ -8,7 +8,7 @@ import { BlurFade } from "@/components/ui/blur-fade";
 import { Calendar, Clock, ArrowLeft, ArrowRight, BookOpen } from "lucide-react";
 import type { BlogPost } from "@/types";
 
-const baseUrl = process.env.BASE_URL || "";
+const baseUrl = "https://www.chiragtalpada.in";
 
 export const metadata: Metadata = {
   title: "Blog - Web Development, AI & Software Engineering | Chirag Talpada",

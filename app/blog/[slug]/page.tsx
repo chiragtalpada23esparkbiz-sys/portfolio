@@ -31,7 +31,7 @@ export async function generateMetadata({
 }: PageProps): Promise<Metadata> {
   const { slug } = await params;
   const post = await getPostBySlug(slug);
-  const baseUrl = process.env.BASE_URL || "https://www.chiragtalpada.in";
+  const baseUrl = "https://www.chiragtalpada.in";
 
   if (!post) {
     return { title: "Post Not Found" };
