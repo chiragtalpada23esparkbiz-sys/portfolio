@@ -40,6 +40,7 @@ function PostHogInit({ children }: { children: React.ReactNode }) {
       },
       loaded: (ph) => {
         if (process.env.NODE_ENV === "development") ph.debug();
+        ph.startSessionRecording();
       },
     });
   }, []);
